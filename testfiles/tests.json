@@ -1,0 +1,12 @@
+{
+    "tests":[
+        {
+            "name": "Test ping between pc1 and pc2",
+            "fail": "Ping not successfull",
+            "success": "Ping successfull",
+            "nodes": ["pc1", "pc2"],
+            "test": "ping",
+            "expect": "success"
+        }
+    ]
+}
