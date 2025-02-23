@@ -55,6 +55,7 @@ async def main():
 
     for test in test_config["tests"]:
         operation = strategies.assign_operation(test["test"])
+        if operation is None: continue # add warning unsupported test
         await operation(
             eid,
             test["name"],
