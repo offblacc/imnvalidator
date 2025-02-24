@@ -1,0 +1,22 @@
+the input device is not a TTY with this
+
+
+    TODO maybe don't ping oneself if user wants to test ping all to all? maybe a switch to decide
+    TODO just pass everything
+    """
+async def test_ping(eid, test_config):
+    status = True
+    for node in test_config["nodes"]:
+        for ip in test_config["target_ips"]:
+            process = await start_process(f'himage {node}@{eid}') #  ping -W 2 -c 5 {ip}
+            cmd = f'ping -W 2 -c 5 {ip}\n'
+            print("before stdin write")
+            process.stdin.write(cmd.encode())
+            await process.stdin.drain()
+            stdout = await process.stdout.read()
+            print(stdout.decode())
+    
+    
+- ili ću parsirati RUČNO rezultat ping naredbe... ako želim testirati $? exit code:
+; echo $? - ne znam kako himageu to poslati.. ili
+interaktivni himage, no tad javlja the input device is not a TTY

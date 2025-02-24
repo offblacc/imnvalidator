@@ -4,6 +4,8 @@ import asyncio
 from util import start_process
 
 ### TODO PRIMARNI TEST - DA ČVOROVI U NODES ZAPRAVO POSTOJE U SIMULACIJI!!!!!!!!!!!!!!!!!!
+# TODO također reflection - aj dodaj obje varijante, nek bude neka refleksija s mogućim i dict mapiranjem za slučaj da je komplicirano keywordove..
+
 
 async def main():
     if len(sys.argv) != 3:
@@ -38,7 +40,7 @@ async def main():
 
     if return_code != "0":
         print("Simulation failed to start")
-        sys.exit(1) # TODO and cleanup?
+        sys.exit(1)  # TODO and cleanup?
     elif return_code == "0":
         # print(f'Simulation started successfully with eid={eid}')
         print(f"Simulation started successfully.")
@@ -53,16 +55,9 @@ async def main():
 
     # then go and run each operation...
 
-    for test in test_config["tests"]:
-        operation = strategies.assign_operation(test["test"])
-        await operation(
-            eid,
-            test["name"],
-            test["fail"],
-            test["success"],
-            test["nodes"],
-            test["expect"],
-        )
+    for test_config in test_config["tests"]:
+        operation = strategies.assign_operation(test_config["test"])
+        await operation(eid, test_config)
 
 
 if __name__ == "__main__":
