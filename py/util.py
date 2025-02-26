@@ -14,4 +14,3 @@ async def start_process(cmd: str):
 def get_ip_from_node(scheme, node_name):
     with open(scheme, 'r'):
         scheme = json.load(scheme)
-        

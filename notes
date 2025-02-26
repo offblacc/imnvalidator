@@ -20,3 +20,20 @@ async def test_ping(eid, test_config):
 - ili ću parsirati RUČNO rezultat ping naredbe... ako želim testirati $? exit code:
 ; echo $? - ne znam kako himageu to poslati.. ili
 interaktivni himage, no tad javlja the input device is not a TTY
+
+
+# TODO add verbose option!
+# TODO ASAP add a wrapper that prints it out nicely.. work out the format later, just have something to print it out with nicely before you get too deep into the project, it'll require more refactoring later on...
+# TODO kad dodaš još jedan test, obavezno sredi ovo iznad i dodaj neki globalni pratitelj koji ispiše generalni status svih testova
+# TODO za pisati u radu - brzina invokeanja subshella... svaki čak i uspješni ping dakle bez timeouta traje ipak neko kraće vrijeme... možda isti shell **NEKAKO** za svaki izvorišni čvor...; ali prouči definitivno izmjeri trajanje...
+
+# TODO dodaj trajanje svega u ispis
+# TODO add count of failed tests in global status...
+
+# TODO do you need to extract some things into functions, things such as pingCheck? As you'll use those often later when, for example, testing ping after routing updates..?
+ - ok mislim da ćeš def trebat tcpdump ili takvo nešto
+
+
+========================== WIDER PROJECT SCOPE TODOS ==========================
+Kako bi runnao kad imaš X schema i želiš Y testova provesti nad raznim shemama? Kad bi primjerice provjeravao validnost IMUNES instalacije? Napravi sve fleksibilnijim tako da jedan poziv validate.py može to odraditi... Možda dodatan fajl koji parsira i sprema neku mapu, mapu tipa "schema: testovi"
+
