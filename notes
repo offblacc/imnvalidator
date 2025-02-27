@@ -32,8 +32,11 @@ interaktivni himage, no tad javlja the input device is not a TTY
 
 # TODO do you need to extract some things into functions, things such as pingCheck? As you'll use those often later when, for example, testing ping after routing updates..?
  - ok mislim da ćeš def trebat tcpdump ili takvo nešto
+# TODO invert ---- and ==== usage
+# TODO separating with ---- not needed when not printing verbose
 
 
 ========================== WIDER PROJECT SCOPE TODOS ==========================
 Kako bi runnao kad imaš X schema i želiš Y testova provesti nad raznim shemama? Kad bi primjerice provjeravao validnost IMUNES instalacije? Napravi sve fleksibilnijim tako da jedan poziv validate.py može to odraditi... Možda dodatan fajl koji parsira i sprema neku mapu, mapu tipa "schema: testovi"
 
+# TODO raise GH issue - jel 

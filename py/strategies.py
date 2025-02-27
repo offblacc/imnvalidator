@@ -1,5 +1,6 @@
 from util import start_process
 
+
 verbose = False
 # TODO add directional ping, or make [a,b] only check a->b, maybe that's better? or add modifiers (LATER...)
 # TODO are nodes node names or node IPs? figure out what's better
@@ -32,14 +33,30 @@ async def test_ping(eid, test_config) -> bool:
     for node in test_config["nodes"]:
         for ip in test_config["target_ips"]:
             process = await start_process(
-                f'himage -nt {node}@{eid} sh -c "ping -W 2 -c 2 {ip} > dev/null; echo \$?"'
+                f'himage -nt {node}@{eid} sh -c "ping -W 2 -c 2 {ip}; echo \$?"'
             )
             output = await process.stdout.read()
-            if output.decode().strip().split("\n")[-1] != "0":
-                print(f"[FAIL] Node '{node}' failed to ping '{ip}'")
+            output = output.decode().strip()
+            if output.split("\n")[-1] != "0":
+                print(f"...[FAIL] Node '{node}' failed to ping '{ip}'")
                 failed += 1
+                
+                if verbose:
+                    output = output.strip().split("\n")[:-1]
+                    border = '=' * ((max([len(x) for x in output])) + 2)
+                    print(f'    /{border}')
+                    for line in output:
+                        print(f'   || {line}')
+                    print(f'    \{border}')
+
+                # if verbose:
+                #     print('    x=========================================')
+                #     for line in output.split("\n")[:-1]:
+                #         print(f'   || {line}')
+                #     print('    x=========================================')
+                    
             elif verbose:
-                print(f"[OK] Node '{node}' pinged '{ip}' successfully")
+                print(f"...[OK] Node '{node}' pinged '{ip}' successfully")
 
     total = len(test_config["nodes"]) * len(test_config["target_ips"])
     print('\n' + ('[OK] ' if failed == 0 else '[FAIL] ') + f"{total - failed}/{total} pings successfull")
