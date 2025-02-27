@@ -1,4 +1,4 @@
-from util import start_process
+import util
 
 
 verbose = False
@@ -9,6 +9,26 @@ verbose = False
 def set_verbose(v):
     global verbose
     verbose = v
+    
+def format_output_frame(s):
+    """Format the output with borders and lines.
+    Used mainly (probably) for returning the raw
+    output from a command that failed the test.
+
+    Args:
+        s (str): The string to format.
+
+    Returns:
+        _type_: A sort of box frame is added to the output
+    """
+    ret_str = ""
+    s = s.strip().split("\n")
+    border = '=' * (max(len(line) for line in s) + 2)
+    ret_str += f'    /{border}\n'
+    for line in s:
+        ret_str += f'   || {line}\n'
+    ret_str += f'    \{border}'
+    return ret_str
 
 
 def assign_operation(
@@ -19,52 +39,33 @@ def assign_operation(
     elif keyword == "neighbour":
         return test_neigh
 
-    """Test ping - ping and check return command
-    for each node in nodes ping each ip in target_ips
-    report each one and return success if all succeed, else fail
-    TODO maybe don't ping oneself if user wants to test ping all to all? maybe a switch to decide
-    TODO just pass everything
-    TODO add options to set timeout and -c (-W and -c)
-    """
 
-
+# TODO here add awaiting at the end ?
 async def test_ping(eid, test_config) -> bool:
     total, failed = 0, 0
     for node in test_config["nodes"]:
         for ip in test_config["target_ips"]:
-            process = await start_process(
-                f'himage -nt {node}@{eid} sh -c "ping -W 2 -c 2 {ip}; echo \$?"'
-            )
-            output = await process.stdout.read()
-            output = output.decode().strip()
-            if output.split("\n")[-1] != "0":
-                print(f"...[FAIL] Node '{node}' failed to ping '{ip}'")
-                failed += 1
-                
+            status, output = await util.ping_check(node, ip, eid)
+            
+            if status: # test success
                 if verbose:
-                    output = output.strip().split("\n")[:-1]
-                    border = '=' * ((max([len(x) for x in output])) + 2)
-                    print(f'    /{border}')
-                    for line in output:
-                        print(f'   || {line}')
-                    print(f'    \{border}')
+                    util.print_pass_subtest(f'Node \'{node}\' pinged \'{ip}\' successfully')
+            
+            else: # test failure
+                util.print_fail_subtest(f'Node \'{node}\' failed to ping \'{ip}\'')
+                failed += 1
+                if verbose:
+                    print(format_output_frame(output))
 
-                # if verbose:
-                #     print('    x=========================================')
-                #     for line in output.split("\n")[:-1]:
-                #         print(f'   || {line}')
-                #     print('    x=========================================')
-                    
-            elif verbose:
-                print(f"...[OK] Node '{node}' pinged '{ip}' successfully")
 
     total = len(test_config["nodes"]) * len(test_config["target_ips"])
-    print('\n' + ('[OK] ' if failed == 0 else '[FAIL] ') + f"{total - failed}/{total} pings successfull")
+    
+    if failed == 0:
+        util.print_pass_test(f'{total - failed}/{total} pings successfull')
+    else:
+        util.print_fail_test(f'{total - failed}/{total} pings successfull')
     
     return failed == 0
-
-    # TODO add printing out the exact pings failing!
-
 
 def test_neigh(name, fail, success, nodes, expect):
     pass

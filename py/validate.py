@@ -5,19 +5,23 @@ import json
 import os
 import strategies
 import asyncio
-from util import start_process
+import util
 import argparse
 from strategies import set_verbose
 
+
 def get_verbose():
-    global verbose # TODO is the keyword needed?
+    global verbose  # TODO is the keyword needed?
     return verbose
 
-async def main(imn_file, config_file, verbose=False): # TODO verbose=False is redundant ?
+
+async def main(
+    imn_file, config_file, verbose=False
+):  # TODO verbose=False is redundant ?
     verbose = verbose
     strategies.set_verbose(verbose)
     test_config = None
-    
+
     try:
         with open(config_file, "r") as json_file:
             test_config = json.load(json_file)
@@ -36,7 +40,7 @@ async def main(imn_file, config_file, verbose=False): # TODO verbose=False is re
     else:
         print("Starting simulation")
 
-    process = await start_process(cmd)
+    process = await util.start_process(cmd)
 
     # "live stream" simulation creation output
     return_code, eid = None, None
@@ -67,18 +71,25 @@ async def main(imn_file, config_file, verbose=False): # TODO verbose=False is re
         if not await operation(eid, test):
             global_status = False
         print("------------------------------------")
-        
-    print() # just a newline
+
+    print()  # just a newline
     if not global_status:
-        print("[FAIL] Some tests failed!")
+        util.print_fail_test("Some tests failed")
     else:
-        print("All tests successfull!")
+        util.print_pass_test("All tests passed!")
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run a simulation with specified arguments.")
-    parser.add_argument('imn_file', help="Path to the imunes scheme")
-    parser.add_argument('config_file', help="Path to the JSON config file defining the tests")
-    parser.add_argument('-v', '--verbose', action='store_true', help="Enable verbose mode")
+    parser = argparse.ArgumentParser(
+        description="Run a simulation with specified arguments."
+    )
+    parser.add_argument("imn_file", help="Path to the imunes scheme")
+    parser.add_argument(
+        "config_file", help="Path to the JSON config file defining the tests"
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Enable verbose mode"
+    )
 
     args = parser.parse_args()
 
