@@ -8,6 +8,7 @@ import asyncio
 import util
 import argparse
 from strategies import set_verbose
+import time
 
 
 def get_verbose():
@@ -16,7 +17,7 @@ def get_verbose():
 
 
 async def main(
-    imn_file, config_file, verbose=False
+    imn_file, config_file, verbose, parallel
 ):  # TODO verbose=False is redundant ?
     verbose = verbose
     strategies.set_verbose(verbose)
@@ -64,19 +65,37 @@ async def main(
         print(f"Simulation started successfully.")
 
     # then go and run each operation...
-    global_status = True
-    for test in test_config["tests"]:
-        operation = strategies.assign_operation(test["test"])
-        print(f'\nRunning test {test["name"]}')
-        if not await operation(eid, test):
-            global_status = False
-        print("------------------------------------")
+    failures = 0
+    if parallel:
+        tasks = [run_single_test(eid, test) for test in test_config["tests"]]
+        results = await asyncio.gather(*tasks)
+        for test, (status, output) in zip(test_config["tests"], results):
+            print(output)
+            if status:
+                continue
+            failures += 1
+    else:
+        # Run tests sequentially
+        for test in test_config["tests"]:
+            status, output = await run_single_test(eid, test)
+            print(output)
+            if status:
+                continue
+            failures += 1
 
     print()  # just a newline
-    if not global_status:
-        util.print_fail_test("Some tests failed")
-    else:
-        util.print_pass_test("All tests passed!")
+    print(
+        util.format_end_status(
+            f"{len(test_config['tests']) - failures}/{len(test_config['tests'])} tests successful",
+            failures == 0,
+        )
+    )
+
+
+async def run_single_test(eid, test):
+    operation = strategies.assign_operation(test["test"])
+    status, output = await operation(eid, test)
+    return status, f'\nRunning test {test["name"]}\n' + output
 
 
 if __name__ == "__main__":
@@ -90,8 +109,20 @@ if __name__ == "__main__":
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Enable verbose mode"
     )
+    parser.add_argument(
+        "-p", "--parallel", action="store_true", help="Run tests in parallel"
+    )
+    parser.add_argument(
+        "-t", "--timeit", action="store_true", help="Time the execution"
+    )
 
     args = parser.parse_args()
 
+    if args.timeit:
+        start = time.time()
     # Run the main function with parsed arguments
-    asyncio.run(main(args.imn_file, args.config_file, args.verbose))
+    asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel))
+
+    if args.timeit:
+        end = time.time()
+        print(f"Execution time: {end - start} seconds")

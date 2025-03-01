@@ -41,3 +41,5 @@ interaktivni himage, no tad javlja the input device is not a TTY
 Kako bi runnao kad imaš X schema i želiš Y testova provesti nad raznim shemama? Kad bi primjerice provjeravao validnost IMUNES instalacije? Napravi sve fleksibilnijim tako da jedan poziv validate.py može to odraditi... Možda dodatan fajl koji parsira i sprema neku mapu, mapu tipa "schema: testovi"
 
 # TODO raise GH issue - jel 
+
+# TODO IMPORTANT test success SHOULD DEPEND ON EXPECTED STATUS FROM PING! NOT PING SUCCESS!!

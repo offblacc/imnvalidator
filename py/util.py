@@ -15,20 +15,25 @@ async def start_process(cmd: str):
         stderr=asyncio.subprocess.STDOUT,
     )
 
-def print_pass_subtest(s: str) -> None:
-    print(f'...{green_code}[OK]{reset_code} {s}')
+def format_pass_subtest(s: str) -> None:
+    return f'...{green_code}[OK]{reset_code} {s}\n'
     
-def print_fail_subtest(s: str) -> None:
-    print(f'...{red_code}[FAIL]{reset_code} {s}')
+def format_fail_subtest(s: str) -> None:
+    return f'...{red_code}[FAIL]{reset_code} {s}\n'
 
-def print_pass_test(s: str) -> None:
-    print(f'{green_code}[PASS]{reset_code} {s}')
+def format_pass_test(s: str) -> None:
+    return f'{green_code}[PASS]{reset_code} {s}'
 
-def print_fail_test(s: str) -> None:
-    print(f'{red_code}[FAIL]{reset_code} {s}')
+def format_fail_test(s: str) -> None:
+    return f'{red_code}[FAIL]{reset_code} {s}'
+
+def format_end_status(s: str, status: bool) -> None:
+    """Status True is success, False is failure.
+    """
+    return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
+    
 
 # TODO if you optimise pings - multiple calls in the same shell process, implement it here
-# TODO after implementing this function, use it in the ping test itself
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     """sssssstringgggggggggggg
 
@@ -51,3 +56,23 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
     ping_output = output[:output.rfind('\n')].strip()
 
     return ping_status, ping_output
+
+def format_output_frame(s):
+    """Format the output with borders and lines.
+    Used mainly (probably) for returning the raw
+    output from a command that failed the test.
+
+    Args:
+        s (str): The string to format.
+
+    Returns:
+        _type_: A sort of box frame is added to the output
+    """
+    ret_str = ""
+    s = s.strip().split("\n")
+    border = '=' * (max(len(line) for line in s) + 2)
+    ret_str += f'    /{border}\n'
+    for line in s:
+        ret_str += f'   || {line}\n'
+    ret_str += f'    \{border}\n'
+    return ret_str
