@@ -2,8 +2,7 @@ import util, asyncio
 
 
 verbose = False
-# TODO add directional ping, or make [a,b] only check a->b, maybe that's better? or add modifiers (LATER...)
-# TODO are nodes node names or node IPs? figure out what's better
+
 
 
 def set_verbose(v):
@@ -32,20 +31,23 @@ async def test_ping(eid, test_config) -> bool:
         for ip in test_config["target_ips"]
     ]
 
+    expect_success = test_config["expect"] not in ["fail", "failure", "0", "f", "false"]
+    
     results = await asyncio.gather(*tasks)
 
-    for (node, ip), (status, output) in zip(
+    for (node, ip), (ping_status, output) in zip(
         [(node, ip) for node in test_config["nodes"] for ip in test_config["target_ips"]],
         results
     ):
-        if status:
-            if verbose:
-                print_output += util.format_pass_subtest(f'Node \'{node}\' pinged \'{ip}\' successfully')
-        else:
-            print_output += util.format_fail_subtest(f'Node \'{node}\' failed to ping \'{ip}\'')
+        pstr = f'Node \'{node}\' pinged \'{ip}\' successfully' if ping_status else f'Node \'{node}\' failed to ping \'{ip}\''
+        format = util.format_pass_subtest if ping_status == expect_success else util.format_fail_subtest
+        print_output += format(pstr)
+        
+        if ping_status != expect_success:
             failed += 1
             if verbose:
                 print_output += util.format_output_frame(output)
+
 
     format = util.format_fail_test if failed != 0 else util.format_pass_test
     print_output += format(f'{total - failed}/{total} pings successful')

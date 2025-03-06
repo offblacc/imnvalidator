@@ -71,7 +71,8 @@
             "expect": "success",
             "fail": "Ping not successfull",
             "success": "Ping successfull"
-        },{
+        },
+        {
             "name": "Another OK one with 10",
             "test": "ping",
             "nodes": [
@@ -88,6 +89,21 @@
                 "10.0.0.22",
                 "10.0.0.22",
                 "10.0.0.22"
+            ],
+            "expect": "success",
+            "fail": "Ping not successfull",
+            "success": "Ping successfull"
+        },
+        {
+            "name": "Ping pc1 to nonexistant expect fail",
+            "test": "ping",
+            "nodes": [
+                "pc1", "pc2"
+            ],
+            "target_ips": [
+                "10.0.0.19",
+                "1.2.3.4",
+                "5.6.7.8"
             ],
             "expect": "success",
             "fail": "Ping not successfull",

@@ -36,10 +36,13 @@ interaktivni himage, no tad javlja the input device is not a TTY
 # TODO separating with ---- not needed when not printing verbose
 
 # TODO pingove ne moraš odmah awaitati... na kraju; onda će bit malo paralelizma tu pa će se ubrzati sve...
+# TODO add directional ping, or make [a,b] only check a->b, maybe that's better? or add modifiers (LATER...)
+
 
 ========================== WIDER PROJECT SCOPE TODOS ==========================
 Kako bi runnao kad imaš X schema i želiš Y testova provesti nad raznim shemama? Kad bi primjerice provjeravao validnost IMUNES instalacije? Napravi sve fleksibilnijim tako da jedan poziv validate.py može to odraditi... Možda dodatan fajl koji parsira i sprema neku mapu, mapu tipa "schema: testovi"
 
 # TODO raise GH issue - jel 
 
-# TODO IMPORTANT test success SHOULD DEPEND ON EXPECTED STATUS FROM PING! NOT PING SUCCESS!!
+# TODO IMPORTANT test success should depend on expected status
+# FIXME # TODO IMPORTANT figure out why reading ping output sometimes flips the output itself and the following ;echo\$?
