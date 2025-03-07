@@ -3,11 +3,21 @@ import strategies
 import asyncio
 from typing import Tuple
 import pexpect
-import sys
+import re
 
 green_code = '\033[92m'
 red_code = '\033[91m'
 reset_code = '\033[0m'
+
+# This is a list of tuples where the first element is the regex pattern to match
+# and the second element is the replacement string.
+# Use to remove unwanted patterns from the output of the pexpect command,
+# such as escape codes.
+# TODO remove if unused
+replace_codes = [
+    (r'\r\n\x1b[?', ''),
+    (r'\x1b[?2004l\r', ''),
+]
 
 global logger
 
@@ -24,6 +34,18 @@ async def start_process(cmd: str):
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
     )
+
+def sanitize_output(s: str) -> str:
+    """Fix rouge \r from pexpect output and remove other non-printable characters.
+    The newline seems to be an exception (not considered printable?)
+
+    Args:
+        s (str): _description_
+
+    Returns:
+        str: _description_
+    """
+    return s
 
 def format_pass_subtest(s: str) -> None:
     return f'...{green_code}[OK]{reset_code} {s}\n'
@@ -42,24 +64,11 @@ def format_end_status(s: str, status: bool) -> None:
     """
     return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
 
-
-def mprint(s: str) -> None:
-    """Print to stdout using sys.stdout.write() and sys.stdout.flush()
-    adding a newline at the end. Should be used instead of print() around
-    pexpect to avoid buffering issues.
-
-    Args:
-        s (_str_): String to print to stdout.
-    """
-    sys.stdout.write(f'{s}\n')
-    sys.stdout.flush()
-
-
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     command = f"himage {source_node_name}@{eid}"
 
     # Start interactive shell session with `himage`
-    child = pexpect.spawn(command, encoding="utf-8", timeout=timeout + 2)
+    child = pexpect.spawn(command, encoding="utf-8", timeout=timeout + 10)
 
     # Ensure the shell is ready (wait for prompt)
     child.expect(r'[a-zA-Z0-9]+@[a-zA-Z0-9]+:/# ')
@@ -72,25 +81,25 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
 
     # Extract ping output (excluding the prompt itself)
     ping_output = child.before.strip()
-    mprint(f"ping output is {ping_output}")
-
+    
     # Send command to get the exit status ($?)
     child.sendline("echo $?")
 
     # Expect a number (exit code) followed by a newline, then wait for the next prompt
-    child.expect(r"\d+\r?\n")  # Match just the exit code output
+    # TTYs should end with \r\n, allow both just in case
+    child.expect(r"\d+\r?\n")
 
     # Extract the exit status (last captured number)
     ping_status = child.match.group(0).strip()
 
-    # Capture the exit status
-    # child.expect(r'# ')
-    # ping_status = child.before.strip()#.strip()# == "0"
-    sys.stdout.flush()
-    mprint(f"ping_status: {ping_status}")
     # Close the session
     child.sendline("exit")
     child.close()
+    # print((ping_output[:ping_output.rfind('\n')]))
+    # print("Status is" + (ping_status))
+    print("Ping output:" + ping_output[:ping_output.rfind('\n')])
+    print(f"Ping status: {ping_status}")
+    
 
     # Log result
     logger.debug(

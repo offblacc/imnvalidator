@@ -69,7 +69,7 @@ async def main(
 
     logger.debug(f'Starting simulation with command: {cmd.split(";")[0]}')
     
-    process = await util.start_process(cmd)
+    process = await util.start_process(cmd) # don't need a PTY here, just start the simulation & read output
 
     # "live stream" simulation creation output
     return_code, eid = None, None
