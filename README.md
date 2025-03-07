@@ -1,4 +1,5 @@
-# Diplomski / Master's thesis
+# Imnvalidator
+### IMUNES simulation validator/testing framework
 
 This project is a testing framework for the IMUNES application. Its purpose is to simplify verifying a successfull IMUNES installation and functionality (to test all functions work on, for example, a specific OS and hardware) as well as verify desired network operation for a specific simulation.
 
