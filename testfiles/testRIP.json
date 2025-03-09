@@ -1,0 +1,17 @@
+{
+    "tests": [
+        {
+            "name": "Test RIP functionality",
+            "type": "RIP",
+            "nodes": [
+                "pc"
+            ],
+            "target_ips4": [
+                "10.0.4.10"
+            ],
+            "target_ips6": [
+                "fc00:1::10"
+            ]
+        }
+    ]
+}

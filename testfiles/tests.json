@@ -2,7 +2,7 @@
     "tests": [
         {
             "name": "Ping pc1 to pc2",
-            "test": "ping",
+            "type": "ping",
             "nodes": [
                 "pc1"
             ],
@@ -15,7 +15,7 @@
         },
         {
             "name": "Ping pc1 to pc2",
-            "test": "ping",
+            "type": "ping",
             "nodes": [
                 "pc1"
             ],
@@ -29,7 +29,7 @@
         },
         {
             "name": "Ping pc1 to pc2 with one wrong IP",
-            "test": "ping",
+            "type": "ping",
             "nodes": [
                 "pc1"
             ],
@@ -47,7 +47,7 @@
         },
         {
             "name": "Another OK one with 15",
-            "test": "ping",
+            "type": "ping",
             "nodes": [
                 "pc1"
             ],
@@ -74,7 +74,7 @@
         },
         {
             "name": "Another OK one with 10",
-            "test": "ping",
+            "type": "ping",
             "nodes": [
                 "pc1"
             ],
@@ -96,7 +96,7 @@
         },
         {
             "name": "Ping pc1 to nonexistant expect fail",
-            "test": "ping",
+            "type": "ping",
             "nodes": [
                 "pc1", "pc2"
             ],

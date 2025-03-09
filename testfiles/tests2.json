@@ -2,7 +2,7 @@
     "tests": [
         {
             "name": "Ping pc1 to nonexistant expect fail",
-            "test": "ping",
+            "type": "ping",
             "nodes": [
                 "pc1", "pc2"
             ],

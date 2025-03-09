@@ -135,7 +135,7 @@ async def main(
 
 
 async def run_single_test(eid, test):
-    operation = strategies.assign_operation(test["test"])
+    operation = strategies.assign_operation(test['type'])
     status, output = await operation(eid, test)
     return status, f'\nRunning test {test["name"]}\n' + output
 

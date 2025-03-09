@@ -9,7 +9,7 @@
                 "oneOf": [
                     {
                         "properties": {
-                            "test": {
+                            "type": {
                                 "const": "ping"
                             },
                             "name": {
@@ -37,7 +37,49 @@
                                 "type": "string"
                             }
                         },
-                        "required": ["test", "name", "nodes", "target_ips"]
+                        "required": [
+                            "type",
+                            "name",
+                            "nodes",
+                            "target_ips"
+                        ],
+                        "additionalProperties": false
+                    },
+                    {
+                        "properties": {
+                            "type": {
+                                "const": "RIP"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "nodes": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "target_ips4": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "target_ips6": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "name",
+                            "nodes",
+                            "target_ips4",
+                            "target_ips6"
+                        ],
+                        "additionalProperties": false
                     }
                 ]
             }
