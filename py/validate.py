@@ -8,7 +8,8 @@ import argparse
 import util
 import time
 import logging
-import strategies
+import strategies # TODO remove ?
+import importlib
 
 def configure_logging(log_to_file=True, log_file='imnvalidator.log'):
     # Create a custom logger
@@ -135,8 +136,13 @@ async def main(
 
 
 async def run_single_test(eid, test):
-    operation = strategies.assign_operation(test['type'])
-    status, output = await operation(eid, test)
+    # operation = strategies.assign_operation(test['type']) # old way of doing it, keeping it here for old times sake
+    strategy_type = test['type']
+    strategy_module = importlib.import_module(f'strategies.{strategy_type}')
+    strategy_function = getattr(strategy_module, strategy_type)
+    
+    
+    status, output = await strategy_function(eid, test)
     return status, f'\nRunning test {test["name"]}\n' + output
 
 

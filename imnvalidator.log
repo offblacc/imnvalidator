@@ -7406,3 +7406,216 @@ ping: connect: Network is unreachable
 2025-03-07 19:36:08,708 - imnvalidator - DEBUG - Test Ping pc1 to nonexistant expect fail failed
 2025-03-07 19:36:08,708 - imnvalidator - DEBUG - Tests finished with 1 failures
 2025-03-07 19:36:08,709 - imnvalidator - INFO - Validator finished in 10.393263101577759 seconds
+2025-03-09 19:18:06,471 - imnvalidator - DEBUG - Program started
+2025-03-09 19:18:06,471 - imnvalidator - DEBUG - Parsing arguments
+2025-03-09 19:18:06,474 - imnvalidator - DEBUG - Starting main function
+2025-03-09 19:18:06,475 - imnvalidator - DEBUG - Starting simulation with command: imunes -b testfiles/scheme.imn
+2025-03-09 19:18:09,525 - imnvalidator - DEBUG - Simulation started successfully.
+2025-03-09 19:18:09,525 - imnvalidator - DEBUG - Running tests in sequence
+2025-03-09 19:18:12,918 - imnvalidator - DEBUG - Pinging 10.0.0.19 from pc1@i25a with timeout=2, count=2 RETURNS status '1' and output 'ping -W 2 -c 2 10.0.0.19
+[?2004lPING 10.0.0.19 (10.0.0.19) 56(84) bytes of data.
+
+--- 10.0.0.19 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1005ms
+
+[?'
+2025-03-09 19:18:13,307 - imnvalidator - DEBUG - Pinging 1.2.3.4 from pc1@i25a with timeout=2, count=2 RETURNS status '2' and output 'ping -W 2 -c 2 1.2.3.4
+[?2004lping: connect: Network is unreachable
+[?'
+2025-03-09 19:18:13,678 - imnvalidator - DEBUG - Pinging 5.6.7.8 from pc1@i25a with timeout=2, count=2 RETURNS status '2' and output 'ping -W 2 -c 2 5.6.7.8
+[?2004lping: connect: Network is unreachable
+[?'
+2025-03-09 19:18:17,077 - imnvalidator - DEBUG - Pinging 10.0.0.19 from pc2@i25a with timeout=2, count=2 RETURNS status '1' and output 'ping -W 2 -c 2 10.0.0.19
+[?2004lPING 10.0.0.19 (10.0.0.19) 56(84) bytes of data.
+
+--- 10.0.0.19 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1017ms
+
+[?'
+2025-03-09 19:18:17,457 - imnvalidator - DEBUG - Pinging 1.2.3.4 from pc2@i25a with timeout=2, count=2 RETURNS status '2' and output 'ping -W 2 -c 2 1.2.3.4
+[?2004lping: connect: Network is unreachable
+[?'
+2025-03-09 19:18:17,833 - imnvalidator - DEBUG - Pinging 5.6.7.8 from pc2@i25a with timeout=2, count=2 RETURNS status '2' and output 'ping -W 2 -c 2 5.6.7.8
+[?2004lping: connect: Network is unreachable
+[?'
+2025-03-09 19:18:17,834 - imnvalidator - DEBUG - Test Ping pc1 to nonexistant expect fail failed
+2025-03-09 19:18:17,834 - imnvalidator - DEBUG - Tests finished with 1 failures
+2025-03-09 19:18:17,837 - imnvalidator - INFO - Validator finished in 11.362859010696411 seconds
+2025-03-09 19:18:38,243 - imnvalidator - DEBUG - Program started
+2025-03-09 19:18:38,244 - imnvalidator - DEBUG - Parsing arguments
+2025-03-09 19:18:38,247 - imnvalidator - DEBUG - Starting main function
+2025-03-09 19:18:38,247 - imnvalidator - DEBUG - Starting simulation with command: imunes -b testfiles/scheme.imn
+2025-03-09 19:18:40,974 - imnvalidator - DEBUG - Simulation started successfully.
+2025-03-09 19:18:40,974 - imnvalidator - DEBUG - Running tests in sequence
+2025-03-09 19:18:42,406 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.134 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.108 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1028ms
+rtt min/avg/max/mdev = 0.108/0.121/0.134/0.013 ms
+[?'
+2025-03-09 19:18:42,407 - imnvalidator - DEBUG - Test Ping pc1 to pc2 failed
+2025-03-09 19:18:43,813 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.132 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.083 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1029ms
+rtt min/avg/max/mdev = 0.083/0.107/0.132/0.024 ms
+[?'
+2025-03-09 19:18:45,221 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.094 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.105 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1025ms
+rtt min/avg/max/mdev = 0.094/0.099/0.105/0.005 ms
+[?'
+2025-03-09 19:18:45,223 - imnvalidator - DEBUG - Test Ping pc1 to pc2 failed
+2025-03-09 19:18:46,631 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.088 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.110 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1017ms
+rtt min/avg/max/mdev = 0.088/0.099/0.110/0.011 ms
+[?'
+2025-03-09 19:18:50,038 - imnvalidator - DEBUG - Pinging 10.0.0.19 from pc1@i251 with timeout=2, count=2 RETURNS status '1' and output 'ping -W 2 -c 2 10.0.0.19
+[?2004lPING 10.0.0.19 (10.0.0.19) 56(84) bytes of data.
+
+--- 10.0.0.19 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1030ms
+
+[?'
+2025-03-09 19:18:51,429 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.092 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.107 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 0.092/0.099/0.107/0.007 ms
+[?'
+2025-03-09 19:18:52,837 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.089 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.105 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 0.089/0.097/0.105/0.008 ms
+[?'
+2025-03-09 19:18:54,245 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.116 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.088 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1027ms
+rtt min/avg/max/mdev = 0.088/0.102/0.116/0.014 ms
+[?'
+2025-03-09 19:18:55,653 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.094 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.093 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1024ms
+rtt min/avg/max/mdev = 0.093/0.093/0.094/0.000 ms
+[?'
+2025-03-09 19:18:55,654 - imnvalidator - DEBUG - Test Ping pc1 to pc2 with one wrong IP failed
+2025-03-09 19:18:57,063 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.141 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.110 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1016ms
+rtt min/avg/max/mdev = 0.110/0.125/0.141/0.015 ms
+[?'
+2025-03-09 19:18:58,470 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.099 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.137 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1031ms
+rtt min/avg/max/mdev = 0.099/0.118/0.137/0.019 ms
+[?'
+2025-03-09 19:18:59,877 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.119 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.107 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1028ms
+rtt min/avg/max/mdev = 0.107/0.113/0.119/0.006 ms
+[?'
+2025-03-09 19:19:01,285 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.115 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.106 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1004ms
+rtt min/avg/max/mdev = 0.106/0.110/0.115/0.004 ms
+[?'
+2025-03-09 19:19:02,693 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.095 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.111 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1029ms
+rtt min/avg/max/mdev = 0.095/0.103/0.111/0.008 ms
+[?'
+2025-03-09 19:19:04,101 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.117 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.085 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1022ms
+rtt min/avg/max/mdev = 0.085/0.101/0.117/0.016 ms
+[?'
+2025-03-09 19:19:05,573 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.115 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.102 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1056ms
+rtt min/avg/max/mdev = 0.102/0.108/0.115/0.006 ms
+[?'
+2025-03-09 19:19:06,982 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.082 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.086 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1007ms
+rtt min/avg/max/mdev = 0.082/0.084/0.086/0.002 ms
+[?'
+2025-03-09 19:19:08,390 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.123 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.108 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1024ms
+rtt min/avg/max/mdev = 0.108/0.115/0.123/0.007 ms
+[?'
+2025-03-09 19:19:09,798 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i251 with timeout=2, count=2 RETURNS status '0' and output 'ping -W 2 -c 2 10.0.0.22
+[?2004lPING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.104 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.091 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1029ms
+rtt min/avg/max/mdev = 0.091/0.097/0.104/0.006 ms
+[?'

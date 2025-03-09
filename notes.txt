@@ -56,6 +56,7 @@ Kako bi runnao kad imaš X schema i želiš Y testova provesti nad raznim shemam
 # TODO add a test that checks if the ping is successful, and if not, it should print out the output of the ping command 
 
 # TODO DEFAULT EXPECT IN PING IS SUCCESS !
+# TODO add ipv6 ping separately?
 
 
 
