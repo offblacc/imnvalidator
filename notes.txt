@@ -46,3 +46,35 @@ Kako bi runnao kad imaš X schema i želiš Y testova provesti nad raznim shemam
 
 # TODO IMPORTANT test success should depend on expected status
 # FIXME # TODO IMPORTANT figure out why reading ping output sometimes flips the output itself and the following ;echo\$?
+
+# TODO if you want atomized tests - WHEN do you start the simulation? or, or should that also be left to the user to decide (of course, having a sane default option)
+
+
+
+
+
+# TODO add a test that checks if the ping is successful, and if not, it should print out the output of the ping command 
+
+# TODO DEFAULT EXPECT IN PING IS SUCCESS !
+
+
+
+
+
+
+
+dobivao sam nekompletan output, jer.. treba sanitizeati tekst
+ovo vraća print(repr(output)):
+'ping -W 2 -c 2 10.0.0.19\r\n\x1b[?2004l\rPING 10.0.0.19 (10.0.0.19) 56(84) bytes of data.\r\n\r\n--- 10.0.0.19 ping statistics ---\r\n2 packets transmitted, 0 received, 100% packet loss, time 1034ms\r\n\r\n\x1b[?'
+'1'
+'ping -W 2 -c 2 1.2.3.4\r\n\x1b[?2004l\rping: connect: Network is unreachable\r\n\x1b[?'
+'2'
+'ping -W 2 -c 2 5.6.7.8\r\n\x1b[?2004l\rping: connect: Network is unreachable\r\n\x1b[?'
+'2'
+'ping -W 2 -c 2 10.0.0.19\r\n\x1b[?2004l\rPING 10.0.0.19 (10.0.0.19) 56(84) bytes of data.\r\n\r\n--- 10.0.0.19 ping statistics ---\r\n2 packets transmitted, 0 received, 100% packet loss, time 1014ms\r\n\r\n\x1b[?'
+'1'
+'ping -W 2 -c 2 1.2.3.4\r\n\x1b[?2004l\rping: connect: Network is unreachable\r\n\x1b[?'
+'2'
+'ping -W 2 -c 2 5.6.7.8\r\n\x1b[?2004l\rping: connect: Network is unreachable\r\n\x1b[?'
+'2'
+

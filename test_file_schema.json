@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "tests": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "oneOf": [
+                    {
+                        "properties": {
+                            "test": {
+                                "const": "ping"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "nodes": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "target_ips": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "expect": {
+                                "type": "string"
+                            },
+                            "fail": {
+                                "type": "string"
+                            },
+                            "success": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["test", "name", "nodes", "target_ips"]
+                    }
+                ]
+            }
+        }
+    },
+    "required": [
+        "tests"
+    ]
+}
