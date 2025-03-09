@@ -19,8 +19,27 @@ replace_codes = [
     (r'\x1b[?2004l\r', ''),
 ]
 
-global logger
 
+def clean_string(input_string):
+    result = []
+    skip = False
+
+    for char in input_string:
+        if char == '\n':
+            skip = True
+        elif char == '\r' and skip:
+            skip = False
+            continue
+
+        if not skip:
+            result.append(char)
+
+    return ''.join(result).replace('\r', '\n')
+
+
+
+# TODO modify after you implement strategies as a module
+global logger
 def initialize_modules(verbose):
     global logger
     logger = logging.getLogger('imnvalidator')
@@ -34,18 +53,6 @@ async def start_process(cmd: str):
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
     )
-
-def sanitize_output(s: str) -> str:
-    """Fix rouge \r from pexpect output and remove other non-printable characters.
-    The newline seems to be an exception (not considered printable?)
-
-    Args:
-        s (str): _description_
-
-    Returns:
-        str: _description_
-    """
-    return s
 
 def format_pass_subtest(s: str) -> None:
     return f'...{green_code}[OK]{reset_code} {s}\n'
@@ -64,6 +71,9 @@ def format_end_status(s: str, status: bool) -> None:
     """
     return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
 
+import pexpect
+from typing import Tuple
+
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     command = f"himage {source_node_name}@{eid}"
 
@@ -76,12 +86,15 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
     # Send the ping command
     child.sendline(f"ping -W {timeout} -c {count} {target_ip}")
 
-    # Capture ping output until the next shell prompt appears
-    child.expect(r'[a-zA-Z0-9]+@[a-zA-Z0-9]+:/# ')
+    child.expect(r'(PING|ping) .+')  # Expect the PING line
+    ping_output = child.before.strip()  # Capture everything before the match
 
+    child.expect(r'[a-zA-Z0-9]+@[a-zA-Z0-9]+:/# ')  # Wait for the shell prompt
+    ping_output += "\n" + child.before.strip()  # Append the ping output
+    
     # Extract ping output (excluding the prompt itself)
     ping_output = child.before.strip()
-    
+
     # Send command to get the exit status ($?)
     child.sendline("echo $?")
 
@@ -90,16 +103,11 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
     child.expect(r"\d+\r?\n")
 
     # Extract the exit status (last captured number)
-    ping_status = child.match.group(0).strip()
+    ping_status = child.match.group(0).strip() == '0'
 
     # Close the session
     child.sendline("exit")
     child.close()
-    # print((ping_output[:ping_output.rfind('\n')]))
-    # print("Status is" + (ping_status))
-    print("Ping output:" + ping_output[:ping_output.rfind('\n')])
-    print(f"Ping status: {ping_status}")
-    
 
     # Log result
     logger.debug(
@@ -107,7 +115,11 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
         f"RETURNS status '{ping_status}' and output '{ping_output}'"
     )
 
+    #print(repr(ping_output[:ping_output.rfind('\n')].strip()))
+    ping_output = ping_output[:ping_output.rfind('\n')].strip()
+
     return ping_status, ping_output
+
 
 # TODO if you optimise pings - multiple calls in the same shell process, implement it here
 async def ping_check_old(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
@@ -152,4 +164,13 @@ def format_output_frame(s):
     for line in s:
         ret_str += f'   || {line}\n'
     ret_str += f'    \{border}\n'
+    return ret_str
+
+
+def format_output_frame_alt(s):
+    print("I GOT" + repr(s))
+    ret_str = ""
+    for l in s.strip().split('\n'):
+        print("l is" + l)
+        ret_str += f"   " + l + "\n"
     return ret_str
