@@ -76,7 +76,7 @@ from typing import Tuple
 
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     command = f"himage {source_node_name}@{eid}"
-
+    
     # Start interactive shell session with `himage`
     child = pexpect.spawn(command, encoding="utf-8", timeout=timeout + 10)
 
@@ -115,9 +115,7 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
         f"RETURNS status '{ping_status}' and output '{ping_output}'"
     )
 
-    #print(repr(ping_output[:ping_output.rfind('\n')].strip()))
     ping_output = ping_output[:ping_output.rfind('\n')].strip()
-
     return ping_status, ping_output
 
 

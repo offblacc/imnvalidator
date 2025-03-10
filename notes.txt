@@ -57,7 +57,7 @@ Kako bi runnao kad imaš X schema i želiš Y testova provesti nad raznim shemam
 
 # TODO DEFAULT EXPECT IN PING IS SUCCESS !
 # TODO add ipv6 ping separately?
-
+# TODO handle the case when a <node>@<simulation> is not found nicely, i don't want stack traces dropped to the console
 
 
 

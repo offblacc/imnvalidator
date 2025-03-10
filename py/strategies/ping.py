@@ -15,7 +15,7 @@ async def ping(eid, test_config) -> bool:
         for ip in test_config["target_ips"]
     ]
 
-    expect_success = test_config["expect"] not in ["fail", "failure", "0", "f", "false"]
+    expect_success = test_config.get("expect", "true").lower() not in ["fail", "failure", "0", "f", "false"]
 
     results = await asyncio.gather(*tasks)
 
@@ -42,6 +42,7 @@ async def ping(eid, test_config) -> bool:
         if ping_status != expect_success:
             failed += 1
             if verbose:
+                print_output += f'Expected {"successful ping" if expect_success else "ping failure"}, got:\n'
                 print_output += util.format_output_frame(output)
 
     format = util.format_fail_test if failed != 0 else util.format_pass_test
