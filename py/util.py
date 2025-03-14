@@ -8,43 +8,7 @@ import re
 green_code = '\033[92m'
 red_code = '\033[91m'
 reset_code = '\033[0m'
-
-# This is a list of tuples where the first element is the regex pattern to match
-# and the second element is the replacement string.
-# Use to remove unwanted patterns from the output of the pexpect command,
-# such as escape codes.
-# TODO remove if unused
-replace_codes = [
-    (r'\r\n\x1b[?', ''),
-    (r'\x1b[?2004l\r', ''),
-]
-
-
-def clean_string(input_string):
-    result = []
-    skip = False
-
-    for char in input_string:
-        if char == '\n':
-            skip = True
-        elif char == '\r' and skip:
-            skip = False
-            continue
-
-        if not skip:
-            result.append(char)
-
-    return ''.join(result).replace('\r', '\n')
-
-
-
-# TODO modify after you implement strategies as a module
-global logger
-def initialize_modules(verbose):
-    global logger
-    logger = logging.getLogger('imnvalidator')
-    
-    strategies.set_verbose(verbose)
+logger = logging.getLogger("imnvalidator")
     
 async def start_process(cmd: str):
     return await asyncio.create_subprocess_shell(
@@ -119,7 +83,6 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
     return ping_status, ping_output
 
 
-# TODO if you optimise pings - multiple calls in the same shell process, implement it here
 async def ping_check_old(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     """sssssstringgggggggggggg
 
@@ -162,13 +125,4 @@ def format_output_frame(s):
     for line in s:
         ret_str += f'   || {line}\n'
     ret_str += f'    \{border}\n'
-    return ret_str
-
-
-def format_output_frame_alt(s):
-    print("I GOT" + repr(s))
-    ret_str = ""
-    for l in s.strip().split('\n'):
-        print("l is" + l)
-        ret_str += f"   " + l + "\n"
     return ret_str

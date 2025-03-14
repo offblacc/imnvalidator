@@ -1,64 +1,21 @@
-the input device is not a TTY with this
-
-
-    TODO maybe don't ping oneself if user wants to test ping all to all? maybe a switch to decide
-    TODO just pass everything
-    """
-async def test_ping(eid, test_config):
-    status = True
-    for node in test_config["nodes"]:
-        for ip in test_config["target_ips"]:
-            process = await start_process(f'himage {node}@{eid}') #  ping -W 2 -c 5 {ip}
-            cmd = f'ping -W 2 -c 5 {ip}\n'
-            print("before stdin write")
-            process.stdin.write(cmd.encode())
-            await process.stdin.drain()
-            stdout = await process.stdout.read()
-            print(stdout.decode())
-    
-    
-- ili ću parsirati RUČNO rezultat ping naredbe... ako želim testirati $? exit code:
-; echo $? - ne znam kako himageu to poslati.. ili
-interaktivni himage, no tad javlja the input device is not a TTY
-
-
-# TODO add verbose option!
-# TODO ASAP add a wrapper that prints it out nicely.. work out the format later, just have something to print it out with nicely before you get too deep into the project, it'll require more refactoring later on...
 # TODO kad dodaš još jedan test, obavezno sredi ovo iznad i dodaj neki globalni pratitelj koji ispiše generalni status svih testova
 # TODO za pisati u radu - brzina invokeanja subshella... svaki čak i uspješni ping dakle bez timeouta traje ipak neko kraće vrijeme... možda isti shell **NEKAKO** za svaki izvorišni čvor...; ali prouči definitivno izmjeri trajanje...
 
-# TODO dodaj trajanje svega u ispis
-# TODO add count of failed tests in global status...
-
-# TODO do you need to extract some things into functions, things such as pingCheck? As you'll use those often later when, for example, testing ping after routing updates..?
- - ok mislim da ćeš def trebat tcpdump ili takvo nešto
-# TODO invert ---- and ==== usage
-# TODO separating with ---- not needed when not printing verbose
-
-# TODO pingove ne moraš odmah awaitati... na kraju; onda će bit malo paralelizma tu pa će se ubrzati sve...
 # TODO add directional ping, or make [a,b] only check a->b, maybe that's better? or add modifiers (LATER...)
 
 
 ========================== WIDER PROJECT SCOPE TODOS ==========================
 Kako bi runnao kad imaš X schema i želiš Y testova provesti nad raznim shemama? Kad bi primjerice provjeravao validnost IMUNES instalacije? Napravi sve fleksibilnijim tako da jedan poziv validate.py može to odraditi... Možda dodatan fajl koji parsira i sprema neku mapu, mapu tipa "schema: testovi"
-
-# TODO raise GH issue - jel 
+To je generalniji problem
 
 # TODO IMPORTANT test success should depend on expected status
 # FIXME # TODO IMPORTANT figure out why reading ping output sometimes flips the output itself and the following ;echo\$?
 
 # TODO if you want atomized tests - WHEN do you start the simulation? or, or should that also be left to the user to decide (of course, having a sane default option)
 
-
-
-
-
-# TODO add a test that checks if the ping is successful, and if not, it should print out the output of the ping command 
-
-# TODO DEFAULT EXPECT IN PING IS SUCCESS !
 # TODO add ipv6 ping separately?
 # TODO handle the case when a <node>@<simulation> is not found nicely, i don't want stack traces dropped to the console
-
+# TODO validate json before going to tests?
 
 
 

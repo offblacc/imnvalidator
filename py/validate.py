@@ -8,12 +8,13 @@ import argparse
 import util
 import time
 import logging
-import strategies # TODO remove ?
+import strategies  # TODO remove ?
 import importlib
 
-def configure_logging(log_to_file=True, log_file='imnvalidator.log'):
+
+def configure_logging(log_to_file=True, log_file="imnvalidator.log"):
     # Create a custom logger
-    logger = logging.getLogger('imnvalidator')
+    logger = logging.getLogger("imnvalidator")
     logger.setLevel(logging.DEBUG)  # Set the logging level
 
     # Clear any existing handlers
@@ -26,30 +27,28 @@ def configure_logging(log_to_file=True, log_file='imnvalidator.log'):
         file_handler.setLevel(logging.DEBUG)
         logger.addHandler(file_handler)
     else:
-        syslog_handler = logging.handlers.SysLogHandler(address='/dev/log')
+        syslog_handler = logging.handlers.SysLogHandler(address="/dev/log")
         syslog_handler.setLevel(logging.DEBUG)
         logger.addHandler(syslog_handler)
 
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     for handler in logger.handlers:
         handler.setFormatter(formatter)
 
     return logger
 
-
-def get_verbose():
-    global verbose  # TODO is the keyword needed?
-    return verbose
-
-
-async def main(
-    imn_file, config_file, verbose, parallel
-):  # TODO verbose=False is redundant ?
+async def main(imn_file, config_file, verbose, parallel):
     verbose = verbose
-    util.initialize_modules(verbose)
     test_config = None
-    logger = logging.getLogger('imnvalidator')
+    logger = logging.getLogger("imnvalidator")
+    
+    ## Send verbose where it needs to go
+    strategies.set_verbose(verbose)
 
+
+    ## Open and parse the config file
     try:
         with open(config_file, "r") as json_file:
             test_config = json.load(json_file)
@@ -60,48 +59,51 @@ async def main(
         print(f"Error: Config file '{config_file}' is not a valid JSON file.")
         sys.exit(1)
 
-    # run the simulation
+    ## Run the IMUNES simulation
     cmd = f"imunes -b {imn_file}; echo $?"
-
     if verbose:
         print(f"Starting simulation with command: {cmd.split(';')[0]}")
     else:
         print("Starting simulation")
 
     logger.debug(f'Starting simulation with command: {cmd.split(";")[0]}')
-    
-    process = await util.start_process(cmd) # don't need a PTY here, just start the simulation & read output
 
-    # "live stream" simulation creation output
+    process = await util.start_process(cmd)  # don't need a PTY here, just start the simulation & read output
+
+    ## "live stream" simulation creation output line by line (if verbose)
     return_code, eid = None, None
     while True:
         line = await process.stdout.readline()
         if not line:
             break
         pl = line.decode().strip()
+        ## Print the line if verbose and not output of '; echo $?'
         if pl not in ["0", "1"] and verbose:
             print(pl)
 
+        ## Fetch eid
         if pl.startswith("Experiment ID ="):
             eid = pl.split()[-1]
         return_code = pl
 
-    # check return code
+    ## Check return code
     if return_code != "0":
         print("Simulation failed to start")
-        logger.debug('Simulation failed to start, exiting')
-        sys.exit(1)  # TODO and cleanup?
+        logger.debug("Simulation failed to start, exiting")
+        sys.exit(1)
     elif return_code == "0":
         print(f"Simulation started successfully.")
-        logger.debug('Simulation started successfully.')
+        logger.debug("Simulation started successfully.")
 
     logger.debug(f'Running tests in {"parallel" if parallel else "sequence"}')
-    # then go and run each operation...
+    
+    ## Run each test
     failures = 0
     if parallel:
+        # Run tests in parallel
         tasks = [run_single_test(eid, test) for test in test_config["tests"]]
         results = await asyncio.gather(*tasks)
-        logger.debug('Tests finished')
+        logger.debug("Tests finished")
         for test, (status, output) in zip(test_config["tests"], results):
             print(output)
             if status:
@@ -110,8 +112,8 @@ async def main(
             else:
                 logger.debug(f'Test {test["name"]} successful')
             failures += 1
-            
-        logger.debug(f'Tests finished with {failures} failures')
+
+        logger.debug(f"Tests finished with {failures} failures")
     else:
         # Run tests sequentially
         for test in test_config["tests"]:
@@ -123,8 +125,8 @@ async def main(
             else:
                 logger.debug(f'Test {test["name"]} failed')
             failures += 1
-            
-        logger.debug(f'Tests finished with {failures} failures')
+
+        logger.debug(f"Tests finished with {failures} failures")
 
     print()  # just a newline
     print(
@@ -137,11 +139,10 @@ async def main(
 
 async def run_single_test(eid, test):
     # operation = strategies.assign_operation(test['type']) # old way of doing it, keeping it here for old times sake
-    strategy_type = test['type']
-    strategy_module = importlib.import_module(f'strategies.{strategy_type}')
+    strategy_type = test["type"]
+    strategy_module = importlib.import_module(f"strategies.{strategy_type}")
     strategy_function = getattr(strategy_module, strategy_type)
-    
-    
+
     status, output = await strategy_function(eid, test)
     return status, f'\nRunning test {test["name"]}\n' + output
 
@@ -149,8 +150,8 @@ async def run_single_test(eid, test):
 if __name__ == "__main__":
     log_to_file = True
     logger = configure_logging(log_to_file=log_to_file)
-    logger.debug('Program started')
-    logger.debug('Parsing arguments')
+    logger.debug("Program started")
+    logger.debug("Parsing arguments")
     parser = argparse.ArgumentParser(
         description="Run a simulation with specified arguments."
     )
@@ -172,10 +173,10 @@ if __name__ == "__main__":
     if args.timeit:
         start = time.time()
     # Run the main function with parsed arguments
-    logger.debug('Starting main function')
+    logger.debug("Starting main function")
     asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel))
 
     if args.timeit:
         end = time.time()
         print(f"Execution time: {end - start} seconds")
-        logger.info(f'Validator finished in {end - start} seconds')
+        logger.info(f"Validator finished in {end - start} seconds")
