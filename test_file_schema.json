@@ -78,13 +78,17 @@
                                 },
                                 "router_turnoff": {
                                     "type": "string"
+                                },
+                                "router_checkriptable": {
+                                    "type": "string"
                                 }
                             },
                             "required": [
                                 "type",
                                 "name",
                                 "source_node",
-                                "router_turnoff"
+                                "router_turnoff",
+                                "router_checkriptable"
                             ],
                             "additionalProperties": false
                         }

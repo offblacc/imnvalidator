@@ -80,61 +80,63 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
     return ping_status, ping_output
 
 
-def nodes_exist(imn_file, test_config_filepath) -> list:
-    """Tests whether nodes from: 
+import json
+
+def nodes_exist(imn_file, test_config_filepath) -> set:
+    """Tests whether nodes from:
     'source_node',
     'source_nodes'
-    
+
     fields in the json test config are in the IMUNES scheme themselves.
     Used to avoid stacktraces from deep within (...himage calls) saying
     node doesn't exist when connecting to them.
-    
+
     When adding a new type of test TRY to have nodes the framework is connecting
     to in fields named source_node or source_nodes (or both, but why would you do that?). If
     for some reason there is need for a different name for a field in JSON that holds the
-    nodes the framework is connecting to at one point, add them to this function in the 
+    nodes the framework is connecting to at one point, add them to this function in the
     appropriate list.
-    
-    It checks across all tests 
+
+    It checks across all tests
 
     Args:
         imn_file (_type_): _description_
         test_config_filepath (_type_): _description_
-    
+
     Returns:
-        _list_: ... TODO
+        set: A set of missing nodes.
     """
-    
+
     chk_data_flds = [
         'source_node',
         'source_nodes'
     ]
-    
+
     with open(imn_file, 'r') as imn_f, open(test_config_filepath, 'r') as schema_f:
         imn_data = json.load(imn_f)
         test_data = json.load(schema_f)
-        
-        imn_nodes = [imn_data["nodes"][node]["name"] for node in imn_data["nodes"]]
-        test_config_nodes = []
-        
+
+        # Extract node names from IMN data
+        imn_nodes = set(imn_data["nodes"][node]["name"] for node in imn_data["nodes"])
+
+        # Collect nodes from test configuration
+        test_config_nodes = set()
+
         for test in test_data["tests"]:
             for data_field in chk_data_flds:
                 try:
                     n = test[data_field]
-                    if isinstance(n, list): # a list of nodes
-                        test_config_nodes.extend(n)
-                    elif isinstance(n, str): # a single node
-                        test_config_nodes.append(n)
+                    if isinstance(n, list):  # a list of nodes
+                        test_config_nodes.update(n)
+                    elif isinstance(n, str):  # a single node
+                        test_config_nodes.add(n)
                     else:
-                        raise ValueError('What??') # don't ever raise please
+                        raise ValueError('Unexpected node type')
                 except KeyError:
                     pass
 
-        missing = []
-        for node in imn_nodes:
-            if node not in test_config_nodes:
-                missing.append(node)
-        return missing # TODO MAKE THIS A SET DIFFERENCE !!! SETS, NOT LISTS
+        missing = test_config_nodes - imn_nodes
+        return missing
 
 
 def read_JSON_from_file(JSON_filepath: str):

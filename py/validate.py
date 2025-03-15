@@ -77,7 +77,7 @@ async def main(imn_file, config_filepath, verbose, parallel):
     ## Check nodes the framework will connect to even exist in the IMUNES file
     missing = util.nodes_exist(imn_file, config_filepath)
     if missing:
-        print(f'You have the following nodes specified in the test file that are not found in the IMUNES simulation: {missing}')
+        print('You have the following nodes specified in the test file that are not found in the IMUNES simulation:', ', '.join(missing))
         exit(1)
         
     ## Run the IMUNES simulation
@@ -156,7 +156,13 @@ async def main(imn_file, config_filepath, verbose, parallel):
             failures == 0,
         )
     )
-
+    
+    process = await util.start_process(f'imunes -b -e {eid}')
+    
+    while True:
+        line = await process.stdout.readline()
+        if not line:
+            break
 
 async def run_single_test(eid, test):
     # operation = strategies.assign_operation(test['type']) # old way of doing it, keeping it here for old times sake

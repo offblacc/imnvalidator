@@ -22,8 +22,8 @@ To je generalniji problem
 # TODO rewrite old json test files to adhere to the new schema
 # TODO globalni neki failsafe exit sa cleanupAll... ili nije pametno to raditi? samo close ovog experimenta kojeg si započeo, da... nećemo dirati u nešto što nije ovaj program započeo, seems illegal
 # TODO u upute za dodavanje novog testa - treba nodes_exist updateati
-
-
+# TODO test nodes_exists works with ping (when it's a list of nodes)
+# TODO add warning when a target ip is not in imunes sim at all (just warn in case of a mistake, don't affect test results, let, for example, pings ping etc)
 
 dobivao sam nekompletan output, jer.. treba sanitizeati tekst
 ovo vraća print(repr(output)):
