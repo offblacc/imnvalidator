@@ -1,15 +1,15 @@
 {
     "tests": [
         {
-            "name": "Ping pc1 to pc2",
+            "name": "Simple ping pc1 to pc2",
             "type": "ping",
-            "source_nodes": [
+            "nodes": [
                 "pc1"
             ],
             "target_ips": [
-                "10.0.0.22"
+                "10.0.0.19"
             ],
-            "expect": "success",
+            "expect": "fail",
             "fail": "Ping not successfull",
             "success": "Ping successfull"
         }

@@ -19,7 +19,7 @@ async def ping(eid, test_config) -> bool:
     ## The default ping expect status is that the ping succeeds, therefore default option is true (mind the dumb 'not in')
     expect_success = test_config.get("expect", "true").lower() not in ["fail", "failure", "0", "f", "false"]
 
-    ### FIXME since using pexpect() this is useless, not in parallel at least, because of pexpect()
+    ### FIXME since using pexpect() this is useless, not running in parallel i mean, because of pexpect()
     results = await asyncio.gather(*tasks)
 
     for (node, ip), (ping_status, output) in zip(

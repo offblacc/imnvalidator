@@ -3,7 +3,7 @@ import strategies
 import asyncio
 from typing import Tuple
 import pexpect
-import re
+import sys, json
 
 green_code = '\033[92m'
 red_code = '\033[91m'
@@ -34,9 +34,6 @@ def format_end_status(s: str, status: bool) -> None:
     """Status True is success, False is failure.
     """
     return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
-
-import pexpect
-from typing import Tuple
 
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     command = f"himage {source_node_name}@{eid}"
@@ -82,6 +79,67 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
     ping_output = ping_output[:ping_output.rfind('\n')].strip()
     return ping_status, ping_output
 
+
+def nodes_exist(imn_file, test_config_filepath) -> list:
+    """Tests whether nodes from: 
+    'source_node',
+    'source_nodes'
+    
+    fields in the json test config are in the IMUNES scheme themselves.
+    Used to avoid stacktraces from deep within (...himage calls) saying
+    node doesn't exist when connecting to them.
+    
+    When adding a new type of test TRY to have nodes the framework is connecting
+    to in fields named source_node or source_nodes (or both, but why would you do that?). If
+    for some reason there is need for a different name for a field in JSON that holds the
+    nodes the framework is connecting to at one point, add them to this function in the 
+    appropriate list.
+    
+    It checks across all tests 
+
+    Args:
+        imn_file (_type_): _description_
+        test_config_filepath (_type_): _description_
+    
+    Returns:
+        _list_: ... TODO
+    """
+    
+    chk_data_flds = [
+        'source_node',
+        'source_nodes'
+    ]
+    
+    with open(imn_file, 'r') as imn_f, open(test_config_filepath, 'r') as schema_f:
+        imn_data = json.load(imn_f)
+        test_data = json.load(schema_f)
+        
+        imn_nodes = [imn_data["nodes"][node]["name"] for node in imn_data["nodes"]]
+        test_config_nodes = []
+        
+        for test in test_data["tests"]:
+            for data_field in chk_data_flds:
+                try:
+                    n = test[data_field]
+                    if isinstance(n, list): # a list of nodes
+                        test_config_nodes.extend(n)
+                    elif isinstance(n, str): # a single node
+                        test_config_nodes.append(n)
+                    else:
+                        raise ValueError('What??') # don't ever raise please
+                except KeyError:
+                    pass
+
+        missing = []
+        for node in imn_nodes:
+            if node not in test_config_nodes:
+                missing.append(node)
+        return missing # TODO MAKE THIS A SET DIFFERENCE !!! SETS, NOT LISTS
+
+
+def read_JSON_from_file(JSON_filepath: str):
+    with open(JSON_filepath, "r") as json_file:
+        return json.load(json_file)
 
 async def ping_check_old(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     """sssssstringgggggggggggg

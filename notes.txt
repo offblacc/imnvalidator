@@ -16,8 +16,12 @@ To je generalniji problem
 # TODO add ipv6 ping separately?
 # TODO handle the case when a <node>@<simulation> is not found nicely, i don't want stack traces dropped to the console
 # TODO validate json before going to tests?
-
-
+# TODO rewrite ping možda, onaj .gather()
+# TODO trebat će ti stopNode
+# TODO don't print subtest results in ping unless error when not verbose
+# TODO rewrite old json test files to adhere to the new schema
+# TODO globalni neki failsafe exit sa cleanupAll... ili nije pametno to raditi? samo close ovog experimenta kojeg si započeo, da... nećemo dirati u nešto što nije ovaj program započeo, seems illegal
+# TODO u upute za dodavanje novog testa - treba nodes_exist updateati
 
 
 
