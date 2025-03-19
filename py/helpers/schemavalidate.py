@@ -1,22 +1,22 @@
 import json
 import jsonschema
 import sys
+from typing import Tuple
 
-
-def validateJSON(data_file_path, schema_file_path):
-    # Load the JSON data and schema from files
+# Does this really need its separate function here?
+# I just have it here because I used to run it as main
+# So I separated it into a function aswell
+def validateJSON(data_file_path: str, schema_file_path: str) -> Tuple[bool, str]:
     with open(data_file_path, 'r') as data_file:
         json_data = json.load(data_file)
 
     with open(schema_file_path, 'r') as schema_file:
         json_schema = json.load(schema_file)
-
-    # Validate the JSON data against the schema
     try:
         jsonschema.validate(instance=json_data, schema=json_schema)
-        print("JSON data is valid.")
+        return True, 'JSON is valid.'
     except jsonschema.exceptions.ValidationError as err:
-        print("JSON data is invalid:", err)
+        return False, str(err)
 
 def main():
     if len(sys.argv) != 3:

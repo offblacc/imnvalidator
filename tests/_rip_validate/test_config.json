@@ -1,0 +1,12 @@
+{
+    "tests": [
+        {
+            "name": "Validate RIP funtioning",
+            "type": "_rip_validate",
+            "source_node": "pc",
+            "target_ip4": "10.0.4.10",
+            "router_turnoff": "router7",
+            "router_checkriptable": "router2"
+        }
+    ]
+}

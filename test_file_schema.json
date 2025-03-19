@@ -6,80 +6,95 @@
             "type": "array",
             "items": {
                 "type": "object",
-                "oneOf": [
+                "allOf": [
                     {
-                        "properties": {
-                            "type": {
-                                "const": "ping"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "nodes": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
+                        "if": {
+                            "properties": {
+                                "type": {
+                                    "const": "ping"
                                 }
-                            },
-                            "target_ips": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "expect": {
-                                "type": "string"
-                            },
-                            "fail": {
-                                "type": "string"
-                            },
-                            "success": {
-                                "type": "string"
                             }
                         },
-                        "required": [
-                            "type",
-                            "name",
-                            "nodes",
-                            "target_ips"
-                        ],
-                        "additionalProperties": false
+                        "then": {
+                            "properties": {
+                                "type": {
+                                    "const": "ping"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "source_nodes": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "target_ips": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "expect": {
+                                    "type": "string"
+                                },
+                                "fail": {
+                                    "type": "string"
+                                },
+                                "success": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "type",
+                                "name",
+                                "source_nodes",
+                                "target_ips"
+                            ],
+                            "additionalProperties": false
+                        }
                     },
                     {
-                        "properties": {
-                            "type": {
-                                "const": "RIP"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "nodes": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "target_ips4": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "target_ips6": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
+                        "if": {
+                            "properties": {
+                                "type": {
+                                    "const": "_rip_validate"
                                 }
                             }
                         },
-                        "required": [
-                            "type",
-                            "name",
-                            "nodes",
-                            "target_ips4",
-                            "target_ips6"
-                        ],
-                        "additionalProperties": false
+                        "then": {
+                            "properties": {
+                                "type": {
+                                    "const": "_rip_validate"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "source_node": {
+                                    "type": "string"
+                                },
+                                "target_ip4": {
+                                    "type": "string"
+                                },
+                                "target_ip6": {
+                                    "type": "string"
+                                },
+                                "router_turnoff": {
+                                    "type": "string"
+                                },
+                                "router_checkriptable": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "type",
+                                "name",
+                                "source_node",
+                                "router_turnoff",
+                                "router_checkriptable"
+                            ],
+                            "additionalProperties": false
+                        }
                     }
                 ]
             }

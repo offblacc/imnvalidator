@@ -8,8 +8,11 @@ import argparse
 import util
 import time
 import logging
-import strategies  # TODO remove ?
+import strategies
 import importlib
+from helpers.schemavalidate import validateJSON
+
+schema_filepath = 'test_file_schema.json'
 
 
 def configure_logging(log_to_file=True, log_file="imnvalidator.log"):
@@ -39,26 +42,44 @@ def configure_logging(log_to_file=True, log_file="imnvalidator.log"):
 
     return logger
 
-async def main(imn_file, config_file, verbose, parallel):
+async def main(imn_file, config_filepath, verbose, parallel):
+    global schema_filepath
     verbose = verbose
     test_config = None
     logger = logging.getLogger("imnvalidator")
     
+    ## First, validate JSON file
+    json_valid, output = validateJSON(data_file_path=config_filepath, schema_file_path=schema_filepath)
+    if not json_valid:
+        print('Invalid JSON, reason:')
+        print(output)
+        exit(1)
+    else:
+        if verbose:
+            print('JSON file adheres to the schema.')
+    
     ## Send verbose where it needs to go
     strategies.set_verbose(verbose)
+    # util -> does it need verbose? shouldn't if you don't do anything wierd
 
 
-    ## Open and parse the config file
+    ## Try parsing the config file
     try:
-        with open(config_file, "r") as json_file:
-            test_config = json.load(json_file)
+        test_config = util.read_JSON_from_file(config_filepath)
     except FileNotFoundError:
-        print(f"Error: Config file '{config_file}' not found.")
-        sys.exit(1)
+        print(f"Error: Config file '{config_filepath}' not found.")
+        exit(1)
     except json.JSONDecodeError:
-        print(f"Error: Config file '{config_file}' is not a valid JSON file.")
-        sys.exit(1)
-
+        print(f"Error: Config file '{config_filepath}' is not a valid JSON file.")
+        exit(1)
+        
+    
+    ## Check nodes the framework will connect to even exist in the IMUNES file
+    missing = util.nodes_exist(imn_file, config_filepath)
+    if missing:
+        print('You have the following nodes specified in the test file that are not found in the IMUNES simulation:', ', '.join(missing))
+        exit(1)
+        
     ## Run the IMUNES simulation
     cmd = f"imunes -b {imn_file}; echo $?"
     if verbose:
@@ -135,7 +156,13 @@ async def main(imn_file, config_file, verbose, parallel):
             failures == 0,
         )
     )
-
+    
+    process = await util.start_process(f'imunes -b -e {eid}')
+    
+    while True:
+        line = await process.stdout.readline()
+        if not line:
+            break
 
 async def run_single_test(eid, test):
     # operation = strategies.assign_operation(test['type']) # old way of doing it, keeping it here for old times sake
