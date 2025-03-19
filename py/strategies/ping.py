@@ -5,14 +5,14 @@ import util, asyncio
 
 
 async def ping(eid, test_config) -> bool:
-    total = len(test_config["nodes"]) * len(test_config["target_ips"])
+    total = len(test_config["source_nodes"]) * len(test_config["target_ips"])
     failed = 0
     print_output = ""
 
 
     tasks = [
         util.ping_check(node, ip, eid)
-        for node in test_config["nodes"]
+        for node in test_config["source_nodes"]
         for ip in test_config["target_ips"]
     ]
 
@@ -25,7 +25,7 @@ async def ping(eid, test_config) -> bool:
     for (node, ip), (ping_status, output) in zip(
         [
             (node, ip)
-            for node in test_config["nodes"]
+            for node in test_config["source_nodes"]
             for ip in test_config["target_ips"]
         ],
         results,

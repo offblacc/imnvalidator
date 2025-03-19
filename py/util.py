@@ -89,7 +89,7 @@ def nodes_exist(imn_file, test_config_filepath) -> set:
 
     fields in the json test config are in the IMUNES scheme themselves.
     Used to avoid stacktraces from deep within (...himage calls) saying
-    node doesn't exist when connecting to them.
+    node doesn't exist when connecting to it (and warn user of a, quite possibly, typo).
 
     When adding a new type of test TRY to have nodes the framework is connecting
     to in fields named source_node or source_nodes (or both, but why would you do that?). If
@@ -97,7 +97,7 @@ def nodes_exist(imn_file, test_config_filepath) -> set:
     nodes the framework is connecting to at one point, add them to this function in the
     appropriate list.
 
-    It checks across all tests
+    It checks across all tests .. finish me
 
     Args:
         imn_file (_type_): _description_

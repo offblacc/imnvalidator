@@ -3,7 +3,7 @@
         {
             "name": "Ping pc1 to pc2",
             "type": "ping",
-            "nodes": [
+            "source_nodes": [
                 "pc1"
             ],
             "target_ips": [
@@ -16,7 +16,7 @@
         {
             "name": "Ping pc1 to pc2 with one wrong IP",
             "type": "ping",
-            "nodes": [
+            "source_nodes": [
                 "pc1"
             ],
             "target_ips": [
@@ -31,7 +31,7 @@
         {
             "name": "Ping pc1 to pc2 five times",
             "type": "ping",
-            "nodes": [
+            "source_nodes": [
                 "pc1"
             ],
             "target_ips": [

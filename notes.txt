@@ -24,6 +24,8 @@ To je generalniji problem
 # TODO u upute za dodavanje novog testa - treba nodes_exist updateati
 # TODO test nodes_exists works with ping (when it's a list of nodes)
 # TODO add warning when a target ip is not in imunes sim at all (just warn in case of a mistake, don't affect test results, let, for example, pings ping etc)
+# TODO make parallel work again using worker threads
+
 
 dobivao sam nekompletan output, jer.. treba sanitizeati tekst
 ovo vraća print(repr(output)):

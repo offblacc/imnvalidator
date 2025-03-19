@@ -17,6 +17,9 @@
                         },
                         "then": {
                             "properties": {
+                                "type": {
+                                    "const": "ping"
+                                },
                                 "name": {
                                     "type": "string"
                                 },
