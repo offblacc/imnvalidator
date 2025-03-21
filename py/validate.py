@@ -31,7 +31,7 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
             print('Invalid JSON, reason:')
             print(output)
             exit(1)
-        # TODO then check if you have tests that are not made to be run w other tests in the same file (that require restarting sim. etc; maybe later group them as a different type of tests?)
+        # TODO then check if you have tests that are not made to be run w other tests in the same file (that require restarting sim. etc; maybe later group them as a different type of tests?)e
     
     ## Send verbose to config
     #strategies.set_verbose(verbose)
@@ -138,6 +138,7 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
     
     process = await util.start_process(f'imunes -b -e {eid}')
     
+    print("Cleaning up...")
     while True:
         line = await process.stdout.readline()
         if not line:
