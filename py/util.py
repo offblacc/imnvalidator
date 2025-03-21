@@ -13,6 +13,7 @@ logger = logging.getLogger("imnvalidator")
 async def start_process(cmd: str):
     return await asyncio.create_subprocess_shell(
         cmd,
+        limit=1024 * 256, # 256 KiB buffer, imunes sometimes gives a long output
         stdin=asyncio.subprocess.PIPE,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
