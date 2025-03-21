@@ -10,6 +10,8 @@ import time
 import logging
 import strategies
 import importlib
+import os
+import config
 from helpers.schemavalidate import validateJSON
 
 schema_filepath = 'test_file_schema.json'
@@ -42,7 +44,7 @@ def configure_logging(log_to_file=True, log_file="imnvalidator.log"):
 
     return logger
 
-async def main(imn_file, config_filepath, verbose, parallel):
+async def main(imn_file, config_filepath, verbose, parallel) -> int:
     global schema_filepath
     verbose = verbose
     test_config = None
@@ -54,12 +56,10 @@ async def main(imn_file, config_filepath, verbose, parallel):
         print('Invalid JSON, reason:')
         print(output)
         exit(1)
-    else:
-        if verbose:
-            print('JSON file adheres to the schema.')
     
-    ## Send verbose where it needs to go
-    strategies.set_verbose(verbose)
+    ## Send verbose to config
+    #strategies.set_verbose(verbose)
+    config.config.set_verbose(verbose)
     # util -> does it need verbose? shouldn't if you don't do anything wierd
 
 
@@ -157,12 +157,15 @@ async def main(imn_file, config_filepath, verbose, parallel):
         )
     )
     
+    
     process = await util.start_process(f'imunes -b -e {eid}')
     
     while True:
         line = await process.stdout.readline()
         if not line:
-            break
+            break # await process termination, start_process trickery and trade secrets
+    
+    return failures
 
 async def run_single_test(eid, test):
     # operation = strategies.assign_operation(test['type']) # old way of doing it, keeping it here for old times sake
@@ -201,9 +204,11 @@ if __name__ == "__main__":
         start = time.time()
     # Run the main function with parsed arguments
     logger.debug("Starting main function")
-    asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel))
+    failures = asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel))
 
     if args.timeit:
         end = time.time()
         print(f"Execution time: {end - start} seconds")
         logger.info(f"Validator finished in {end - start} seconds")
+    
+    sys.exit(failures) # report the number of failed tests

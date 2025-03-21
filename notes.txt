@@ -25,6 +25,9 @@ To je generalniji problem
 # TODO test nodes_exists works with ping (when it's a list of nodes)
 # TODO add warning when a target ip is not in imunes sim at all (just warn in case of a mistake, don't affect test results, let, for example, pings ping etc)
 # TODO make parallel work again using worker threads
+# TODO eid in a global variable somewhere, a list or smth, for tests that require starting and restarting simulations themselves
+# TODO make json validation optional - if importerror just ignore and print that validation is skipped (if environments are minimal instalations)
+
 
 
 dobivao sam nekompletan output, jer.. treba sanitizeati tekst
