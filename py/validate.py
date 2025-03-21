@@ -14,48 +14,24 @@ import os
 import config
 from helpers.schemavalidate import validateJSON
 
-schema_filepath = 'test_file_schema.json'
+logger = logging.getLogger("imnvalidator")
 
+schema_filepath = str(config.PROJECT_ROOT) + '/test_file_schema.json'
+print(schema_filepath)
 
-def configure_logging(log_to_file=True, log_file="imnvalidator.log"):
-    # Create a custom logger
-    logger = logging.getLogger("imnvalidator")
-    logger.setLevel(logging.DEBUG)  # Set the logging level
-
-    # Clear any existing handlers
-    if logger.hasHandlers():
-        logger.handlers.clear()
-
-    # Create handlers
-    if log_to_file:
-        file_handler = logging.FileHandler(log_file)
-        file_handler.setLevel(logging.DEBUG)
-        logger.addHandler(file_handler)
-    else:
-        syslog_handler = logging.handlers.SysLogHandler(address="/dev/log")
-        syslog_handler.setLevel(logging.DEBUG)
-        logger.addHandler(syslog_handler)
-
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    for handler in logger.handlers:
-        handler.setFormatter(formatter)
-
-    return logger
-
-async def main(imn_file, config_filepath, verbose, parallel) -> int:
+async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) -> int:
     global schema_filepath
     verbose = verbose
     test_config = None
-    logger = logging.getLogger("imnvalidator")
     
     ## First, validate JSON file
-    json_valid, output = validateJSON(data_file_path=config_filepath, schema_file_path=schema_filepath)
-    if not json_valid:
-        print('Invalid JSON, reason:')
-        print(output)
-        exit(1)
+    if not validate_scheme:
+        json_valid, output = validateJSON(data_file_path=config_filepath, schema_file_path=schema_filepath)
+        if not json_valid:
+            print('Invalid JSON, reason:')
+            print(output)
+            exit(1)
+        # TODO then check if you have tests that are not made to be run w other tests in the same file (that require restarting sim. etc; maybe later group them as a different type of tests?)
     
     ## Send verbose to config
     #strategies.set_verbose(verbose)
@@ -98,9 +74,11 @@ async def main(imn_file, config_filepath, verbose, parallel) -> int:
         if not line:
             break
         pl = line.decode().strip()
-        ## Print the line if verbose and not output of '; echo $?'
-        if pl not in ["0", "1"] and verbose:
-            print(pl)
+        
+        if pl not in ["0", "1"]:
+            config.state.imunes_output += pl + '\n'
+            if verbose:
+                print(pl)
 
         ## Fetch eid
         if pl.startswith("Experiment ID ="):
@@ -179,7 +157,6 @@ async def run_single_test(eid, test):
 
 if __name__ == "__main__":
     log_to_file = True
-    logger = configure_logging(log_to_file=log_to_file)
     logger.debug("Program started")
     logger.debug("Parsing arguments")
     parser = argparse.ArgumentParser(
@@ -198,17 +175,20 @@ if __name__ == "__main__":
     parser.add_argument(
         "-t", "--timeit", action="store_true", help="Time the execution"
     )
+    parser.add_argument(
+        "-s", "--validate-scheme", action="store_true", help="Disable validating the test schema; useful during development"
+    )
 
     args = parser.parse_args()
     if args.timeit:
         start = time.time()
-    # Run the main function with parsed arguments
+
     logger.debug("Starting main function")
-    failures = asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel))
+    failures = asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel, args.validate_scheme))
 
     if args.timeit:
         end = time.time()
         print(f"Execution time: {end - start} seconds")
         logger.info(f"Validator finished in {end - start} seconds")
     
-    sys.exit(failures) # report the number of failed tests
+    sys.exit(failures) # report the number of failed tests back to shell
