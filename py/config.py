@@ -41,6 +41,7 @@ class Config:
 class State:
     def __init__(self):
         self.imunes_output = ''
+        self.eid = None
 
 config = Config()
 state = State()

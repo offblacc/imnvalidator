@@ -4,6 +4,7 @@ from . import verbose
 from config import state
 import util
 
+# TODO make this warning work better it happens @ more places
 async def test_big(eid, test_config):
     output = ''
     status = None

@@ -84,6 +84,7 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
         if pl.startswith("Experiment ID ="):
             eid = pl.split()[-1]
         return_code = pl
+        config.state.eid = eid # TODO use this from now on later...
 
     ## Check return code
     if return_code != "0":
