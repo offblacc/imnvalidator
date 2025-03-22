@@ -143,7 +143,13 @@ def nodes_exist(imn_file, test_config_filepath) -> set:
 def read_JSON_from_file(JSON_filepath: str):
     with open(JSON_filepath, "r") as json_file:
         return json.load(json_file)
-    
+
+# TODO use this to replace other send-and-forget commands
+def shell_send_await(cmd: str) -> str:
+    child = pexpect.spawn(cmd, encoding='utf-8')
+    child.expect(pexpect.EOF)
+    return child.before
+
 async def start_simulation():
     imn_file = config.config.imunes_filename
     print_live = config.config.VERBOSE
@@ -185,16 +191,19 @@ async def start_simulation():
         print(f"Simulation started successfully.")
         logger.debug("Simulation started successfully.")
 
-async def stop_simulation():
+async def stop_simulation() -> str:
     if config.state.eid:
-        process = await start_process(f'sudo imunes -b -e {config.state.eid}')
-        while True:
-            line = await process.stdout.readline()
-            if not line:
-                config.state.eid = None
-                return # await process termination, start_process trickery and trade secrets
+        output = shell_send_await(f'sudo imunes -b -e {config.state.eid}')
+        # process = await start_process(f'sudo imunes -b -e {config.state.eid}')
+        # while True:
+        #     line = await process.stdout.readline()
+        #     if not line:
+        #         config.state.eid = None
+        #         return # await process termination, start_process trickery and trade secrets
     else:
         raise RuntimeError("No simulation started by this framework still running")
+    return output
+
 
 async def ping_check_old(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     """sssssstringgggggggggggg
