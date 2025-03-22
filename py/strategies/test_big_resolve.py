@@ -1,10 +1,10 @@
-# strategies/test_big.py
+# strategies/test_big_resolve.py
 
 from . import verbose
 from config import state
 import util
 
-async def test_big(eid, test_config):
+async def test_big_resolve(eid, test_config):
     output = ''
     status = None
     if "IMUNES warning - Issues encountered while creating nodes" in state.imunes_output:
@@ -17,3 +17,12 @@ async def test_big(eid, test_config):
         status = True
     
     return status, output
+
+
+### Steps to implement this
+## 1. Extract simulation creation logic to util.
+# That way you can simply in the same way start a new sim.
+# This includes changing sim creation to the new function in validate.py.
+# 
+
+## 2. 

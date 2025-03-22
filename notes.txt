@@ -29,6 +29,8 @@ To je generalniji problem
 # TODO make json validation optional - if importerror just ignore and print that validation is skipped (if environments are minimal instalations)
 # TODO u schemu dodaj jedan else ništa NIŠTA
 
+sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout 30/' /usr/local/lib/imunes/imunes.tcl
+i nemoj 30 nego pomalo traži vrijednost.. prvo s 5 pa += 5
 
 dobivao sam nekompletan output, jer.. treba sanitizeati tekst
 ovo vraća print(repr(output)):
