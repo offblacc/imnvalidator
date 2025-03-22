@@ -3,23 +3,39 @@
 from . import verbose
 import config
 import util
+import time
 
 async def test_big_resolve(test_config):
     output = ''
     status = None
     
-    ## Pazi - bit ćeš u ciklusu sa start - stop simulation, budi siguran da dobro rade te funkcije tamo
+    process = await util.start_process("awk '/set nodecreate_timeout [0-9]+/ {print $3}'")
+    current_timeout = await process.stdout.readline()
     
-    if "IMUNES warning - Issues encountered while creating nodes" in config.state.imunes_output:
-        output += util.format_fail_test('Warnings while starting simulation')
-        status = False
-        if verbose:
-            print("TODO add output here, maybe unnecessary, verbose already prints it out while starting experiment")
-    else:
-        output += util.format_pass_test('Simulation started without warnings')
+    if "IMUNES warning - Issues encountered while creating nodes" not in config.state.imunes_output:
         status = True
+        output += util.format_pass_test(f'Simulation started without warnings with nodecreate_timeout = {current_timeout}')
+        return status, output
 
-    return status, output
+    for tout in range(5, 100, 5):
+        output += f'    trying with timeout value {tout}'
+        util.stop_simulation()
+        process = await util.start_process(f"sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout {tout}/' /usr/local/lib/imunes/imunes.tcl")
+        time.sleep(2) # TODO replace with a function that uses pexpect to await next prompt after sending smth to stdin!!
+        util.start_simulation()
+        if "IMUNES warning - Issues encountered while creating nodes" not in config.state.imunes_output:
+            status = True
+            output += util.format_pass_test(f'Simulation started without warnings with nodecreate_timeout = {current_timeout}')
+            return status, output
+    
+    return False, output
+    
+    
+    
+    
+    ## Pazi - bit ćeš u ciklusu sa start - stop simulation, budi siguran da dobro rade te funkcije tamo
+
+    # return status, output
 
 
 ### Steps to implement this
@@ -42,3 +58,6 @@ async def test_big_resolve(test_config):
 # you can extract the current number if needed with awk '/set nodecreate_timeout [0-9]+/ {print $3}' imunes.tcl
 
 ## POST - have a max value.. don't go to infinity
+
+
+    return status, output
