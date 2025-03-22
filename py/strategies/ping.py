@@ -2,13 +2,14 @@
 
 from . import verbose
 import util, asyncio
+import config
 
 
-async def ping(eid, test_config) -> bool:
+async def ping(test_config) -> bool:
+    eid = config.state.eid
     total = len(test_config["source_nodes"]) * len(test_config["target_ips"])
     failed = 0
     print_output = ""
-
 
     tasks = [
         util.ping_check(node, ip, eid)

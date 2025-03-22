@@ -1,6 +1,5 @@
 # config.py
 
-import os
 from pathlib import Path
 import logging
 
@@ -34,6 +33,8 @@ class Config:
     def __init__(self):
         self.VERBOSE = False
         self.logger = configure_logging()
+        self.imunes_filename = None
+        self.test_config_filename = None
 
     def set_verbose(self, verbose):
         self.VERBOSE = verbose

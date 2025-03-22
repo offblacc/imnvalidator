@@ -8,22 +8,21 @@ import argparse
 import util
 import time
 import logging
-import strategies
 import importlib
-import os
 import config
 from helpers.schemavalidate import validateJSON
 
 logger = logging.getLogger("imnvalidator")
 
 schema_filepath = str(config.PROJECT_ROOT) + '/test_file_schema.json'
-print(schema_filepath)
 
 async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) -> int:
-    global schema_filepath
-    verbose = verbose
+    config.config.imunes_filename = imn_file
+    config.config.test_config_filename = config_filepath
+    config.config.set_verbose(verbose)
+
     test_config = None
-    
+
     ## First, validate JSON file
     if not validate_scheme:
         json_valid, output = validateJSON(data_file_path=config_filepath, schema_file_path=schema_filepath)
@@ -33,12 +32,6 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
             exit(1)
         # TODO then check if you have tests that are not made to be run w other tests in the same file (that require restarting sim. etc; maybe later group them as a different type of tests?)e
     
-    ## Send verbose to config
-    #strategies.set_verbose(verbose)
-    config.config.set_verbose(verbose)
-    # util -> does it need verbose? shouldn't if you don't do anything wierd
-
-
     ## Try parsing the config file
     try:
         test_config = util.read_JSON_from_file(config_filepath)
@@ -55,45 +48,8 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
     if missing:
         print('You have the following nodes specified in the test file that are not found in the IMUNES simulation:', ', '.join(missing))
         exit(1)
-        
-    ## Run the IMUNES simulation
-    cmd = f"imunes -b {imn_file}; echo $?"
-    if verbose:
-        print(f"Starting simulation with command: {cmd.split(';')[0]}")
-    else:
-        print("Starting simulation")
 
-    logger.debug(f'Starting simulation with command: {cmd.split(";")[0]}')
-
-    process = await util.start_process(cmd)  # don't need a PTY here, just start the simulation & read output
-
-    ## "live stream" simulation creation output line by line (if verbose)
-    return_code, eid = None, None
-    while True:
-        line = await process.stdout.readline()
-        if not line:
-            break
-        pl = line.decode().strip()
-        
-        if pl not in ["0", "1"]:
-            config.state.imunes_output += pl + '\n'
-            if verbose:
-                print(pl)
-
-        ## Fetch eid
-        if pl.startswith("Experiment ID ="):
-            eid = pl.split()[-1]
-        return_code = pl
-        config.state.eid = eid # TODO use this from now on later...
-
-    ## Check return code
-    if return_code != "0":
-        print("Simulation failed to start")
-        logger.debug("Simulation failed to start, exiting")
-        sys.exit(1)
-    elif return_code == "0":
-        print(f"Simulation started successfully.")
-        logger.debug("Simulation started successfully.")
+    await util.start_simulation()
 
     logger.debug(f'Running tests in {"parallel" if parallel else "sequence"}')
     
@@ -101,7 +57,7 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
     failures = 0
     if parallel:
         # Run tests in parallel
-        tasks = [run_single_test(eid, test) for test in test_config["tests"]]
+        tasks = [run_single_test(test) for test in test_config["tests"]]
         results = await asyncio.gather(*tasks)
         logger.debug("Tests finished")
         for test, (status, output) in zip(test_config["tests"], results):
@@ -117,7 +73,7 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
     else:
         # Run tests sequentially
         for test in test_config["tests"]:
-            status, output = await run_single_test(eid, test)
+            status, output = await run_single_test(test)
             print(output)
             if status:
                 logger.debug(f'Test {test["name"]} successful')
@@ -135,25 +91,18 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
             failures == 0,
         )
     )
-    
-    
-    process = await util.start_process(f'imunes -b -e {eid}')
-    
-    print("Cleaning up...")
-    while True:
-        line = await process.stdout.readline()
-        if not line:
-            break # await process termination, start_process trickery and trade secrets
-    
+        
+    print('Cleaning up...')
+    await util.stop_simulation()
+
     return failures
 
-async def run_single_test(eid, test):
-    # operation = strategies.assign_operation(test['type']) # old way of doing it, keeping it here for old times sake
+async def run_single_test(test):
     strategy_type = test["type"]
     strategy_module = importlib.import_module(f"strategies.{strategy_type}")
     strategy_function = getattr(strategy_module, strategy_type)
 
-    status, output = await strategy_function(eid, test)
+    status, output = await strategy_function(test)
     return status, f'\nRunning test {test["name"]}\n' + output
 
 
@@ -162,7 +111,7 @@ if __name__ == "__main__":
     logger.debug("Program started")
     logger.debug("Parsing arguments")
     parser = argparse.ArgumentParser(
-        description="Run a simulation with specified arguments."
+        description="Run framework with specified arguments."
     )
     parser.add_argument("imn_file", help="Path to the imunes scheme")
     parser.add_argument(
@@ -179,7 +128,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-s", "--validate-scheme", action="store_true", help="Disable validating the test schema; useful during development"
-    )
+    ) # remove this please TODO
 
     args = parser.parse_args()
     if args.timeit:

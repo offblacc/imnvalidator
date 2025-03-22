@@ -3,9 +3,10 @@
 from . import verbose
 from config import state
 import util
+import config
 
 # TODO make this warning work better it happens @ more places
-async def test_big(eid, test_config):
+async def test_big(test_config):
     output = ''
     status = None
     if "IMUNES warning - Issues encountered while creating nodes" in state.imunes_output:

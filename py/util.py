@@ -1,9 +1,9 @@
 import logging
-import strategies
+import config
 import asyncio
 from typing import Tuple
 import pexpect
-import sys, json
+import json
 
 green_code = '\033[92m'
 red_code = '\033[91m'
@@ -13,7 +13,7 @@ logger = logging.getLogger("imnvalidator")
 async def start_process(cmd: str):
     return await asyncio.create_subprocess_shell(
         cmd,
-        limit=1024 * 256, # 256 KiB buffer, imunes sometimes gives a long output
+        limit=1024 * 256, # 256 KiB buffer, imunes sometimes gives a long output # TODO might be unnecessary
         stdin=asyncio.subprocess.PIPE,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
@@ -143,6 +143,58 @@ def nodes_exist(imn_file, test_config_filepath) -> set:
 def read_JSON_from_file(JSON_filepath: str):
     with open(JSON_filepath, "r") as json_file:
         return json.load(json_file)
+    
+async def start_simulation():
+    imn_file = config.config.imunes_filename
+    print_live = config.config.VERBOSE
+    config.state.imunes_output = '' # reset to empty for new sim output log
+    
+    cmd = f"imunes -b {imn_file}; echo $?"
+    if config.config.VERBOSE:
+        print(f"Starting simulation with command: {cmd.split(';')[0]}")
+    else:
+        print("Starting simulation")
+
+    logger.debug(f'Starting simulation with command: {cmd.split(";")[0]}')
+
+    process = await start_process(cmd)  # don't need a PTY here, just start the simulation & read output
+
+    return_code = None
+    while True:
+        line = await process.stdout.readline()
+        if not line:
+            break
+        pl = line.decode().strip()
+        
+        if pl not in ["0", "1"]:
+            config.state.imunes_output += pl + '\n'
+            if print_live:
+                print(pl)
+
+        ## fetch and set eid
+        if pl.startswith("Experiment ID ="):
+            config.state.eid = pl.split()[-1]
+        return_code = pl
+
+    ## Check return code
+    if return_code != "0":
+        print("Simulation failed to start")
+        logger.debug("Simulation failed to start")
+        raise RuntimeError("Simulation failed to start")
+    elif return_code == "0":
+        print(f"Simulation started successfully.")
+        logger.debug("Simulation started successfully.")
+
+async def stop_simulation():
+    if config.state.eid:
+        process = await start_process(f'sudo imunes -b -e {config.state.eid}')
+        while True:
+            line = await process.stdout.readline()
+            if not line:
+                config.state.eid = None
+                return # await process termination, start_process trickery and trade secrets
+    else:
+        raise RuntimeError("No simulation started by this framework still running")
 
 async def ping_check_old(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     """sssssstringgggggggggggg

@@ -4,13 +4,14 @@ from . import verbose
 import util
 import time
 import pexpect
+import config
 
 
 sleep_shortest = 10
 sleep_short = 30
 sleep_long = 120
 
-async def _rip_validate(eid, test_config) -> bool:
+async def _rip_validate(test_config) -> bool:
     """Used in conjunction with A SPECIFIC scheme. Operates on a few
     assumptions. Finish this doc later.
 
@@ -78,5 +79,7 @@ async def _rip_validate(eid, test_config) -> bool:
     print("RIP table is")
     o = childp.match.group(0).decode().strip()
     print(o)
+    
+    # TODO shutdown a node and test it didn't break
         
     return True, print_output

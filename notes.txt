@@ -28,6 +28,7 @@ To je generalniji problem
 # TODO eid in a global variable somewhere, a list or smth, for tests that require starting and restarting simulations themselves
 # TODO make json validation optional - if importerror just ignore and print that validation is skipped (if environments are minimal instalations)
 # TODO u schemu dodaj jedan else ništa NIŠTA
+# TODO ping don't print subtest success if not verbose !
 
 sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout 30/' /usr/local/lib/imunes/imunes.tcl
 i nemoj 30 nego pomalo traži vrijednost.. prvo s 5 pa += 5
