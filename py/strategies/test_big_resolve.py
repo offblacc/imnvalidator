@@ -2,8 +2,11 @@
 
 from . import verbose
 import config
-import util
-import time
+from .. import util
+
+TIMEOUT_MIN = 5
+TIMEOUT_MAX = 100
+TIMEOUT_STEP = 5
 
 async def test_big_resolve(test_config):
     output = ''
@@ -17,12 +20,30 @@ async def test_big_resolve(test_config):
         output += util.format_pass_test(f'Simulation started without warnings with nodecreate_timeout = {current_timeout}')
         return status, output
 
-    for tout in range(5, 100, 5):
+    for tout in range(TIMEOUT_MIN, TIMEOUT_MAX, TIMEOUT_STEP):
+        if int(current_timeout) > tout:
+            continue # don't check values that obviously won't work, skip to first that might (> current) 
+        
         output += f'    trying with timeout value {tout}'
         util.stop_simulation()
-        #process = await util.start_process(f"sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout {tout}/' /usr/local/lib/imunes/imunes.tcl")
-        util.shell_send_await(f"sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout {tout}/' /usr/local/lib/imunes/imunes.tcl")
-        #time.sleep(2) # TODO replace with a function that uses pexpect to await next prompt after sending smth to stdin!!
+        
+        ## Change value in imunes.tcl and double-check it was done
+        process = await util.start_process(f"sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout {tout}/' /usr/local/lib/imunes/imunes.tcl; echo $?")
+        while True:
+            res += await process.stdout.readline().decode().strip()
+            if not res:
+                break
+        if res.strip() != '0':
+            raise RuntimeError(f"Failed to modify imunes.tcl: {res}")
+        
+        process = await util.start_process("awk '/set nodecreate_timeout [0-9]+/ {print $3}'")
+        checked_value = await process.stdout.readline().strip()
+        if str(checked_value) != str(tout):
+            raise RuntimeError(f"Failed to modify imunes.tcl, tried changing from {current_timeout} to {tout}, but after change it is {checked_value}")
+        ## -
+        
+        
+        current_timeout = tout
         util.start_simulation()
         if "IMUNES warning - Issues encountered while creating nodes" not in config.state.imunes_output:
             status = True
@@ -59,6 +80,3 @@ async def test_big_resolve(test_config):
     # you can extract the current number if needed with awk '/set nodecreate_timeout [0-9]+/ {print $3}' imunes.tcl
 
     ## POST - have a max value.. don't go to infinity
-
-
-    return status, output
