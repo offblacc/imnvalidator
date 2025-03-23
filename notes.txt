@@ -29,6 +29,8 @@ To je generalniji problem
 # TODO make json validation optional - if importerror just ignore and print that validation is skipped (if environments are minimal instalations)
 # TODO u schemu dodaj jedan else ništa NIŠTA
 # TODO ping don't print subtest success if not verbose !
+# TODO test_big_resolve dodaj u json da možeš tamo setati min/max/step argumente
+# TODO odluči se za ponašanje test_big_resolve - ostavi na vrijednosti koja radi ili dojavi samo i vrati na staro (omogući oboje u config fileu!)
 
 sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout 30/' /usr/local/lib/imunes/imunes.tcl
 i nemoj 30 nego pomalo traži vrijednost.. prvo s 5 pa += 5

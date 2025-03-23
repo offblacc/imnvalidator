@@ -1,17 +1,8 @@
 {
     "tests": [
         {
-            "name": "Test big simulation and find appropriate",
-            "type": "test_big_resolve",
-            "source_nodes": [
-                "pc1"
-            ],
-            "target_ips": [
-                "10.0.0.22"
-            ],
-            "expect": "success",
-            "fail": "Ping not successfull",
-            "success": "Ping successfull"
+            "name": "Test big simulation for errors",
+            "type": "test_big_resolve"
         }
     ]
 }

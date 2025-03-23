@@ -144,12 +144,6 @@ def read_JSON_from_file(JSON_filepath: str):
     with open(JSON_filepath, "r") as json_file:
         return json.load(json_file)
 
-# TODO use this to replace other send-and-forget commands
-def shell_send_await(cmd: str) -> str:
-    child = pexpect.spawn(cmd, encoding='utf-8')
-    child.expect(pexpect.EOF)
-    return child.before
-
 async def start_simulation():
     imn_file = config.config.imunes_filename
     print_live = config.config.VERBOSE
@@ -192,14 +186,15 @@ async def start_simulation():
         logger.debug("Simulation started successfully.")
 
 async def stop_simulation() -> str:
+    output = ''
     if config.state.eid:
-        output = shell_send_await(f'sudo imunes -b -e {config.state.eid}')
-        # process = await start_process(f'sudo imunes -b -e {config.state.eid}')
-        # while True:
-        #     line = await process.stdout.readline()
-        #     if not line:
-        #         config.state.eid = None
-        #         return # await process termination, start_process trickery and trade secrets
+        process = await start_process(f'sudo imunes -b -e {config.state.eid}')
+        while True:
+            line = await process.stdout.readline()
+            if not line:
+                config.state.eid = None
+                break # await process termination, start_process trickery and trade secrets
+            output += line.decode().strip() + '\n'
     else:
         raise RuntimeError("No simulation started by this framework still running")
     return output
