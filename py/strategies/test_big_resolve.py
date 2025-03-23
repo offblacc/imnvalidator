@@ -2,7 +2,7 @@
 
 from . import verbose
 import config
-from .. import util
+import util
 
 TIMEOUT_MIN = 5
 TIMEOUT_MAX = 100

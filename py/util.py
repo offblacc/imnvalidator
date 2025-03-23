@@ -10,7 +10,7 @@ red_code = '\033[91m'
 reset_code = '\033[0m'
 logger = logging.getLogger("imnvalidator")
     
-async def start_process(cmd: str):
+async def start_process(cmd: str) -> None:
     return await asyncio.create_subprocess_shell(
         cmd,
         limit=1024 * 256, # 256 KiB buffer, imunes sometimes gives a long output # TODO might be unnecessary
@@ -19,16 +19,16 @@ async def start_process(cmd: str):
         stderr=asyncio.subprocess.STDOUT,
     )
 
-def format_pass_subtest(s: str) -> None:
+def format_pass_subtest(s: str) -> str:
     return f'...{green_code}[OK]{reset_code} {s}\n'
     
-def format_fail_subtest(s: str) -> None:
+def format_fail_subtest(s: str) -> str:
     return f'...{red_code}[FAIL]{reset_code} {s}\n'
 
-def format_pass_test(s: str) -> None:
+def format_pass_test(s: str) -> str:
     return f'{green_code}[PASS]{reset_code} {s}'
 
-def format_fail_test(s: str) -> None:
+def format_fail_test(s: str) -> str:
     return f'{red_code}[FAIL]{reset_code} {s}'
 
 def format_end_status(s: str, status: bool) -> None:

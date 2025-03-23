@@ -1,7 +1,8 @@
 # strategies/ping.py
 
 from . import verbose
-import util, asyncio
+import util
+import asyncio
 import config
 
 

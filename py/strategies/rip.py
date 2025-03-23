@@ -1,7 +1,7 @@
 # strategies/rip.py
 
 from . import verbose
-import util, asyncio
+import util
 import config
 
 async def rip(test_config) -> bool:

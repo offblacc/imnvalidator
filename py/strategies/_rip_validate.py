@@ -57,7 +57,7 @@ async def _rip_validate(test_config) -> bool:
     
     ### Step 2
     for addr in addrs:
-        ping_status, ping_output = await util.ping_check(test_config["source_node"], addr, eid)
+        ping_status, ping_output = await util.ping_check(test_config["source_node"], addr, config.state.eid)
         if not ping_status:
             return False, "Didn't converge. Error with test config.\n" + ping_output
     print_output += util.format_pass_subtest("Ping after waiting passed - RIP success")
@@ -67,7 +67,8 @@ async def _rip_validate(test_config) -> bool:
     ### Step 3
     # vtysh print if verbose
     
-    childp = pexpect.spawn(f'himage {router_checkriptable}@{eid}')
+    childp = pexpect.spawn(f'himage {router_checkriptable}@{config.state.eid}')
+    print(type(childp))
     
     childp.expect(r'.*:/# ') # await prompt
     

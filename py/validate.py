@@ -16,7 +16,7 @@ logger = logging.getLogger("imnvalidator")
 
 schema_filepath = str(config.PROJECT_ROOT) + '/test_file_schema.json'
 
-async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) -> int:
+async def main(imn_file: str, config_filepath: str, verbose: bool, parallel: bool, validate_scheme: bool) -> int:
     config.config.imunes_filename = imn_file
     config.config.test_config_filename = config_filepath
     config.config.set_verbose(verbose)
