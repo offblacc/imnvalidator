@@ -1,9 +1,12 @@
+## TODO add getting the RIP table here..
+
 import logging
 import config
 import asyncio
 from typing import Tuple
 import pexpect
 import json
+import os
 
 green_code = '\033[92m'
 red_code = '\033[91m'
@@ -37,7 +40,7 @@ def format_end_status(s: str, status: bool) -> None:
     return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
 
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
-    command = f"himage {source_node_name}@{eid}"
+    command = f"himage {source_node_name}@{config.state.eid}"
     
     # Start interactive shell session with `himage`
     child = pexpect.spawn(command, encoding="utf-8", timeout=timeout + 10)
@@ -199,6 +202,27 @@ async def stop_simulation() -> str:
         raise RuntimeError("No simulation started by this framework still running")
     return output
 
+async def stopNode(node: str) -> bool:
+    if config.config.is_OS_linux():
+        ifaces = list()
+        process = await start_process(f'himage {node}@{config.state.eid} ls -1 /sys/class/net')
+        while True:
+            line = await process.stdout.readline()
+            if not line:
+                break
+            ifaces.append(line.decode().strip())
+        print("Stopping interfaces")
+        print(ifaces)
+        print(f"On node {node}")
+        for ifc in ifaces:
+            print(f"running command: himage {node}@{config.state.eid} ifconfig {ifc} down")
+            process = await start_process(f'himage {node}@{config.state.eid} ifconfig {ifc} down')
+            line = ''
+            while line:
+                line = await process.stdout.readline() # await subprocess.. trickery again
+    
+    
+    return True # TODO add return status, check if ifc down
 
 async def ping_check_old(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     """sssssstringgggggggggggg

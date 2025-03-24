@@ -2,6 +2,8 @@
 
 from pathlib import Path
 import logging
+from enum import Enum
+from platform import system
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent # assuming structure: PROJECT_ROOT/py/validate.py
 
@@ -35,14 +37,34 @@ class Config:
         self.logger = configure_logging()
         self.imunes_filename = None
         self.test_config_filename = None
+        self.os = self.set_platform()
 
     def set_verbose(self, verbose):
         self.VERBOSE = verbose
+        
+    def set_platform(self):
+        if system() == 'Linux':
+            self.os = OS.LINUX
+            return
+        if system() == 'FreeBSD':
+            self.os = OS.FREEBSD
+            return
+        raise ValueError("Unsupported operating system")
+    
+    def is_OS_linux(self):
+        return self.os == OS.LINUX
+    
+    def is_OS_freebsd(self):
+        return self.os == OS.FREEBSD
 
 class State:
     def __init__(self):
         self.imunes_output = ''
         self.eid = None
+
+class OS(Enum):
+    LINUX = 1
+    FREEBSD = 2
 
 config = Config()
 state = State()

@@ -20,6 +20,7 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
     config.config.imunes_filename = imn_file
     config.config.test_config_filename = config_filepath
     config.config.set_verbose(verbose)
+    config.config.set_platform()
 
     test_config = None
 
