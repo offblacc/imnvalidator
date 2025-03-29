@@ -1,9 +1,12 @@
+## TODO add getting the RIP table here..
+
 import logging
-import strategies
+import config
 import asyncio
 from typing import Tuple
 import pexpect
-import sys, json
+import json
+import os
 
 green_code = '\033[92m'
 red_code = '\033[91m'
@@ -13,6 +16,7 @@ logger = logging.getLogger("imnvalidator")
 async def start_process(cmd: str):
     return await asyncio.create_subprocess_shell(
         cmd,
+        limit=1024 * 256, # 256 KiB buffer, imunes sometimes gives a long output # TODO might be unnecessary
         stdin=asyncio.subprocess.PIPE,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
@@ -36,7 +40,7 @@ def format_end_status(s: str, status: bool) -> None:
     return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
 
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
-    command = f"himage {source_node_name}@{eid}"
+    command = f"himage {source_node_name}@{config.state.eid}"
     
     # Start interactive shell session with `himage`
     child = pexpect.spawn(command, encoding="utf-8", timeout=timeout + 10)
@@ -142,6 +146,150 @@ def nodes_exist(imn_file, test_config_filepath) -> set:
 def read_JSON_from_file(JSON_filepath: str):
     with open(JSON_filepath, "r") as json_file:
         return json.load(json_file)
+
+async def start_simulation():
+    imn_file = config.config.imunes_filename
+    print_live = config.config.VERBOSE
+    config.state.imunes_output = '' # reset to empty for new sim output log
+    
+    cmd = f"imunes -b {imn_file}; echo $?"
+    if config.config.VERBOSE:
+        print(f"Starting simulation with command: {cmd.split(';')[0]}")
+    else:
+        print("Starting simulation")
+
+    logger.debug(f'Starting simulation with command: {cmd.split(";")[0]}')
+
+    process = await start_process(cmd)  # don't need a PTY here, just start the simulation & read output
+
+    return_code = None
+    while True:
+        line = await process.stdout.readline()
+        if not line:
+            break
+        pl = line.decode().strip()
+        
+        if pl not in ["0", "1"]:
+            config.state.imunes_output += pl + '\n'
+            if print_live:
+                print(pl)
+
+        ## fetch and set eid
+        if pl.startswith("Experiment ID ="):
+            config.state.eid = pl.split()[-1]
+        return_code = pl
+
+    ## Check return code
+    if return_code != "0":
+        print("Simulation failed to start")
+        logger.debug("Simulation failed to start")
+        raise RuntimeError("Simulation failed to start")
+    elif return_code == "0":
+        print(f"Simulation started successfully.")
+        logger.debug("Simulation started successfully.")
+
+async def stop_simulation() -> str:
+    output = ''
+    if config.state.eid:
+        process = await start_process(f'sudo imunes -b -e {config.state.eid}')
+        while True:
+            line = await process.stdout.readline()
+            if not line:
+                config.state.eid = None
+                break
+            output += line.decode().strip() + '\n'
+    else:
+        raise RuntimeError("No simulation started by this framework still running")
+    return output
+
+async def stopNode(node: str) -> bool:
+    if config.config.is_OS_linux():
+        ifaces = list()
+        process = await start_process(f'himage {node}@{config.state.eid} ls -1 /sys/class/net')
+        while True:
+            line = await process.stdout.readline()
+            if not line:
+                break
+            ifaces.append(line.decode().strip())
+
+        for ifc in ifaces:
+            process = await start_process(f'himage {node}@{config.state.eid} ifconfig {ifc} down')
+            line = ''
+            while line:
+                line = await process.stdout.readline() # await subprocess.. trickery again
+    return True # TODO add return status, check if ifc down
+
+
+async def _get_ripany_table(node: str, ripng: bool):
+    childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
+    childp.expect(r'.*:/# ') # await prompt
+    childp.sendline(f"vtysh -c \"show ip rip{'ng' if ripng else ''}\"")
+    childp.expect('(Codes: .*)(?=\\r\\n)')
+    ret = childp.match.group(0).decode().strip()
+    return ret
+
+async def get_rip_table(node: str):
+    return await _get_ripany_table(node, False)
+
+async def get_ripng_table(node: str):
+    return await _get_ripany_table(node, True)
+
+
+def parse_rip_table(raw_rip_table: str):
+    ript = dict()
+    raw_rip_table = raw_rip_table.replace("\\r\\n", "\n").split("\n")
+    start = False
+    for line in raw_rip_table:
+        if not start:
+            if line.strip().startswith("Network"):
+                start = True
+        elif start:
+            line = line.split()[1:]
+            ript.update(
+                {
+                    line[0]: {
+                        "nexthop": line[1],
+                        "metric": line[2],
+                        "from": line[3],
+                        "tag": line[4],
+                        "time": line[5] if len(line) == 6 else None,
+                    }
+                }
+            )
+
+    return ript
+    
+    
+def parse_ripng_table(raw_rip_table: str):
+    start = False
+    beg = True
+    newentry = list()
+    ript = dict()
+    for line in raw_rip_table.replace('\\r\\n', '\n').split('\n'):
+        if not start:
+            if line.strip().startswith('Network'):
+                start = True
+        else:
+            if beg:
+                newentry.append(line.split()[1]) # "Network" column
+                beg = False
+            else:
+                newentry.extend(line.split())
+                ript.update(
+                    {
+                        newentry[0]: {
+                            "nexthop": newentry[1],
+                            "via": newentry[2],
+                            "metric": newentry[3],
+                            "tag": newentry[4],
+                            "time": newentry[5] if len(newentry) == 6 else None,
+                        }
+                    }
+                )
+                # reset to build new entry
+                beg = True
+                newentry = list()
+    return ript
 
 async def ping_check_old(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     """sssssstringgggggggggggg

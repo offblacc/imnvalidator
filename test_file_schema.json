@@ -84,7 +84,16 @@
                                 },
                                 "router_checkriptable": {
                                     "type": "string"
-                                }
+                                },
+                                "target_ip4_subnet": {
+                                    "type": "string"
+                                },
+                                "initial_next_hop4": {
+                                    "type": "string"
+                                },
+                                "post_turnoff_next_hop4": {
+                                    "type": "string"
+                                }                                
                             },
                             "required": [
                                 "type",

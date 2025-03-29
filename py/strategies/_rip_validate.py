@@ -1,82 +1,128 @@
 # strategies/rip.py
 
-from . import verbose
+# TODO add RIPng
+
 import util
 import time
-import pexpect
+import config
 
+verbose = config.config.VERBOSE
 
 sleep_shortest = 10
 sleep_short = 30
 sleep_long = 120
 
-async def _rip_validate(eid, test_config) -> bool:
-    """Used in conjunction with A SPECIFIC scheme. Operates on a few
-    assumptions. Finish this doc later.
-
-    Args:
-        eid (int): Opis
-        test_config (_type_): _description_
-
-    Returns:
-        bool: _description_
-    """
-    ## Step 1:
-    # sleep - let RIP propagate
-    
-    ## Step 2:
-    # Ping from node 'pc' to '10.0.4.10' and expect success
-    
-    ## Step 3:
-    # Print out (if verbose) vtysh show ip rip && ipv6 ripng
-       
+async def _rip_validate(test_config) -> bool:
     print_output = ''
+    status = True
     
-    source_node, router_turnoff = None, None
     source_node = test_config["source_node"]
     router_turnoff = test_config["router_turnoff"]
-    router_checkriptable = test_config["router_turnoff"]
+    router_checkriptable = test_config["router_checkriptable"]
+    target_ip4_subnet = test_config["target_ip4_subnet"]
+    expected_initial_next_hop4 = test_config["initial_next_hop4"]
+    expected_post_turnoff_next_hop4 = test_config["post_turnoff_next_hop4"]
+    # link-local ipv6 messing this up:
+    # target_ip6_subnet = test_config["target_ip6_subnet"]
+    # expected_initial_next_hop6 = test_config["initial_next_hop6"]   
+    # expected_post_turnoff_next_hop6 = test_config["post_turnoff_next_hop6"]
     
-    addrs = list()
-
     ip4 = test_config.get("target_ip4")
     ip6 = test_config.get("target_ip6")
-
-    if ip4:
-        addrs.append(ip4)
-    if ip6:
-        addrs.append(ip6)
-
-    if not addrs:
-        print("No target IPs to check. Error with test config. Exiting...")
-        exit(1)
     
-    ### Step 1
     time.sleep(15) # TODO temporary value, change later, as well as the constants above
-    
-    ### Step 2
-    for addr in addrs:
-        ping_status, ping_output = await util.ping_check(test_config["source_node"], addr, eid)
-        if not ping_status:
-            return False, "Didn't converge. Error with test config.\n" + ping_output
-    print_output += util.format_pass_subtest("Ping after waiting passed - RIP success")
-    
-    print_output += util.format_pass_test("RIP seems to work")
-    
-    ### Step 3
-    # vtysh print if verbose
-    
-    childp = pexpect.spawn(f'himage {router_checkriptable}@{eid}')
-    
-    childp.expect(r'.*:/# ') # await prompt
-    
-    childp.sendline(f'vtysh -c "show ip rip"')
+    # TODO sleep in smaller intervals (to a limit..) until RIP is set up..
+    # await multiple times try in a loop..
+
+
+    ### ====================== Test initial pings ======================    
+    ## IPv4 initial ping
+    rt = await util.get_rip_table(router_checkriptable)
+    ping_status, ping_output = await util.ping_check(source_node, ip4, config.state.eid)
+    if not ping_status:
+        return False, "Didn't converge initially. Error with test config or didn't wait long enough at the start.\n" + ping_output + rt
+    print_output += util.format_pass_subtest("Initial IPv4 ping goes through")
     
     
-    childp.expect('(Codes: .*)(?=\\r\\n)') # da bude konzistentno stavi r ispred pa makni escape \
+    ## IPv6 initial ping
+    rt = await util.get_ripng_table(router_checkriptable)
+    ping_status, ping_output = await util.ping_check(source_node, ip6, config.state.eid)
+    if not ping_status:
+        return False, "Didn't converge initially. Error with test config or didn't wait long enough at the start.\n" + ping_output + rt
+    print_output += util.format_pass_subtest("Initial IPv6 ping goes through")
+      
     
-    print("RIP table is")
-    o = childp.match.group(0).decode().strip()
-    print(o)
+    
+    ## Initial RIP(/ng) table checking
+    # ====================== RIP (ipv4) check ======================
+    rip_table = await util.get_rip_table(router_checkriptable)
+    next_hop = util.parse_rip_table(rip_table)[target_ip4_subnet]["nexthop"]
+    if next_hop == expected_initial_next_hop4:
+        print_output += util.format_pass_subtest(f"Next RIP hop (IPv4) before turnoff is correct: {expected_initial_next_hop4}")
+    else:
+        print_output += util.format_fail_subtest(f"Next RIP hop (IPv4) before turnoff is invalid, expected {expected_initial_next_hop4} got {next_hop}")
+        status = False
+    
+    if verbose:
+        print_output += "RIP table before turnoff:\n" + rip_table + '\n'
+
+    # ====================== RIPng (ipv6) check ======================
+    rip_table = await util.get_ripng_table(router_checkriptable)
+    # next_hop = util.parse_ripng_table(rip_table)[target_ip6_subnet]["nexthop"]
+    # if next_hop == expected_initial_next_hop6:
+    #     print_output += util.format_pass_subtest(f"Next RIPng hop before turnoff is correct: {expected_initial_next_hop6}")
+    # else:
+    #     print_output += util.format_fail_subtest(f"Next RIPng hop before turnoff is invalid, expected {expected_initial_next_hop6} got {next_hop}")
+    #     status = False
+    
+    if verbose:
+        print_output += "RIPng table before turnoff:\n" + rip_table + '\n'
+    
+    # ====================== Stop a router and wait for new routes to propagate ======================
+    await util.stopNode(router_turnoff)
+    time.sleep(210) # too much?, 190 was too little
         
-    return True, print_output
+    
+    ### ====================== Test pings after router turnoff ======================    
+    ## IPv4 post turnoff ping
+    rt = await util.get_rip_table(router_checkriptable)
+    ping_status, ping_output = await util.ping_check(source_node, ip4, config.state.eid)
+    if not ping_status:
+        return False, "Didn't find a new route, possible RIP error." + ping_output + rt
+    print_output += util.format_pass_subtest("Post turnoff IPv4 ping goes through")
+    
+    
+    ## IPv6 post turnoff ping
+    rt = await util.get_ripng_table(router_checkriptable)
+    ping_status, ping_output = await util.ping_check(source_node, ip6, config.state.eid)
+    if not ping_status:
+        return False, "Didn't find a new route, possible RIP error." + ping_output + rt
+    print_output += util.format_pass_subtest("Post turnoff IPv6 ping goes through")
+
+
+    ## Post router turnoff RIP(/ng) table checking
+    # ====================== RIP (ipv4) check ======================
+    rip_table = await util.get_rip_table(router_checkriptable)
+    next_hop = util.parse_rip_table(rip_table)[target_ip4_subnet]["nexthop"]
+    if next_hop == expected_post_turnoff_next_hop4:
+        print_output += util.format_pass_subtest(f"Next RIP hop (IPv4) after turnoff is correct: {expected_post_turnoff_next_hop4}")
+    else:
+        print_output += util.format_fail_subtest(f"Next RIP hop (IPv4) after  turnoff is invalid, expected {expected_post_turnoff_next_hop4} got {next_hop}")
+        status = False
+    
+    if verbose:
+        print_output += "RIP table after turnoff:\n" + rip_table + '\n'
+        
+    # ====================== RIPng (ipv6) check ======================
+    rip_table = await util.get_ripng_table(router_checkriptable)
+    # next_hop = util.parse_ripng_table(rip_table)[target_ip6_subnet]["nexthop"]
+    # if next_hop == expected_post_turnoff_next_hop6:
+    #     print_output += util.format_pass_subtest(f"Next RIPng hop before turnoff is correct: {expected_post_turnoff_next_hop6}")
+    # else:
+    #     print_output += util.format_fail_subtest(f"Next RIPng hop before turnoff is invalid, expected {expected_post_turnoff_next_hop6} got {next_hop}")
+    #     status = False
+    
+    if verbose:
+        print_output += "RIPng table before turnoff:\n" + rip_table + '\n'
+    
+    return status, print_output.strip() + '\n'

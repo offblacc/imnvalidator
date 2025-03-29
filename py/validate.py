@@ -8,61 +8,31 @@ import argparse
 import util
 import time
 import logging
-import strategies
 import importlib
+import config
 from helpers.schemavalidate import validateJSON
 
-schema_filepath = 'test_file_schema.json'
+logger = logging.getLogger("imnvalidator")
 
+schema_filepath = str(config.PROJECT_ROOT) + '/test_file_schema.json'
 
-def configure_logging(log_to_file=True, log_file="imnvalidator.log"):
-    # Create a custom logger
-    logger = logging.getLogger("imnvalidator")
-    logger.setLevel(logging.DEBUG)  # Set the logging level
+async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) -> int:
+    config.config.imunes_filename = imn_file
+    config.config.test_config_filename = config_filepath
+    config.config.set_verbose(verbose)
+    config.config.set_platform()
 
-    # Clear any existing handlers
-    if logger.hasHandlers():
-        logger.handlers.clear()
-
-    # Create handlers
-    if log_to_file:
-        file_handler = logging.FileHandler(log_file)
-        file_handler.setLevel(logging.DEBUG)
-        logger.addHandler(file_handler)
-    else:
-        syslog_handler = logging.handlers.SysLogHandler(address="/dev/log")
-        syslog_handler.setLevel(logging.DEBUG)
-        logger.addHandler(syslog_handler)
-
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    for handler in logger.handlers:
-        handler.setFormatter(formatter)
-
-    return logger
-
-async def main(imn_file, config_filepath, verbose, parallel):
-    global schema_filepath
-    verbose = verbose
     test_config = None
-    logger = logging.getLogger("imnvalidator")
-    
+
     ## First, validate JSON file
-    json_valid, output = validateJSON(data_file_path=config_filepath, schema_file_path=schema_filepath)
-    if not json_valid:
-        print('Invalid JSON, reason:')
-        print(output)
-        exit(1)
-    else:
-        if verbose:
-            print('JSON file adheres to the schema.')
+    if not validate_scheme:
+        json_valid, output = validateJSON(data_file_path=config_filepath, schema_file_path=schema_filepath)
+        if not json_valid:
+            print('Invalid JSON, reason:')
+            print(output)
+            exit(1)
+        # TODO then check if you have tests that are not made to be run w other tests in the same file (that require restarting sim. etc; maybe later group them as a different type of tests?)e
     
-    ## Send verbose where it needs to go
-    strategies.set_verbose(verbose)
-    # util -> does it need verbose? shouldn't if you don't do anything wierd
-
-
     ## Try parsing the config file
     try:
         test_config = util.read_JSON_from_file(config_filepath)
@@ -79,42 +49,8 @@ async def main(imn_file, config_filepath, verbose, parallel):
     if missing:
         print('You have the following nodes specified in the test file that are not found in the IMUNES simulation:', ', '.join(missing))
         exit(1)
-        
-    ## Run the IMUNES simulation
-    cmd = f"imunes -b {imn_file}; echo $?"
-    if verbose:
-        print(f"Starting simulation with command: {cmd.split(';')[0]}")
-    else:
-        print("Starting simulation")
 
-    logger.debug(f'Starting simulation with command: {cmd.split(";")[0]}')
-
-    process = await util.start_process(cmd)  # don't need a PTY here, just start the simulation & read output
-
-    ## "live stream" simulation creation output line by line (if verbose)
-    return_code, eid = None, None
-    while True:
-        line = await process.stdout.readline()
-        if not line:
-            break
-        pl = line.decode().strip()
-        ## Print the line if verbose and not output of '; echo $?'
-        if pl not in ["0", "1"] and verbose:
-            print(pl)
-
-        ## Fetch eid
-        if pl.startswith("Experiment ID ="):
-            eid = pl.split()[-1]
-        return_code = pl
-
-    ## Check return code
-    if return_code != "0":
-        print("Simulation failed to start")
-        logger.debug("Simulation failed to start, exiting")
-        sys.exit(1)
-    elif return_code == "0":
-        print(f"Simulation started successfully.")
-        logger.debug("Simulation started successfully.")
+    await util.start_simulation()
 
     logger.debug(f'Running tests in {"parallel" if parallel else "sequence"}')
     
@@ -122,7 +58,7 @@ async def main(imn_file, config_filepath, verbose, parallel):
     failures = 0
     if parallel:
         # Run tests in parallel
-        tasks = [run_single_test(eid, test) for test in test_config["tests"]]
+        tasks = [run_single_test(test) for test in test_config["tests"]]
         results = await asyncio.gather(*tasks)
         logger.debug("Tests finished")
         for test, (status, output) in zip(test_config["tests"], results):
@@ -138,7 +74,7 @@ async def main(imn_file, config_filepath, verbose, parallel):
     else:
         # Run tests sequentially
         for test in test_config["tests"]:
-            status, output = await run_single_test(eid, test)
+            status, output = await run_single_test(test)
             print(output)
             if status:
                 logger.debug(f'Test {test["name"]} successful')
@@ -156,31 +92,29 @@ async def main(imn_file, config_filepath, verbose, parallel):
             failures == 0,
         )
     )
-    
-    process = await util.start_process(f'imunes -b -e {eid}')
-    
-    while True:
-        line = await process.stdout.readline()
-        if not line:
-            break
+        
+    print('Cleaning up...')
+    stop_output = await util.stop_simulation()
+    if verbose:
+        print(stop_output)
 
-async def run_single_test(eid, test):
-    # operation = strategies.assign_operation(test['type']) # old way of doing it, keeping it here for old times sake
+    return failures
+
+async def run_single_test(test):
     strategy_type = test["type"]
     strategy_module = importlib.import_module(f"strategies.{strategy_type}")
     strategy_function = getattr(strategy_module, strategy_type)
 
-    status, output = await strategy_function(eid, test)
+    status, output = await strategy_function(test)
     return status, f'\nRunning test {test["name"]}\n' + output
 
 
 if __name__ == "__main__":
     log_to_file = True
-    logger = configure_logging(log_to_file=log_to_file)
     logger.debug("Program started")
     logger.debug("Parsing arguments")
     parser = argparse.ArgumentParser(
-        description="Run a simulation with specified arguments."
+        description="Run framework with specified arguments."
     )
     parser.add_argument("imn_file", help="Path to the imunes scheme")
     parser.add_argument(
@@ -195,15 +129,20 @@ if __name__ == "__main__":
     parser.add_argument(
         "-t", "--timeit", action="store_true", help="Time the execution"
     )
+    parser.add_argument(
+        "-s", "--validate-scheme", action="store_true", help="Disable validating the test schema; useful during development"
+    ) # remove this please TODO
 
     args = parser.parse_args()
     if args.timeit:
         start = time.time()
-    # Run the main function with parsed arguments
+
     logger.debug("Starting main function")
-    asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel))
+    failures = asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel, args.validate_scheme))
 
     if args.timeit:
         end = time.time()
         print(f"Execution time: {end - start} seconds")
         logger.info(f"Validator finished in {end - start} seconds")
+    
+    sys.exit(failures) # report the number of failed tests back to shell

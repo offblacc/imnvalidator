@@ -1,0 +1,8 @@
+{
+    "tests": [
+        {
+            "name": "Test big simulation for errors",
+            "type": "test_big"
+        }
+    ]
+}
