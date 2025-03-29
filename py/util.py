@@ -113,7 +113,8 @@ def nodes_exist(imn_file, test_config_filepath) -> set:
 
     chk_data_flds = [
         'source_node',
-        'source_nodes'
+        'source_nodes',
+        'on_nodes'
     ]
 
     with open(imn_file, 'r') as imn_f, open(test_config_filepath, 'r') as schema_f:

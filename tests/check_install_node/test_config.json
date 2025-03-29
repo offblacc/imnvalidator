@@ -1,0 +1,17 @@
+{
+    "tests": [
+        {
+            "name": "Check multiple packages installed",
+            "type": "check_install_node",
+            "on_nodes": [
+                "pc1",
+                "pc2"
+            ],
+            "commands": [
+                "traceroute --version",
+                "ifconfig --version",
+                "sl --version"
+            ]
+        }
+    ]
+}

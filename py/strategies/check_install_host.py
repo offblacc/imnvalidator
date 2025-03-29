@@ -1,5 +1,3 @@
-# strategies/ping.py
-
 import config
 import pexpect
 import util
