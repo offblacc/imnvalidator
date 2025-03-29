@@ -93,14 +93,48 @@
                                 },
                                 "post_turnoff_next_hop4": {
                                     "type": "string"
-                                }                                
+                                }
                             },
                             "required": [
                                 "type",
                                 "name",
                                 "source_node",
                                 "router_turnoff",
-                                "router_checkriptable"
+                                "router_checkriptable",
+                                "target_ip4_subnet",
+                                "initial_next_hop4",
+                                "post_turnoff_next_hop4"
+                            ],
+                            "additionalProperties": false
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "type": {
+                                    "const": "check_install_host"
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "type": {
+                                    "const": "check_install_host"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "commands": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "type",
+                                "name",
+                                "commands"
                             ],
                             "additionalProperties": false
                         }

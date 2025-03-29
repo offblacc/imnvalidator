@@ -1,0 +1,13 @@
+{
+    "tests": [
+        {
+            "name": "Check multiple packages installed",
+            "type": "check_install_host",
+            "commands": [
+                "traceroute --version",
+                "ifconfig --version",
+                "sl --version"
+            ]
+        }
+    ]
+}

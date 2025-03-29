@@ -1,9 +1,8 @@
 # strategies/ping.py
 
-from . import verbose
 import util, asyncio
 import config
-
+verbose = config.config.VERBOSE
 
 async def ping(test_config) -> bool:
     eid = config.state.eid
