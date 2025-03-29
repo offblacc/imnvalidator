@@ -5,8 +5,12 @@
             "type": "_rip_validate",
             "source_node": "pc",
             "target_ip4": "10.0.4.10",
+            "target_ip4_subnet": "10.0.4.0/24",
+            "target_ip6":"fc00:1::10",
             "router_turnoff": "router7",
-            "router_checkriptable": "router2"
+            "router_checkriptable": "router2",
+            "initial_next_hop4": "10.0.7.2",
+            "post_turnoff_next_hop4": "10.0.1.2"
         }
     ]
 }

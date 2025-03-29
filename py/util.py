@@ -196,7 +196,7 @@ async def stop_simulation() -> str:
             line = await process.stdout.readline()
             if not line:
                 config.state.eid = None
-                break # await process termination, start_process trickery and trade secrets
+                break
             output += line.decode().strip() + '\n'
     else:
         raise RuntimeError("No simulation started by this framework still running")
@@ -211,18 +211,85 @@ async def stopNode(node: str) -> bool:
             if not line:
                 break
             ifaces.append(line.decode().strip())
-        print("Stopping interfaces")
-        print(ifaces)
-        print(f"On node {node}")
+
         for ifc in ifaces:
-            print(f"running command: himage {node}@{config.state.eid} ifconfig {ifc} down")
             process = await start_process(f'himage {node}@{config.state.eid} ifconfig {ifc} down')
             line = ''
             while line:
                 line = await process.stdout.readline() # await subprocess.. trickery again
-    
-    
     return True # TODO add return status, check if ifc down
+
+
+async def _get_ripany_table(node: str, ripng: bool):
+    childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
+    childp.expect(r'.*:/# ') # await prompt
+    childp.sendline(f"vtysh -c \"show ip rip{'ng' if ripng else ''}\"")
+    childp.expect('(Codes: .*)(?=\\r\\n)')
+    ret = childp.match.group(0).decode().strip()
+    return ret
+
+async def get_rip_table(node: str):
+    return await _get_ripany_table(node, False)
+
+async def get_ripng_table(node: str):
+    return await _get_ripany_table(node, True)
+
+
+def parse_rip_table(raw_rip_table: str):
+    ript = dict()
+    raw_rip_table = raw_rip_table.replace("\\r\\n", "\n").split("\n")
+    start = False
+    for line in raw_rip_table:
+        if not start:
+            if line.strip().startswith("Network"):
+                start = True
+        elif start:
+            line = line.split()[1:]
+            ript.update(
+                {
+                    line[0]: {
+                        "nexthop": line[1],
+                        "metric": line[2],
+                        "from": line[3],
+                        "tag": line[4],
+                        "time": line[5] if len(line) == 6 else None,
+                    }
+                }
+            )
+
+    return ript
+    
+    
+def parse_ripng_table(raw_rip_table: str):
+    start = False
+    beg = True
+    newentry = list()
+    ript = dict()
+    for line in raw_rip_table.replace('\\r\\n', '\n').split('\n'):
+        if not start:
+            if line.strip().startswith('Network'):
+                start = True
+        else:
+            if beg:
+                newentry.append(line.split()[1]) # "Network" column
+                beg = False
+            else:
+                newentry.extend(line.split())
+                ript.update(
+                    {
+                        newentry[0]: {
+                            "nexthop": newentry[1],
+                            "via": newentry[2],
+                            "metric": newentry[3],
+                            "tag": newentry[4],
+                            "time": newentry[5] if len(newentry) == 6 else None,
+                        }
+                    }
+                )
+                # reset to build new entry
+                beg = True
+                newentry = list()
+    return ript
 
 async def ping_check_old(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     """sssssstringgggggggggggg
