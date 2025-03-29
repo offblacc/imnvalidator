@@ -1,7 +1,3 @@
-# strategies/rip.py
-
-# TODO add RIPng
-
 import util
 import time
 import config

@@ -220,6 +220,16 @@ async def stopNode(node: str) -> bool:
                 line = await process.stdout.readline() # await subprocess.. trickery again
     return True # TODO add return status, check if ifc down
 
+async def set_BER(node1: str, node2: str, ber: float) -> Tuple[bool, str]:
+    child = pexpect.spawn(f'/bin/bash', encoding="utf-8", timeout=10)
+    child.expect(r"[a-zA-Z0-9]+@[a-zA-Z0-9]+.* ?# ?")
+    child.sendline(f'vlink -BER {ber} -e $eid {node1}:{node2}')
+    child.expect(r"[a-zA-Z0-9]+@[a-zA-Z0-9]+.* ?# ?")
+    output = '\n'.join(child.before.strip().split('\r\n')[1:-1])
+    child.sendline("echo $?")
+    child.expect(r"\d+\r?\n")
+    cmd_status = child.match.group(0).strip()
+    return cmd_status, output
 
 async def _get_ripany_table(node: str, ripng: bool):
     childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
@@ -235,6 +245,19 @@ async def get_rip_table(node: str):
 async def get_ripng_table(node: str):
     return await _get_ripany_table(node, True)
 
+async def _get_ospfany_table(node: str, ipv6: bool)
+    childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
+    childp.expect(r'.*:/# ') # await prompt
+    childp.sendline(f"vtysh -c \"show ip{'v6' if ipv6 else ''} ospf\"")
+    childp.expect('(Codes: .*)(?=\\r\\n)')
+    ret = childp.match.group(0).decode().strip()
+    return ret
+
+async def get_ospf_table(node:str):
+    return await _get_ospfany_table(node, False)
+
+async def get_ipv6_ospf_table(node:str):
+    return await _get_ospfany_table(node, True)
 
 def parse_rip_table(raw_rip_table: str):
     ript = dict()
