@@ -95,8 +95,8 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
         
     print('Cleaning up...')
     stop_output = await util.stop_simulation()
-    if verbose:
-        print(stop_output)
+    # if verbose: # don't print it.. clutter
+    #     print(stop_output)
 
     return failures
 
