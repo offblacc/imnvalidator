@@ -76,8 +76,29 @@ def _ospf_validate(test_config) -> Tuple[bool, str]:
     ### ====================== Restore link ======================
     util.set_BER(disable_link_n1, disable_link_n2, 0)
     
-    
     ### ====================== Sleep again ======================
     time.sleep(40)
     
-    ### ====================== Sleep again ======================
+    ### ====================== Ping checks after reinstating link ======================
+    ## IPv4 initial ping
+    pst = True # sanity reasons, don't question it, it's alright
+    for _ in range(20):
+        pst, __ = util.ping_check(src_node, target_ip4, eid)
+        if pst:
+            break
+    
+    if not pst:
+        return False, util.format_fail_test("Post router restart IPv4 ping failed")
+    
+    
+    ## IPv6 initial ping
+    pst = True # sanity reasons, don't question it, it's alright
+    for _ in range(20):
+        pst, __ = util.ping_check(src_node, target_ip6, eid)
+        if pst:
+            break
+    
+    if not pst:
+        return False, util.format_fail_test("Post router restart IPv6 ping failed")
+    
+    print_output += util.format_pass_subtest("Post router restart pings succeeded")

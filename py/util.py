@@ -245,7 +245,7 @@ async def get_rip_table(node: str):
 async def get_ripng_table(node: str):
     return await _get_ripany_table(node, True)
 
-async def _get_ospfany_table(node: str, ipv6: bool)
+async def _get_ospfany_table(node: str, ipv6: bool):
     childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
     childp.expect(r'.*:/# ') # await prompt
     childp.sendline(f"vtysh -c \"show ip{'v6' if ipv6 else ''} ospf\"")

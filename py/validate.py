@@ -21,6 +21,8 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
     config.config.test_config_filename = config_filepath
     config.config.set_verbose(verbose)
     config.config.set_platform()
+    
+    # Convert from legacy .imn to the new json format (if legacy format)
 
     test_config = None
 
