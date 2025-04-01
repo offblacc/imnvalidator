@@ -16,7 +16,7 @@ logger = logging.getLogger("imnvalidator")
 
 schema_filepath = str(config.PROJECT_ROOT) + '/test_file_schema.json'
 
-async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) -> int:
+async def main(imn_file, config_filepath, verbose, parallel, validate_scheme, aggregate_run) -> int:
     config.config.imunes_filename = imn_file
     config.config.test_config_filename = config_filepath
     config.config.set_verbose(verbose)
@@ -85,20 +85,23 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme) ->
 
         logger.debug(f"Tests finished with {failures} failures")
 
-    print()  # just a newline
-    print(
+        
+    stop_output = await util.stop_simulation()
+    # if verbose: # don't print it.. clutter
+    #     print(stop_output)
+
+    if aggregate_run:
+        return failures
+    else:
+        print()  # just a newline
+        print(
         util.format_end_status(
             f"{len(test_config['tests']) - failures}/{len(test_config['tests'])} tests successful",
             failures == 0,
         )
     )
+        print('Cleaning up...')
         
-    print('Cleaning up...')
-    stop_output = await util.stop_simulation()
-    # if verbose: # don't print it.. clutter
-    #     print(stop_output)
-
-    return failures
 
 async def run_single_test(test):
     strategy_type = test["type"]
@@ -132,13 +135,16 @@ if __name__ == "__main__":
     parser.add_argument(
         "-s", "--validate-scheme", action="store_true", help="Disable validating the test schema; useful during development"
     ) # remove this please TODO
+    parser.add_argument(
+        "-a", "--aggregate-run", action="store_true", help="Time the execution"
+    )
 
     args = parser.parse_args()
     if args.timeit:
         start = time.time()
 
     logger.debug("Starting main function")
-    failures = asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel, args.validate_scheme))
+    failures = asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel, args.validate_scheme, args.aggregate_run))
 
     if args.timeit:
         end = time.time()

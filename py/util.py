@@ -155,11 +155,11 @@ async def start_simulation():
     
     cmd = f"imunes -b {imn_file}; echo $?"
     if config.config.VERBOSE:
-        print(f"Starting simulation with command: {cmd.split(';')[0]}")
+        print(f"Starting simulation with command: {cmd.split(';')[0]}") # TODO not print ??
     else:
-        print("Starting simulation")
+        print("Starting simulation") # TODO not print (..here)
 
-    logger.debug(f'Starting simulation with command: {cmd.split(";")[0]}')
+    logger.debug(f'Starting simulation with command: {cmd.split(";")[0]}') # TODO not print ??
 
     process = await start_process(cmd)  # don't need a PTY here, just start the simulation & read output
 
