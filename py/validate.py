@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import sys
 import json
 import asyncio
@@ -14,9 +12,10 @@ from helpers.schemavalidate import validateJSON
 
 logger = logging.getLogger("imnvalidator")
 
-schema_filepath = str(config.PROJECT_ROOT) + '/test_file_schema.json'
+schema_filepath = str(config.PROJECT_ROOT) + "/test_file_schema.json"
 
-async def main(imn_file, config_filepath, verbose, parallel, validate_scheme, aggregate_run) -> int:
+
+async def main(imn_file, config_filepath, verbose, parallel, validate_scheme):
     config.config.imunes_filename = imn_file
     config.config.test_config_filename = config_filepath
     config.config.set_verbose(verbose)
@@ -26,13 +25,14 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme, ag
 
     ## First, validate JSON file
     if not validate_scheme:
-        json_valid, output = validateJSON(data_file_path=config_filepath, schema_file_path=schema_filepath)
+        json_valid, output = validateJSON(
+            data_file_path=config_filepath, schema_file_path=schema_filepath
+        )
         if not json_valid:
-            print('Invalid JSON, reason:')
+            print("Invalid JSON, reason:")
             print(output)
             exit(1)
-        # TODO then check if you have tests that are not made to be run w other tests in the same file (that require restarting sim. etc; maybe later group them as a different type of tests?)e
-    
+
     ## Try parsing the config file
     try:
         test_config = util.read_JSON_from_file(config_filepath)
@@ -42,18 +42,20 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme, ag
     except json.JSONDecodeError:
         print(f"Error: Config file '{config_filepath}' is not a valid JSON file.")
         exit(1)
-        
-    
+
     ## Check nodes the framework will connect to even exist in the IMUNES file
     missing = util.nodes_exist(imn_file, config_filepath)
     if missing:
-        print('You have the following nodes specified in the test file that are not found in the IMUNES simulation:', ', '.join(missing))
+        print(
+            "You have the following nodes specified in the test file that are not found in the IMUNES simulation:",
+            ", ".join(missing),
+        )
         exit(1)
 
     await util.start_simulation()
 
     logger.debug(f'Running tests in {"parallel" if parallel else "sequence"}')
-    
+
     ## Run each test
     failures = 0
     if parallel:
@@ -85,23 +87,19 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_scheme, ag
 
         logger.debug(f"Tests finished with {failures} failures")
 
-        
     stop_output = await util.stop_simulation()
     # if verbose: # don't print it.. clutter
     #     print(stop_output)
 
-    if aggregate_run:
-        return failures
-    else:
-        print()  # just a newline
-        print(
+    print()  # just a newline
+    print(
         util.format_end_status(
             f"{len(test_config['tests']) - failures}/{len(test_config['tests'])} tests successful",
             failures == 0,
         )
     )
-        print('Cleaning up...')
-        
+    print("Cleaning up...")
+
 
 async def run_single_test(test):
     strategy_type = test["type"]
@@ -133,8 +131,11 @@ if __name__ == "__main__":
         "-t", "--timeit", action="store_true", help="Time the execution"
     )
     parser.add_argument(
-        "-s", "--validate-scheme", action="store_true", help="Disable validating the test schema; useful during development"
-    ) # remove this please TODO
+        "-s",
+        "--validate-scheme",
+        action="store_true",
+        help="Disable validating the test schema; useful during development",
+    )  # remove this please TODO
     parser.add_argument(
         "-a", "--aggregate-run", action="store_true", help="Time the execution"
     )
@@ -144,11 +145,20 @@ if __name__ == "__main__":
         start = time.time()
 
     logger.debug("Starting main function")
-    failures = asyncio.run(main(args.imn_file, args.config_file, args.verbose, args.parallel, args.validate_scheme, args.aggregate_run))
+    failures = asyncio.run(
+        main(
+            args.imn_file,
+            args.config_file,
+            args.verbose,
+            args.parallel,
+            args.validate_scheme,
+            args.aggregate_run,
+        )
+    )
 
     if args.timeit:
         end = time.time()
         print(f"Execution time: {end - start} seconds")
         logger.info(f"Validator finished in {end - start} seconds")
-    
-    sys.exit(failures) # report the number of failed tests back to shell
+
+    sys.exit(failures)  # report the number of failed tests back to shell
