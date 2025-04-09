@@ -21,3 +21,5 @@
    - validacija json_config datoteke
    - check nodes exist
    - samu parallel/sequential logiku pokretanja
+ - ako postoji validate imunes flag postoje drugačija pravila za flagove
+ - umjesto exit u validate_simulation() zovi return neki, da nastavi dalje s testovima IF aggregate_run
