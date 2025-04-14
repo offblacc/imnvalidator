@@ -62,7 +62,21 @@ class Config:
 class State:
     def __init__(self):
         self.imunes_output = ''
-        self.eid = None
+        self._eid = None
+        self.all_eids = []
+        
+    def set_eid(self, value):
+        self.all_eids.append(value)
+        self._eid = value
+    
+    @property
+    def eid(self):
+        return self._eid
+    
+    @eid.setter
+    def eid(self, value):
+        self.set_eid(value)
+
 
 class OS(Enum):
     LINUX = 1

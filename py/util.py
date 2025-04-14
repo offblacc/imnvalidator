@@ -189,19 +189,22 @@ async def start_simulation():
         print(f"Simulation started successfully.")
         logger.debug("Simulation started successfully.")
 
-async def stop_simulation() -> str:
+async def stop_simulation(eid=None) -> str:
+    if not eid:
+        eid = config.state.eid
     output = ''
-    if config.state.eid:
-        process = await start_process(f'sudo imunes -b -e {config.state.eid}')
-        while True:
-            line = await process.stdout.readline()
-            if not line:
-                config.state.eid = None
-                break
-            output += line.decode().strip() + '\n'
-    else:
-        raise RuntimeError("No simulation started by this framework still running")
+    process = await start_process(f'sudo imunes -b -e {eid}')
+    while True:
+        line = await process.stdout.readline()
+        if not line:
+            eid = None # TODO makes no sense now that you've added stop_all_ran_sims()
+            break
+        output += line.decode().strip() + '\n'
     return output
+
+async def stop_all_ran_sims():
+    for eid in config.state.all_eids:
+        stop_simulation(eid)
 
 async def stopNode(node: str) -> bool:
     if config.config.is_OS_linux():
