@@ -41,6 +41,7 @@ async def validate_installation():
         if not os.path.isfile(schemefile) or not os.path.isfile(configfile):
             continue # check .imn and .json pair exists in the subdir
         
+        print(f"Starting test {dir.name}")
         num_failed = await validate_simulation(schemefile, configfile, False, valinst=True)
         total_num_failed += num_failed
         if num_failed != 0:
