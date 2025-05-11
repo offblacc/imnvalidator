@@ -37,19 +37,19 @@ class Config:
         self.logger = configure_logging()
         self.imunes_filename = None
         self.test_config_filename = None
-        self.os = self.set_platform()
-
-    def set_verbose(self, verbose):
-        self.VERBOSE = verbose
+        self.os = self.get_platform()
+        self.validate_installation = None
+        self.test_dir = PROJECT_ROOT / 'tests'
+        # TODO rename these, its confusing
+        self.scheme_name = 'scheme.imn'
+        self.test_config_name = 'test_config.json'
         
-    def set_platform(self):
+    def get_platform(self):
         if system() == 'Linux':
-            self.os = OS.LINUX
-            return
+            return OS.LINUX
         if system() == 'FreeBSD':
-            self.os = OS.FREEBSD
-            return
-        raise ValueError("Unsupported operating system")
+            return OS.FREEBSD
+        raise ValueError(f"Unsupported operating system: {self.os}")
     
     def is_OS_linux(self):
         return self.os == OS.LINUX
@@ -60,7 +60,21 @@ class Config:
 class State:
     def __init__(self):
         self.imunes_output = ''
-        self.eid = None
+        self._eid = None
+        self.all_eids = []
+        
+    def set_eid(self, value):
+        self.all_eids.append(value)
+        self._eid = value
+    
+    @property
+    def eid(self):
+        return self._eid
+    
+    @eid.setter
+    def eid(self, value):
+        self.set_eid(value)
+
 
 class OS(Enum):
     LINUX = 1

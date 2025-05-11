@@ -34,7 +34,8 @@ To je generalniji problem
 # TODO po uzoru na funkciju check_install_host (sa [1:-1] logikom, jednostavno je i efikasno) napravi generalnu send-read-and-forget funkciju za slat naredbe koje ne zahtijevaju persistent shell, tty whatever nakon.. sama funkcija će započet shell session, pričekati prompt, poslati naredbu, vratiti output - PAZI - decode() calls možda ovise jel si u himage ili host shellu!!
 # TODO imaš krivi return type u većini strategija, no to ostavi za typesafety branch komotno kad staviš strict
 # TODO condition sim starting on needing to start a sim - depends on tests in test_config.json.. figure that one out
-
+# TODO verbose omogući i za validate installation
+# TODO validate installation - parallel running
 
 sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout 30/' /usr/local/lib/imunes/imunes.tcl
 i nemoj 30 nego pomalo traži vrijednost.. prvo s 5 pa += 5

@@ -76,7 +76,7 @@ async def _rip_validate(test_config) -> bool:
     
     # ====================== Stop a router and wait for new routes to propagate ======================
     await util.stopNode(router_turnoff)
-    time.sleep(210) # too much?, 190 was too little
+    time.sleep(230) # too much?, 190 was too little
         
     
     ### ====================== Test pings after router turnoff ======================    

@@ -1,6 +1,5 @@
 # strategies/test_big_resolve.py
 
-from . import verbose
 import config
 import util
 
