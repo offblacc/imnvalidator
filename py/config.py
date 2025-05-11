@@ -37,20 +37,18 @@ class Config:
         self.logger = configure_logging()
         self.imunes_filename = None
         self.test_config_filename = None
-        self.os = self.set_platform()
+        self.os = self.get_platform()
         self.validate_installation = None
         self.test_dir = PROJECT_ROOT / 'tests'
         # TODO rename these, its confusing
         self.scheme_name = 'scheme.imn'
         self.test_config_name = 'test_config.json'
         
-    def set_platform(self):
+    def get_platform(self):
         if system() == 'Linux':
-            self.os = OS.LINUX
-            return
+            return OS.LINUX
         if system() == 'FreeBSD':
-            self.os = OS.FREEBSD
-            return
+            return OS.FREEBSD
         raise ValueError(f"Unsupported operating system: {self.os}")
     
     def is_OS_linux(self):

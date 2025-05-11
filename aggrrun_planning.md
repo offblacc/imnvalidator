@@ -23,3 +23,6 @@
    - samu parallel/sequential logiku pokretanja
  - ako postoji validate imunes flag postoje drugačija pravila za flagove
  - umjesto exit u validate_simulation() zovi return neki, da nastavi dalje s testovima IF aggregate_run
+
+### nproc
+- aggr_run bi trebao (mogao..!) paralelno vrtiti testove, to kao default opcija no moguć flag za gašenje tog

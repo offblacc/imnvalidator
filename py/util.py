@@ -217,6 +217,8 @@ async def stopNode(node: str) -> bool:
             ifaces.append(line.decode().strip())
 
         for ifc in ifaces:
+            if config.config.VERBOSE:
+                print(f"Shutting down interface: {ifc.decode()}")
             process = await start_process(f'himage {node}@{config.state.eid} ifconfig {ifc} down')
             line = ''
             while line:

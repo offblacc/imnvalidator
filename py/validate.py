@@ -25,7 +25,7 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_install):
         return
     else: # you got imn_file and config_filepath as args
         await validate_simulation(imn_file, config_filepath, verbose, parallel)
-        pass
+        return
 
 
 async def validate_installation():
