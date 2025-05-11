@@ -17,7 +17,7 @@ logger = logging.getLogger("imnvalidator")
 schema_filepath = str(config.PROJECT_ROOT) + "/test_file_schema.json"
 
 async def main(imn_file, config_filepath, verbose, parallel, validate_install):
-    config.config.verbose = verbose
+    config.config.VERBOSE = verbose
     config.config.validate_installation = validate_install
     
     if validate_install: # you got scheme and config pairs in tests/*/; get and set config variables, don't forget them
