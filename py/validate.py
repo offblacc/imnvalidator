@@ -191,12 +191,12 @@ if __name__ == "__main__":
         
     except Exception as e:
         print(f'Uncaught Exception: {e}')
-        print(f'Stopping all previously started experiments')
-        util.stop_all_ran_sims()
+        print(e)
+        print(f'Stopping all started experiments')
+        asyncio.run(util.stop_all_ran_sims())
         
-    if args.timeit:
-        end = time.time()
-        print(f"Execution time: {end - start} seconds")
-        logger.info(f"Validator finished in {end - start} seconds")
-
-    sys.exit(failures)  # report the number of failed tests back to shell
+    finally:    
+        if args.timeit:
+            end = time.time()
+            print(f"Execution time: {end - start} seconds")
+            logger.info(f"Validator finished in {end - start} seconds")

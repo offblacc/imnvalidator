@@ -118,9 +118,18 @@ def nodes_exist(imn_file, test_config_filepath) -> set:
     ]
 
     with open(imn_file, 'r') as imn_f, open(test_config_filepath, 'r') as schema_f:
-        imn_data = json.load(imn_f)
-        test_data = json.load(schema_f)
-
+        try:
+            imn_data = json.load(imn_f)
+        except Exception as e:
+            print("Error parsing IMUNES file as a JSON file, check your IMUNES file is in the new JSON format.")
+            raise e
+        
+        try:
+            test_data = json.load(schema_f)
+        except Exception as e:
+            print("Error parsing test_config file as a JSON file.")
+            raise e
+        
         # Extract node names from IMN data
         imn_nodes = set(imn_data["nodes"][node]["name"] for node in imn_data["nodes"])
 
@@ -204,7 +213,7 @@ async def stop_simulation(eid=None) -> str:
 
 async def stop_all_ran_sims():
     for eid in config.state.all_eids:
-        stop_simulation(eid)
+        await stop_simulation(eid)
 
 async def stopNode(node: str) -> bool:
     if config.config.is_OS_linux():
@@ -253,8 +262,8 @@ async def get_ripng_table(node: str):
 async def _get_ospfany_table(node: str, ipv6: bool):
     childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
     childp.expect(r'.*:/# ') # await prompt
-    childp.sendline(f"vtysh -c \"show ip{'v6' if ipv6 else ''} ospf\"")
-    childp.expect('(Codes: .*)(?=\\r\\n)')
+    childp.sendline(f"vtysh -c \"show ip{'v6' if ipv6 else ''} ospf route\"")
+    childp.expect('(============ OSPF network routing table ============.*|*N)(?=\\r\\n)')
     ret = childp.match.group(0).decode().strip()
     return ret
 

@@ -5,7 +5,7 @@ from typing import Tuple
 
 verbose = config.config.VERBOSE
 
-def _ospf_validate(test_config) -> Tuple[bool, str]:
+async def _ospf_validate(test_config) -> Tuple[bool, str]:
     print_output = ''
     status = True
     eid = config.state.eid
@@ -13,11 +13,11 @@ def _ospf_validate(test_config) -> Tuple[bool, str]:
     src_node = test_config["source_node"]
     target_ip4 = test_config["target_ip4"]
     target_ip4_subnet = test_config["target_ip4_subnet"]
-    target_ip6 = test_config["target_ipv6"]
+    target_ip6 = test_config["target_ip6"]
     disable_link_n1 = test_config["disable_link_n1"]
     disable_link_n2 = test_config["disable_link_n2"]
     router_checkospftable = test_config["router_checkospftable"]
-    initial_nexthop4 = test_config["initial_nexthop4"]
+    initial_nexthop4 = test_config["initial_next_hop4"]
     post_turnoff_next_hop4 = test_config["post_turnoff_next_hop4"]
     
     ### ====================== Initial sleep - OSPF setup ======================
@@ -27,7 +27,7 @@ def _ospf_validate(test_config) -> Tuple[bool, str]:
     ## IPv4 initial ping
     pst = True # sanity reasons, don't question it, it's alright
     for _ in range(20):
-        pst, __ = util.ping_check(src_node, target_ip4, eid)
+        pst, __ = await util.ping_check(src_node, target_ip4, eid)
         if pst:
             break
     
@@ -38,7 +38,7 @@ def _ospf_validate(test_config) -> Tuple[bool, str]:
     ## IPv6 initial ping
     pst = True # sanity reasons, don't question it, it's alright
     for _ in range(20):
-        pst, __ = util.ping_check(src_node, target_ip6, eid)
+        pst, __ = await util.ping_check(src_node, target_ip6, eid)
         if pst:
             break
     
@@ -49,10 +49,10 @@ def _ospf_validate(test_config) -> Tuple[bool, str]:
     
     ### ====================== Print OSPF tables ======================
     print_output += 'IPv4 OSPF table:' + '\n'
-    print_output += util.get_ospf_table(router_checkospftable) + '\n'
+    print_output += await util.get_ospf_table(router_checkospftable) + '\n'
     
     print_output += 'IPv6 OSPF table:' + '\n'
-    print_output += util.get_ipv6_ospf_table(router_checkospftable) + '\n'
+    print_output += await util.get_ipv6_ospf_table(router_checkospftable) + '\n'
     
     
     ### ====================== Disable link ======================
@@ -83,7 +83,7 @@ def _ospf_validate(test_config) -> Tuple[bool, str]:
     ## IPv4 initial ping
     pst = True # sanity reasons, don't question it, it's alright
     for _ in range(20):
-        pst, __ = util.ping_check(src_node, target_ip4, eid)
+        pst, __ = await util.ping_check(src_node, target_ip4, eid)
         if pst:
             break
     
@@ -94,7 +94,7 @@ def _ospf_validate(test_config) -> Tuple[bool, str]:
     ## IPv6 initial ping
     pst = True # sanity reasons, don't question it, it's alright
     for _ in range(20):
-        pst, __ = util.ping_check(src_node, target_ip6, eid)
+        pst, __ = await util.ping_check(src_node, target_ip6, eid)
         if pst:
             break
     
