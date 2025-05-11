@@ -263,7 +263,7 @@ async def _get_ospfany_table(node: str, ipv6: bool):
     childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
     childp.expect(r'.*:/# ') # await prompt
     childp.sendline(f"vtysh -c \"show ip{'v6' if ipv6 else ''} ospf route\"")
-    childp.expect('(============ OSPF network routing table ============.*|*N)(?=\\r\\n)')
+    childp.expect('(============ OSPF network routing table ============.*|\*N.*)(?=\\r\\n)')
     ret = childp.match.group(0).decode().strip()
     return ret
 
