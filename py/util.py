@@ -84,8 +84,6 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
     return ping_status, ping_output
 
 
-import json
-
 def nodes_exist(imn_file, test_config_filepath) -> set:
     """Tests whether nodes from:
     'source_node',
