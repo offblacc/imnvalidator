@@ -9,6 +9,7 @@ import logging
 import importlib
 import os
 import config
+import traceback
 from helpers.schemavalidate import validateJSON
 
 
@@ -190,8 +191,8 @@ if __name__ == "__main__":
         )
         
     except Exception as e:
-        print(f'Uncaught Exception: {e}')
-        print(e)
+        print(traceback.format_exc())
+        # print(f'Uncaught Exception: {e}')
         print(f'Stopping all started experiments')
         asyncio.run(util.stop_all_ran_sims())
         

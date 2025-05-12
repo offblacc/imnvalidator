@@ -57,7 +57,7 @@ async def _ospf_validate(test_config) -> Tuple[bool, str]:
     
     ### ====================== Disable link ======================
     
-    util.set_BER(disable_link_n1, disable_link_n2, 1)
+    await util.set_BER(disable_link_n1, disable_link_n2, 1)
     
     ### ====================== Short sleep ======================
     sl1 = 10
@@ -67,14 +67,14 @@ async def _ospf_validate(test_config) -> Tuple[bool, str]:
     print_output += f"Routes after {sl1} seconds:\n"
     
     print_output += 'IPv4 OSPF table:' + '\n'
-    print_output += util.get_ospf_table(router_checkospftable) + '\n'
+    print_output += await util.get_ospf_table(router_checkospftable) + '\n'
     
     print_output += 'IPv6 OSPF table:' + '\n'
-    print_output += util.get_ipv6_ospf_table(router_checkospftable) + '\n'
+    print_output += await util.get_ipv6_ospf_table(router_checkospftable) + '\n'
     
     
     ### ====================== Restore link ======================
-    util.set_BER(disable_link_n1, disable_link_n2, 0)
+    await util.set_BER(disable_link_n1, disable_link_n2, 0)
     
     ### ====================== Sleep again ======================
     time.sleep(40)
@@ -102,3 +102,5 @@ async def _ospf_validate(test_config) -> Tuple[bool, str]:
         return False, util.format_fail_test("Post router restart IPv6 ping failed")
     
     print_output += util.format_pass_subtest("Post router restart pings succeeded")
+
+    return True, print_output.strip() + '\n'
