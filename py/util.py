@@ -7,6 +7,7 @@ from typing import Tuple
 import pexpect
 import json
 import os
+from constants import AWAITS_PROMPT
 
 green_code = '\033[92m'
 red_code = '\033[91m'
@@ -327,29 +328,23 @@ def parse_ripng_table(raw_rip_table: str):
                 newentry = list()
     return ript
 
-async def ping_check_old(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
-    """sssssstringgggggggggggg
 
-    Args:
-        source_node_name (str): _description_
-        target_ip (str): _description_
-        eid (str): _description_
-        timeout (int, optional): _description_. Defaults to 2.
-        count (int, optional): _description_. Defaults to 2.
-
-    Returns:
-        Tuple[bool, str]: _description_
-    """
-    process = await start_process(
-        f'himage -nt {source_node_name}@{eid} sh -c "ping -W {timeout} -c {count} {target_ip}; echo \$?"'
-    )
-    output = await process.stdout.read()
-    output = output.decode().strip()
-    ping_status = output.split("\n")[-1].strip() == "0"
-    ping_output = output[:output.rfind('\n')].strip()
-    logger.debug(f'Pinging {target_ip} from {source_node_name}@{eid} with args timeout={timeout} and count={count} RETURNS status \'{ping_status}\' and output \'{ping_output}\' while the complete output was \'{output}\'')
-    return ping_status, ping_output
-
+async def trace_check(source_node: str, target_ip: str):
+    trace_status = False
+    for _ in range(20):
+        child = pexpect.spawn(f'himage {source_node}@{config.state.eid}')
+        child.expect(AWAITS_PROMPT)
+        child.sendline(f'strVal=`traceroute {target_ip} | grep -v traceroute | grep {target_ip}`')
+        child.expect(AWAITS_PROMPT)
+        child.sendline('test -z "$strVal"')
+        child.expect(AWAITS_PROMPT)
+        child.expect(r"\d+\r?\n")
+        if child.match.group(0).strip() != '0':
+            trace_status = True
+            break
+    return trace_status
+        
+        
 
 def format_output_frame(s):
     """Format the output with borders and lines.

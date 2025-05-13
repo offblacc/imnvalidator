@@ -1,0 +1,12 @@
+{
+    "tests": [
+        {
+            "name": "Traceroute test",
+            "type": "traceroute",
+            "src_tgt_pairs": {
+                "pc1": "10.0.8.10",
+                "server": "10.0.0.21"
+            }
+        }
+    ]
+}
