@@ -379,7 +379,6 @@
     "options"  : {
         "show_interface_ipv6" : "0",
         "show_link_labels"    : "0",
-        "version"             : "1",
-        "zoom"                : "3.0"
+        "version"             : "1"
     }
 }

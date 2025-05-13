@@ -39,6 +39,7 @@ To je generalniji problem
 # TODO check all tests have entries in test_file_schema.json
 # TODO double-check distinkciju između test foldera sa _ i bez _ prefixa
 # TODO rewrite existing to use constants.py
+# TODO always check for imunes simulation creation warnings
 
 sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout 30/' /usr/local/lib/imunes/imunes.tcl
 i nemoj 30 nego pomalo traži vrijednost.. prvo s 5 pa += 5

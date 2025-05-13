@@ -338,8 +338,10 @@ async def trace_check(source_node: str, target_ip: str):
         child.expect(AWAITS_PROMPT)
         child.sendline('test -z "$strVal"')
         child.expect(AWAITS_PROMPT)
+        child.sendline('echo $?')
         child.expect(r"\d+\r?\n")
-        if child.match.group(0).strip() != '0':
+        print(child.match.group(0).strip())
+        if child.match.group(0).decode().strip() != '0':
             trace_status = True
             break
     return trace_status
