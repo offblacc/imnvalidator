@@ -47,7 +47,7 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
     child = pexpect.spawn(command, encoding="utf-8", timeout=timeout + 10)
 
     # Ensure the shell is ready (wait for prompt)
-    child.expect(r'[a-zA-Z0-9]+@[a-zA-Z0-9]+:/# ')
+    child.expect(AWAITS_PROMPT)
 
     # Send the ping command
     child.sendline(f"ping -W {timeout} -c {count} {target_ip}")
@@ -55,7 +55,7 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
     child.expect(r'(PING|ping) .+')  # Expect the PING line
     ping_output = child.before.strip()  # Capture everything before the match
 
-    child.expect(r'[a-zA-Z0-9]+@[a-zA-Z0-9]+:/# ')  # Wait for the shell prompt
+    child.expect(AWAITS_PROMPT)  # Wait for the shell prompt
     ping_output += "\n" + child.before.strip()  # Append the ping output
     
     # Extract ping output (excluding the prompt itself)
@@ -235,9 +235,9 @@ async def stopNode(node: str) -> bool:
 
 async def set_BER(node1: str, node2: str, ber: float) -> Tuple[bool, str]:
     child = pexpect.spawn(f'/bin/bash', encoding="utf-8", timeout=10)
-    child.expect(r"[a-zA-Z0-9]+@[a-zA-Z0-9]+.* ?# ?")
+    child.expect(AWAITS_PROMPT)
     child.sendline(f'vlink -BER {ber} -e $eid {node1}:{node2}')
-    child.expect(r"[a-zA-Z0-9]+@[a-zA-Z0-9]+.* ?# ?")
+    child.expect(AWAITS_PROMPT)
     output = '\n'.join(child.before.strip().split('\r\n')[1:-1])
     child.sendline("echo $?")
     child.expect(r"\d+\r?\n")

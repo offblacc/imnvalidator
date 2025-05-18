@@ -1,9 +1,9 @@
 import config
 import pexpect
 import util
+from constants import AWAITS_PROMPT
 
 # .*  for now accounts for ansi ~garbage~
-PROMPT = r"[a-zA-Z0-9]+@[a-zA-Z0-9]+.* ?# ?"
 verbose = config.config.VERBOSE
 
 # TODO fix the issue.. this requires a simulation by code design, but.. yep..
@@ -15,11 +15,11 @@ async def check_install_host(test_config) -> bool:
         
     for cmd in commands:
         # await first or nth consecutive prompt
-        child.expect(PROMPT)
+        child.expect(AWAITS_PROMPT)
         
         # send the command from the config file
         child.sendline(cmd)
-        child.expect(PROMPT)
+        child.expect(AWAITS_PROMPT)
         
         # fetch output from the command for verbose output
         if verbose:

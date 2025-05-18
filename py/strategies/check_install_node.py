@@ -2,11 +2,11 @@
 import config
 import pexpect
 import util
+from constants import AWAITS_PROMPT
 
 verbose = config.config.VERBOSE
 
 # .*  for now accounts for ansi ~garbage~
-PROMPT = r"[a-zA-Z0-9]+@[a-zA-Z0-9]+.* ?# ?"
 
 
 async def check_install_node(test_config) -> bool:
@@ -20,11 +20,11 @@ async def check_install_node(test_config) -> bool:
         child = pexpect.spawn(f'himage {node}@{eid}')
         
         for cmd in commands:
-            child.expect(PROMPT)
+            child.expect(AWAITS_PROMPT)
             
             # send the command from the config file
             child.sendline(cmd)
-            child.expect(PROMPT)
+            child.expect(AWAITS_PROMPT)
             
             # fetch output from the command for verbose output
             if verbose:
