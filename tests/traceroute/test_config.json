@@ -5,7 +5,7 @@
             "type": "traceroute",
             "src_tgt_pairs": {
                 "pc1": "10.0.8.10",
-                "server": "10.0.0.23"
+                "server": "10.0.0.21"
             }
         }
     ]
