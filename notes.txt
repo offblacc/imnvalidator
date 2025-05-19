@@ -1,31 +1,11 @@
-# TODO kad dodaš još jedan test, obavezno sredi ovo iznad i dodaj neki globalni pratitelj koji ispiše generalni status svih testova
-# TODO za pisati u radu - brzina invokeanja subshella... svaki čak i uspješni ping dakle bez timeouta traje ipak neko kraće vrijeme... možda isti shell **NEKAKO** za svaki izvorišni čvor...; ali prouči definitivno izmjeri trajanje...
-
-# TODO add directional ping, or make [a,b] only check a->b, maybe that's better? or add modifiers (LATER...)
-
-
-========================== WIDER PROJECT SCOPE TODOS ==========================
-Kako bi runnao kad imaš X schema i želiš Y testova provesti nad raznim shemama? Kad bi primjerice provjeravao validnost IMUNES instalacije? Napravi sve fleksibilnijim tako da jedan poziv validate.py može to odraditi... Možda dodatan fajl koji parsira i sprema neku mapu, mapu tipa "schema: testovi"
-To je generalniji problem
-
-# TODO IMPORTANT test success should depend on expected status
-# FIXME # TODO IMPORTANT figure out why reading ping output sometimes flips the output itself and the following ;echo\$?
-
-# TODO if you want atomized tests - WHEN do you start the simulation? or, or should that also be left to the user to decide (of course, having a sane default option)
-
 # TODO add ipv6 ping separately?
-# TODO handle the case when a <node>@<simulation> is not found nicely, i don't want stack traces dropped to the console
-# TODO validate json before going to tests?
 # TODO rewrite ping možda, onaj .gather()
-# TODO trebat će ti stopNode
 # TODO don't print subtest results in ping unless error when not verbose
 # TODO rewrite old json test files to adhere to the new schema
-# TODO globalni neki failsafe exit sa cleanupAll... ili nije pametno to raditi? samo close ovog experimenta kojeg si započeo, da... nećemo dirati u nešto što nije ovaj program započeo, seems illegal
 # TODO u upute za dodavanje novog testa - treba nodes_exist updateati
 # TODO test nodes_exists works with ping (when it's a list of nodes)
 # TODO add warning when a target ip is not in imunes sim at all (just warn in case of a mistake, don't affect test results, let, for example, pings ping etc)
 # TODO make parallel work again using worker threads
-# TODO eid in a global variable somewhere, a list or smth, for tests that require starting and restarting simulations themselves
 # TODO make json validation optional - if importerror just ignore and print that validation is skipped (if environments are minimal instalations)
 # TODO u schemu dodaj jedan else ništa NIŠTA
 # TODO ping don't print subtest success if not verbose !
@@ -34,15 +14,26 @@ To je generalniji problem
 # TODO po uzoru na funkciju check_install_host (sa [1:-1] logikom, jednostavno je i efikasno) napravi generalnu send-read-and-forget funkciju za slat naredbe koje ne zahtijevaju persistent shell, tty whatever nakon.. sama funkcija će započet shell session, pričekati prompt, poslati naredbu, vratiti output - PAZI - decode() calls možda ovise jel si u himage ili host shellu!!
 # TODO imaš krivi return type u većini strategija, no to ostavi za typesafety branch komotno kad staviš strict
 # TODO condition sim starting on needing to start a sim - depends on tests in test_config.json.. figure that one out
-# TODO verbose omogući i za validate installation
 # TODO validate installation - parallel running
 # TODO check all tests have entries in test_file_schema.json
 # TODO double-check distinkciju između test foldera sa _ i bez _ prefixa
-# TODO rewrite existing to use constants.py
 # TODO always check for imunes simulation creation warnings
+# TODO handle interrupt - call cleanup of started sims
+
+========================================= PISANI RAD TODO =========================================
+# TODO za pisati u radu - brzina invokeanja subshella... svaki čak i uspješni ping dakle bez timeouta traje ipak neko kraće vrijeme... možda isti shell **NEKAKO** za svaki izvorišni čvor...; ali prouči definitivno izmjeri trajanje...
+
+
+
+
+
+
+
 
 sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout 30/' /usr/local/lib/imunes/imunes.tcl
 i nemoj 30 nego pomalo traži vrijednost.. prvo s 5 pa += 5
+
+
 
 dobivao sam nekompletan output, jer.. treba sanitizeati tekst
 ovo vraća print(repr(output)):
@@ -58,4 +49,3 @@ ovo vraća print(repr(output)):
 '2'
 'ping -W 2 -c 2 5.6.7.8\r\n\x1b[?2004l\rping: connect: Network is unreachable\r\n\x1b[?'
 '2'
-
