@@ -75,7 +75,7 @@ async def _rip_validate(test_config) -> bool:
         print_output += "RIPng table before turnoff:\n" + rip_table + '\n'
     
     # ====================== Stop a router and wait for new routes to propagate ======================
-    await util.stopNode(router_turnoff)
+    await util.stop_node(router_turnoff)
     time.sleep(230) # too much?, 190 was too little
         
     

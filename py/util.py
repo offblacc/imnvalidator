@@ -214,7 +214,7 @@ async def stop_all_ran_sims():
     for eid in config.state.all_eids:
         await stop_simulation(eid)
 
-async def stopNode(node: str) -> bool:
+async def stop_node(node: str) -> bool:
     if config.config.is_OS_linux():
         ifaces = list()
         process = await start_process(f'himage {node}@{config.state.eid} ls -1 /sys/class/net')
