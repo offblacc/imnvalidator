@@ -209,12 +209,9 @@ async def set_BER(node1: str, node2: str, ber: float) -> Tuple[bool, str]:
     return cmd_status, output
 
 async def _get_ripany_table(node: str, ripng: bool):
-    childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
-    childp.expect(r'.*:/# ') # await prompt
-    childp.sendline(f"vtysh -c \"show ip rip{'ng' if ripng else ''}\"")
-    childp.expect('(Codes: .*)(?=\\r\\n)')
-    ret = childp.match.group(0).decode().strip()
-    return ret
+    nodesh = subshell.NodeSubshell(node)
+    output = nodesh.send(f"vtysh -c \"show ip rip{'ng' if ripng else ''}\"")
+    return output
 
 async def get_rip_table(node: str):
     return await _get_ripany_table(node, False)
