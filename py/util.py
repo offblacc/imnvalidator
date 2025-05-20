@@ -220,12 +220,9 @@ async def get_ripng_table(node: str):
     return await _get_ripany_table(node, True)
 
 async def _get_ospfany_table(node: str, ipv6: bool):
-    childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
-    childp.expect(r'.*:/# ') # await prompt
-    childp.sendline(f"vtysh -c \"show ip{'v6' if ipv6 else ''} ospf route\"")
-    childp.expect('(============ OSPF network routing table ============.*|\*? ?N.*)(?=\\r\\n)')
-    ret = childp.match.group(0).decode().strip()
-    return ret
+    nodesh = subshell.NodeSubshell(node)
+    output = nodesh.send(f"vtysh -c \"show ip{'v6' if ipv6 else ''} ospf route\"")
+    return output
 
 async def get_ospf_table(node:str):
     return await _get_ospfany_table(node, False)
@@ -292,16 +289,11 @@ def parse_ripng_table(raw_rip_table: str):
 
 async def trace_check(source_node: str, target_ip: str):
     trace_status = False
+    nodesh = subshell.NodeSubshell(source_node)
     for _ in range(20):
-        child = pexpect.spawn(f'himage {source_node}@{config.state.eid}')
-        child.expect(AWAITS_PROMPT) # himage, 1st prompt on the node itself
-        child.sendline(f'strVal=`traceroute {target_ip} | grep -v traceroute | grep {target_ip}`') # checks if dest ip found in traceroute output save to strVal
-        child.expect(AWAITS_PROMPT) # await prompt after traceroute completes
-        child.sendline('test -z "$strVal"') # checks status, if dest ip found in traceroute from strVal
-        child.expect(AWAITS_PROMPT) # await prompt before return status check
-        child.sendline('echo $?') # get return status of test -z
-        child.expect(r"\d+\r?\n") # await integer - status of test -z to then parse and conclude traceroute status itself
-        if child.match.group(0).decode().strip() != '0': # if strVal length is 0 - dest not found, traceroute fail, so != 0 is success
+        nodesh.send(f'strVal=`traceroute {target_ip} | grep -v traceroute | grep {target_ip}`') # checks if dest ip found in traceroute output save to strVal
+        nodesh.send('test -z "$strVal"')
+        if nodesh.last_cmd_status != '0': # if strVal length is 0 - dest not found, traceroute fail, so != 0 is success
             trace_status = True # quit iterating (waiting for the network to set up)
             break
     return trace_status
