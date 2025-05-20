@@ -2,10 +2,7 @@
 # TODO rewrite ping možda, onaj .gather()
 # TODO don't print subtest results in ping unless error when not verbose
 # TODO rewrite old json test files to adhere to the new schema
-# TODO u upute za dodavanje novog testa - treba nodes_exist updateati
-# TODO test nodes_exists works with ping (when it's a list of nodes)
-# TODO add warning when a target ip is not in imunes sim at all (just warn in case of a mistake, don't affect test results, let, for example, pings ping etc)
-# TODO make parallel work again using worker threads
+# TODO make parallel work again using multipr?
 # TODO make json validation optional - if importerror just ignore and print that validation is skipped (if environments are minimal instalations)
 # TODO u schemu dodaj jedan else ništa NIŠTA
 # TODO ping don't print subtest success if not verbose !
@@ -19,6 +16,7 @@
 # TODO double-check distinkciju između test foldera sa _ i bez _ prefixa
 # TODO always check for imunes simulation creation warnings
 # TODO handle interrupt - call cleanup of started sims
+# TODO send and sendwstatus implement
 
 ========================================= PISANI RAD TODO =========================================
 # TODO za pisati u radu - brzina invokeanja subshella... svaki čak i uspješni ping dakle bez timeouta traje ipak neko kraće vrijeme... možda isti shell **NEKAKO** za svaki izvorišni čvor...; ali prouči definitivno izmjeri trajanje...

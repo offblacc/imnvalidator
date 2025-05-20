@@ -1,5 +1,3 @@
-## TODO add getting the RIP table here..
-
 import logging
 import config
 import asyncio
