@@ -205,7 +205,7 @@ async def stop_node(node: str):
 async def set_BER(node1: str, node2: str, ber: float) -> Tuple[bool, str]:
     hostsh = subshell.HostSubshell()
     output = hostsh.send(f'vlink -BER {ber} -e $eid {node1}:{node2}')
-    cmd_status = hostsh.last_cmd_status
+    cmd_status = hostsh.last_cmd_status == 0
     return cmd_status, output
 
 async def _get_ripany_table(node: str, ripng: bool):
