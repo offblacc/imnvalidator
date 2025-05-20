@@ -203,14 +203,9 @@ async def stop_node(node: str):
     return output
 
 async def set_BER(node1: str, node2: str, ber: float) -> Tuple[bool, str]:
-    child = pexpect.spawn(f'/bin/bash', encoding="utf-8", timeout=10)
-    child.expect(AWAITS_PROMPT)
-    child.sendline(f'vlink -BER {ber} -e $eid {node1}:{node2}')
-    child.expect(AWAITS_PROMPT)
-    output = '\n'.join(child.before.strip().split('\r\n')[1:-1])
-    child.sendline("echo $?")
-    child.expect(r"\d+\r?\n")
-    cmd_status = child.match.group(0).strip()
+    hostsh = subshell.HostSubshell()
+    output = hostsh.send(f'vlink -BER {ber} -e $eid {node1}:{node2}')
+    cmd_status = hostsh.last_cmd_status
     return cmd_status, output
 
 async def _get_ripany_table(node: str, ripng: bool):
