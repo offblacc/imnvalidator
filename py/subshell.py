@@ -24,6 +24,12 @@ class Subshell(ABC):
 
     @abstractmethod
     def send(self, command: str):
+        """Sends command to the subshell and returns its output.
+        Modifies self.last_cmd_status
+
+        Args:
+            command (str): The command to run
+        """
         pass
 
     def __enter__(self):
@@ -62,6 +68,7 @@ class NodeSubshell(Subshell):
         self.child.sendline(command)
         self.child.expect(AWAITS_PROMPT)
         output = '\n'.join(self.child.before.strip().split('\r\n')[1:-1])
+        output = output[output.find('\r')+1:] # skip ANSI garbage, ended with \r always during testing
         self.child.sendline("echo $?")
         self.child.expect(r"\d+\r?\n")
         self.last_cmd_status = self.child.match.group(0).strip()
