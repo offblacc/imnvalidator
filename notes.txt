@@ -19,6 +19,7 @@
 # TODO double-check distinkciju između test foldera sa _ i bez _ prefixa
 # TODO always check for imunes simulation creation warnings
 # TODO handle interrupt - call cleanup of started sims
+# TODO double-check ospf and stop_node
 
 ========================================= PISANI RAD TODO =========================================
 # TODO za pisati u radu - brzina invokeanja subshella... svaki čak i uspješni ping dakle bez timeouta traje ipak neko kraće vrijeme... možda isti shell **NEKAKO** za svaki izvorišni čvor...; ali prouči definitivno izmjeri trajanje...
