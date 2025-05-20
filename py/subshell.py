@@ -61,8 +61,8 @@ class NodeSubshell(Subshell):
     def send(self, command: str) -> str:
         self.child.sendline(command)
         self.child.expect(AWAITS_PROMPT)
-        output = '\n'.join(self.child.before.strip().decode().split('\r\n')[1:-1])
+        output = '\n'.join(self.child.before.strip().split('\r\n')[1:-1])
         self.child.sendline("echo $?")
         self.child.expect(r"\d+\r?\n")
-        self.last_cmd_status = self.child.match.group(0).decode().strip()
+        self.last_cmd_status = self.child.match.group(0).strip()
         return output

@@ -8,6 +8,7 @@ import pexpect
 import json
 import os
 from constants import AWAITS_PROMPT
+import subshell
 
 green_code = '\033[92m'
 red_code = '\033[91m'
@@ -41,39 +42,11 @@ def format_end_status(s: str, status: bool) -> None:
     return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
 
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
-    command = f"himage {source_node_name}@{config.state.eid}"
-    
-    # Start interactive shell session with `himage`
-    child = pexpect.spawn(command, encoding="utf-8", timeout=timeout + 10)
+    nodesh = subshell.NodeSubshell(source_node_name)
 
-    # Ensure the shell is ready (wait for prompt)
-    child.expect(AWAITS_PROMPT)
-
-    # Send the ping command
-    child.sendline(f"ping -W {timeout} -c {count} {target_ip}")
-
-    child.expect(r'(PING|ping) .+')  # Expect the PING line
-    ping_output = child.before.strip()  # Capture everything before the match
-
-    child.expect(AWAITS_PROMPT)  # Wait for the shell prompt
-    ping_output += "\n" + child.before.strip()  # Append the ping output
-    
-    # Extract ping output (excluding the prompt itself)
-    ping_output = child.before.strip()
-
-    # Send command to get the exit status ($?)
-    child.sendline("echo $?")
-
-    # Expect a number (exit code) followed by a newline, then wait for the next prompt
-    # TTYs should end with \r\n, allow both just in case
-    child.expect(r"\d+\r?\n")
-
-    # Extract the exit status (last captured number)
-    ping_status = child.match.group(0).strip() == '0'
-
-    # Close the session
-    child.sendline("exit")
-    child.close()
+    ping_output = nodesh.send(f"ping -W {timeout} -c {count} {target_ip}")
+    ping_status = nodesh.last_cmd_status == '0'
+    nodesh.close()
 
     # Log result
     logger.debug(
@@ -81,7 +54,6 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
         f"RETURNS status '{ping_status}' and output '{ping_output}'"
     )
 
-    ping_output = ping_output[:ping_output.rfind('\n')].strip()
     return ping_status, ping_output
 
 
