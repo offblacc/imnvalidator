@@ -186,24 +186,21 @@ async def stop_all_ran_sims():
     for eid in config.state.all_eids:
         await stop_simulation(eid)
 
-async def stop_node(node: str) -> bool:
+async def stop_node(node: str):
+    output = ''
     if config.config.is_OS_linux():
         ifaces = list()
-        process = await start_process(f'himage {node}@{config.state.eid} ls -1 /sys/class/net')
-        while True:
-            line = await process.stdout.readline()
-            if not line:
-                break
-            ifaces.append(line.decode().strip())
-
+        nodesh = subshell.NodeSubshell(node)
+        ifaces = nodesh.send('ls -1 /sys/class/net')
+        ifaces = [line.strip() for line in ifaces.strip().split('\n')]
         for ifc in ifaces:
             if config.config.VERBOSE:
-                print(f"Shutting down interface: {ifc.decode()}")
-            process = await start_process(f'himage {node}@{config.state.eid} ifconfig {ifc} down')
-            line = ''
-            while line:
-                line = await process.stdout.readline() # await subprocess.. trickery again
-    return True # TODO add return status, check if ifc down
+                print(f"Shutting down interface: {ifc}")
+            nodesh.send(f'ifconfig {ifc} down')
+        nodesh.close()
+    elif config.config.is_OS_freebsd():
+        raise NotImplementedError
+    return output
 
 async def set_BER(node1: str, node2: str, ber: float) -> Tuple[bool, str]:
     child = pexpect.spawn(f'/bin/bash', encoding="utf-8", timeout=10)
