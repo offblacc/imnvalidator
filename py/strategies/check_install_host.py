@@ -21,8 +21,6 @@ async def check_install_host(test_config) -> bool:
     status, print_output = True, ''
     num_failed = 0
     commands = test_config["commands"]
-    print("getplaftorm is")
-    print(config.config.get_platform())
     hostsh = subshell.HostSubshell(host=config.config.get_platform())
         
     for cmd in commands:
