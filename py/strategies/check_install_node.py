@@ -3,6 +3,7 @@ import config
 import pexpect
 import util
 from constants import AWAITS_PROMPT
+import subshell
 
 verbose = config.config.VERBOSE
 
@@ -17,31 +18,16 @@ async def check_install_node(test_config) -> bool:
     eid = config.state.eid
     
     for node in nodes:
-        child = pexpect.spawn(f'himage {node}@{eid}')
-        
+        nodesh = subshell.NodeSubshell(node)
         for cmd in commands:
-            child.expect(AWAITS_PROMPT)
-            
-            # send the command from the config file
-            child.sendline(cmd)
-            child.expect(AWAITS_PROMPT)
-            
-            # fetch output from the command for verbose output
-            if verbose:
-                cmdoutput = '\n'.join(child.before.strip().decode().split('\r\n')[1:-1]) # strip the command 
-                # add to print output after processing the return status of the command
-            
-            # check status of the last ran command
-            child.sendline("echo $?")
-            child.expect(r"\d+\r?\n")
-            cmd_status = child.match.group(0).decode().strip()
-            
+            cmdoutput = nodesh.send(cmd)
+            cmd_status = nodesh.last_cmd_status
             if cmd_status != '0':
                 print_output += util.format_fail_subtest(f'Command {cmd} on {node} failed with non-zero exit: {cmd_status}')
                 status = False
                 num_failed += 1
                 if verbose:
-                    print_output += cmdoutput + '\r\n'
+                    print_output += cmdoutput + '\n'
             else:
                 print_output += util.format_pass_subtest(f'Command {cmd} on {node} returned status {cmd_status}')
                 # if verbose:

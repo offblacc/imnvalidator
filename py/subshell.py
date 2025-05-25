@@ -42,18 +42,34 @@ class Subshell(ABC):
         if self.child and self.child.isalive():
             self.child.close()
         self.child = None
+    
+    def clear_buffer(self):
+        try:
+            while True:
+                self.child.expect('.+', timeout=0)
+        except pexpect.TIMEOUT:
+            pass
 
 class HostSubshell(Subshell):
     def _get_command(self) -> str:
         return '/bin/bash'
     
     def send(self, command: str) -> str:
+        self.clear_buffer()
+        
         self.child.sendline(command)
         self.child.expect(AWAITS_PROMPT)
+        
         output = '\n'.join(self.child.before.strip().split('\r\n')[1:-1])
+        output = output[output.find('\r') + 1:] # skip additional ANSI garbage
+        
         self.child.sendline("echo $?")
         self.child.expect(r"\d+\r?\n")
+        
         self.last_cmd_status = self.child.match.group(0).strip()
+        
+        self.clear_buffer()
+        
         return output
 
 class NodeSubshell(Subshell):
@@ -65,11 +81,20 @@ class NodeSubshell(Subshell):
         return f'himage {self.node}@{config.state.eid}'
 
     def send(self, command: str) -> str:
+        self.clear_buffer()
+        
         self.child.sendline(command)
         self.child.expect(AWAITS_PROMPT)
-        output = '\n'.join(self.child.before.strip().split('\r\n')[1:-1])
-        output = output[output.find('\r') + 1:] # skip ANSI garbage, ended with \r always during testing
+        
+        output = '\n'.join(self.child.before.strip().split('\r\n')[1:-1]) # cut original command and new prompt
+        output = output[output.find('\r') + 1:] # skip additional ANSI garbage
+        
         self.child.sendline("echo $?")
         self.child.expect(r"\d+\r?\n")
+        
         self.last_cmd_status = self.child.match.group(0).strip()
+        
+        self.clear_buffer()
+
+        
         return output

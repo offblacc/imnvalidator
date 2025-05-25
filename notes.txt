@@ -20,6 +20,7 @@
 # TODO always check for imunes simulation creation warnings
 # TODO handle interrupt - call cleanup of started sims
 # TODO double-check ospf and stop_node
+# TODO for version checking - remove '--version' from commands - add this "manually" in strategies themselves depending on the OS (`command traceroute` npr)
 
 ========================================= PISANI RAD TODO =========================================
 # TODO za pisati u radu - brzina invokeanja subshella... svaki čak i uspješni ping dakle bez timeouta traje ipak neko kraće vrijeme... možda isti shell **NEKAKO** za svaki izvorišni čvor...; ali prouči definitivno izmjeri trajanje...

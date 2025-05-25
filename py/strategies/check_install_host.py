@@ -2,8 +2,9 @@ import config
 import pexpect
 import util
 from constants import AWAITS_PROMPT
+import subshell
+# TODO for freebsd host prompt - new entry in constants.py required ('# ' only)
 
-# .*  for now accounts for ansi ~garbage~
 verbose = config.config.VERBOSE
 
 # TODO fix the issue.. this requires a simulation by code design, but.. yep..
@@ -11,25 +12,13 @@ async def check_install_host(test_config) -> bool:
     status, print_output = True, ''
     num_failed = 0
     commands = test_config["commands"]
-    child = pexpect.spawn('/bin/bash', encoding="utf-8", timeout=10)
+    hostsh = subshell.HostSubshell()
         
-    for cmd in commands:
-        # await first or nth consecutive prompt
-        child.expect(AWAITS_PROMPT)
-        
-        # send the command from the config file
-        child.sendline(cmd)
-        child.expect(AWAITS_PROMPT)
-        
-        # fetch output from the command for verbose output
-        if verbose:
-            cmdoutput = '\n'.join(child.before.strip().split('\r\n')[1:-1]) # strip the command 
-            # add to print output after processing the return status of the command
-        
+    for cmd in commands:        
+        cmdoutput = hostsh.send(cmd)
+               
         # check status of the last ran command
-        child.sendline("echo $?")
-        child.expect(r"\d+\r?\n")
-        cmd_status = child.match.group(0).strip()
+        cmd_status = hostsh.last_cmd_status
         
         if cmd_status != '0':
             print_output += util.format_fail_subtest(f'Command {cmd} failed with non-zero exit: {cmd_status}')

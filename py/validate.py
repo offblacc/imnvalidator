@@ -84,7 +84,7 @@ async def validate_simulation(imn_file, config_filepath, parallel, valinst=False
         )
         exit(1)
 
-    await util.start_simulation()
+    await util.start_simulation() # TODO move this into each test (not all require a sim run)
 
     logger.debug(f'Running tests in {"parallel" if parallel else "sequence"}')
 
