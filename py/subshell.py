@@ -1,5 +1,5 @@
 import pexpect
-from constants import AWAITS_PROMPT
+from constants import AWAITS_PROMPT, AWAITS_FREEBSD_ROOT_PROMPT, OS
 import traceback
 import config
 from abc import ABC, abstractmethod
@@ -51,6 +51,10 @@ class Subshell(ABC):
             pass
 
 class HostSubshell(Subshell):
+    def __init__(self, host=OS.LINUX):
+        self.prompt = AWAITS_PROMPT if host == OS.LINUX else AWAITS_FREEBSD_ROOT_PROMPT
+        super().__init__()
+        
     def _get_command(self) -> str:
         return '/bin/bash'
     

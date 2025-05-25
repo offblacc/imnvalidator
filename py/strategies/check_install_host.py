@@ -1,11 +1,19 @@
 import config
 import pexpect
 import util
-from constants import AWAITS_PROMPT
 import subshell
 # TODO for freebsd host prompt - new entry in constants.py required ('# ' only)
 
 verbose = config.config.VERBOSE
+
+version_check_prefix = '' # will exist for freebsd
+version_check_postfix = '' # will exist for linux
+
+if config.config.is_OS_linux():
+    version_check_postfix = ' --version'
+elif config.config.is_OS_freebsd():
+    version_check_prefix = 'command -v '
+    
 
 # TODO fix the issue.. this requires a simulation by code design, but.. yep..
 async def check_install_host(test_config) -> bool:
@@ -15,8 +23,8 @@ async def check_install_host(test_config) -> bool:
     hostsh = subshell.HostSubshell()
         
     for cmd in commands:        
-        cmdoutput = hostsh.send(cmd)
-               
+        cmdoutput = hostsh.send(f'{version_check_prefix}{cmd}{version_check_postfix}')
+
         # check status of the last ran command
         cmd_status = hostsh.last_cmd_status
         
