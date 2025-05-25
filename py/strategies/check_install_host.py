@@ -1,8 +1,6 @@
 import config
-import pexpect
 import util
 import subshell
-from constants import OS
 # TODO for freebsd host prompt - new entry in constants.py required ('# ' only)
 
 verbose = config.config.VERBOSE

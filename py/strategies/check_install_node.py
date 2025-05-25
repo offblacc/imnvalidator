@@ -1,13 +1,12 @@
 
 import config
-import pexpect
 import util
-from constants import AWAITS_PROMPT
 import subshell
 
 verbose = config.config.VERBOSE
 
-# .*  for now accounts for ansi ~garbage~
+version_check_prefix = '' # will exist for freebsd
+version_check_postfix = '' # will exist for linux
 
 if config.config.is_OS_linux():
     version_check_postfix = ' --version'
