@@ -29,7 +29,7 @@ async def check_install_node(test_config) -> bool:
                 status = False
                 num_failed += 1
                 if verbose:
-                    print_output += f'Ran command: "{version_check_prefix}{cmd}{version_check_postfix}"'
+                    print_output += f'Ran command: "{version_check_prefix}{cmd}{version_check_postfix}"\n'
             else:
                 print_output += util.format_pass_subtest(f'Command {cmd} on {node} returned status {cmd_status}')
                 # if verbose:
