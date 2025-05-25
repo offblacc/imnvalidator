@@ -2,6 +2,7 @@ import config
 import pexpect
 import util
 import subshell
+from constants import OS
 # TODO for freebsd host prompt - new entry in constants.py required ('# ' only)
 
 verbose = config.config.VERBOSE
@@ -20,9 +21,11 @@ async def check_install_host(test_config) -> bool:
     status, print_output = True, ''
     num_failed = 0
     commands = test_config["commands"]
-    hostsh = subshell.HostSubshell()
+    print("getplaftorm is")
+    print(config.config.get_platform())
+    hostsh = subshell.HostSubshell(host=config.config.get_platform())
         
-    for cmd in commands:        
+    for cmd in commands:
         cmdoutput = hostsh.send(f'{version_check_prefix}{cmd}{version_check_postfix}')
 
         # check status of the last ran command
