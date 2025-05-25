@@ -9,13 +9,16 @@ verbose = config.config.VERBOSE
 
 # .*  for now accounts for ansi ~garbage~
 
+if config.config.is_OS_linux():
+    version_check_postfix = ' --version'
+elif config.config.is_OS_freebsd():
+    version_check_prefix = 'command -v '
 
 async def check_install_node(test_config) -> bool:
     status, print_output = True, ''
     num_failed = 0
     commands = test_config["commands"]
     nodes = test_config["on_nodes"]
-    eid = config.state.eid
     
     for node in nodes:
         nodesh = subshell.NodeSubshell(node)
