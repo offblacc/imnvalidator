@@ -6,6 +6,7 @@ import pexpect
 import json
 import os
 from constants import AWAITS_PROMPT
+import subshell
 
 green_code = '\033[92m'
 red_code = '\033[91m'
@@ -39,39 +40,11 @@ def format_end_status(s: str, status: bool) -> None:
     return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
 
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
-    command = f"himage {source_node_name}@{config.state.eid}"
-    
-    # Start interactive shell session with `himage`
-    child = pexpect.spawn(command, encoding="utf-8", timeout=timeout + 10)
+    nodesh = subshell.NodeSubshell(source_node_name)
 
-    # Ensure the shell is ready (wait for prompt)
-    child.expect(AWAITS_PROMPT)
-
-    # Send the ping command
-    child.sendline(f"ping -W {timeout} -c {count} {target_ip}")
-
-    child.expect(r'(PING|ping) .+')  # Expect the PING line
-    ping_output = child.before.strip()  # Capture everything before the match
-
-    child.expect(AWAITS_PROMPT)  # Wait for the shell prompt
-    ping_output += "\n" + child.before.strip()  # Append the ping output
-    
-    # Extract ping output (excluding the prompt itself)
-    ping_output = child.before.strip()
-
-    # Send command to get the exit status ($?)
-    child.sendline("echo $?")
-
-    # Expect a number (exit code) followed by a newline, then wait for the next prompt
-    # TTYs should end with \r\n, allow both just in case
-    child.expect(r"\d+\r?\n")
-
-    # Extract the exit status (last captured number)
-    ping_status = child.match.group(0).strip() == '0'
-
-    # Close the session
-    child.sendline("exit")
-    child.close()
+    ping_output = nodesh.send(f"ping -W {timeout} -c {count} {target_ip}")
+    ping_status = nodesh.last_cmd_status == '0'
+    nodesh.close()
 
     # Log result
     logger.debug(
@@ -79,7 +52,6 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
         f"RETURNS status '{ping_status}' and output '{ping_output}'"
     )
 
-    ping_output = ping_output[:ping_output.rfind('\n')].strip()
     return ping_status, ping_output
 
 
@@ -212,43 +184,32 @@ async def stop_all_ran_sims():
     for eid in config.state.all_eids:
         await stop_simulation(eid)
 
-async def stop_node(node: str) -> bool:
+async def stop_node(node: str):
+    output = ''
     if config.config.is_OS_linux():
         ifaces = list()
-        process = await start_process(f'himage {node}@{config.state.eid} ls -1 /sys/class/net')
-        while True:
-            line = await process.stdout.readline()
-            if not line:
-                break
-            ifaces.append(line.decode().strip())
-
+        nodesh = subshell.NodeSubshell(node)
+        ifaces = nodesh.send('ls -1 /sys/class/net')
+        ifaces = [line.strip() for line in ifaces.strip().split('\n')]
         for ifc in ifaces:
             if config.config.VERBOSE:
-                print(f"Shutting down interface: {ifc.decode()}")
-            process = await start_process(f'himage {node}@{config.state.eid} ifconfig {ifc} down')
-            line = ''
-            while line:
-                line = await process.stdout.readline() # await subprocess.. trickery again
-    return True # TODO add return status, check if ifc down
+                print(f"Shutting down interface: {ifc}")
+            nodesh.send(f'ifconfig {ifc} down')
+        nodesh.close()
+    elif config.config.is_OS_freebsd():
+        raise NotImplementedError
+    return output
 
 async def set_BER(node1: str, node2: str, ber: float) -> Tuple[bool, str]:
-    child = pexpect.spawn(f'/bin/bash', encoding="utf-8", timeout=10)
-    child.expect(AWAITS_PROMPT)
-    child.sendline(f'vlink -BER {ber} -e $eid {node1}:{node2}')
-    child.expect(AWAITS_PROMPT)
-    output = '\n'.join(child.before.strip().split('\r\n')[1:-1])
-    child.sendline("echo $?")
-    child.expect(r"\d+\r?\n")
-    cmd_status = child.match.group(0).strip()
+    hostsh = subshell.HostSubshell()
+    output = hostsh.send(f'vlink -BER {ber} -e $eid {node1}:{node2}')
+    cmd_status = hostsh.last_cmd_status == 0
     return cmd_status, output
 
 async def _get_ripany_table(node: str, ripng: bool):
-    childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
-    childp.expect(r'.*:/# ') # await prompt
-    childp.sendline(f"vtysh -c \"show ip rip{'ng' if ripng else ''}\"")
-    childp.expect('(Codes: .*)(?=\\r\\n)')
-    ret = childp.match.group(0).decode().strip()
-    return ret
+    nodesh = subshell.NodeSubshell(node)
+    output = nodesh.send(f"vtysh -c \"show ip rip{'ng' if ripng else ''}\"")
+    return output
 
 async def get_rip_table(node: str):
     return await _get_ripany_table(node, False)
@@ -257,12 +218,9 @@ async def get_ripng_table(node: str):
     return await _get_ripany_table(node, True)
 
 async def _get_ospfany_table(node: str, ipv6: bool):
-    childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
-    childp.expect(r'.*:/# ') # await prompt
-    childp.sendline(f"vtysh -c \"show ip{'v6' if ipv6 else ''} ospf route\"")
-    childp.expect('(============ OSPF network routing table ============.*|\*? ?N.*)(?=\\r\\n)')
-    ret = childp.match.group(0).decode().strip()
-    return ret
+    nodesh = subshell.NodeSubshell(node)
+    output = nodesh.send(f"vtysh -c \"show ip{'v6' if ipv6 else ''} ospf route\"")
+    return output
 
 async def get_ospf_table(node:str):
     return await _get_ospfany_table(node, False)
@@ -329,16 +287,11 @@ def parse_ripng_table(raw_rip_table: str):
 
 async def trace_check(source_node: str, target_ip: str):
     trace_status = False
+    nodesh = subshell.NodeSubshell(source_node)
     for _ in range(20):
-        child = pexpect.spawn(f'himage {source_node}@{config.state.eid}')
-        child.expect(AWAITS_PROMPT) # himage, 1st prompt on the node itself
-        child.sendline(f'strVal=`traceroute {target_ip} | grep -v traceroute | grep {target_ip}`') # checks if dest ip found in traceroute output save to strVal
-        child.expect(AWAITS_PROMPT) # await prompt after traceroute completes
-        child.sendline('test -z "$strVal"') # checks status, if dest ip found in traceroute from strVal
-        child.expect(AWAITS_PROMPT) # await prompt before return status check
-        child.sendline('echo $?') # get return status of test -z
-        child.expect(r"\d+\r?\n") # await integer - status of test -z to then parse and conclude traceroute status itself
-        if child.match.group(0).decode().strip() != '0': # if strVal length is 0 - dest not found, traceroute fail, so != 0 is success
+        nodesh.send(f'strVal=`traceroute {target_ip} | grep -v traceroute | grep {target_ip}`') # checks if dest ip found in traceroute output save to strVal
+        nodesh.send('test -z "$strVal"')
+        if nodesh.last_cmd_status != '0': # if strVal length is 0 - dest not found, traceroute fail, so != 0 is success
             trace_status = True # quit iterating (waiting for the network to set up)
             break
     return trace_status

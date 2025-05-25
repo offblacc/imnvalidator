@@ -119,6 +119,6 @@ async def _rip_validate(test_config) -> bool:
     #     status = False
     
     if verbose:
-        print_output += "RIPng table before turnoff:\n" + rip_table + '\n'
+        print_output += "RIPng table after turnoff:\n" + rip_table + '\n'
     
     return status, print_output.strip() + '\n'
