@@ -62,7 +62,7 @@ class HostSubshell(Subshell):
         self.clear_buffer()
         
         self.child.sendline(command)
-        self.child.expect(AWAITS_PROMPT)
+        self.child.expect(self.prompt)
         
         output = '\n'.join(self.child.before.strip().split('\r\n')[1:-1])
         output = output[output.find('\r') + 1:] # skip additional ANSI garbage
