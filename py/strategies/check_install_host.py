@@ -1,7 +1,6 @@
 import config
 import util
 import subshell
-# TODO for freebsd host prompt - new entry in constants.py required ('# ' only)
 
 verbose = config.config.VERBOSE
 
