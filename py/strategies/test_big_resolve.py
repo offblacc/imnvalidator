@@ -37,8 +37,12 @@ async def test_big_resolve(test_config):
         logger.debug('Simulation stopped')
         logger.debug(f'Changing timeout value to {tout}')
         ## Change value in imunes.tcl and double-check it was done
-        process = await util.start_process(f"sudo sed -i.bak 's/set nodecreate_timeout [0-9]\+/set nodecreate_timeout {tout}/' /usr/local/lib/imunes/imunes.tcl; echo $?")
-        res = ''
+        command = ''
+        # if config.config.is_OS_linux():
+        command = f"sudo sed -i.bak \"s/set nodecreate_timeout [0-9]\\+/set nodecreate_timeout {tout}/\" /usr/local/lib/imunes/imunes.tcl; echo $?"
+        process = await util.start_process()
+
+        res = '' # TODO improve this
         while True:
             l = await process.stdout.readline()
             res += l.decode().strip()
