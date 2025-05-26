@@ -40,7 +40,7 @@ async def test_big_resolve(test_config):
         command = ''
         # if config.config.is_OS_linux():
         command = f"sudo sed -i.bak \"s/set nodecreate_timeout [0-9]\\+/set nodecreate_timeout {tout}/\" /usr/local/lib/imunes/imunes.tcl; echo $?"
-        process = await util.start_process()
+        process = await util.start_process(command)
 
         res = '' # TODO improve this
         while True:
