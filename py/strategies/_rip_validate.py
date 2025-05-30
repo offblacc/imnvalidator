@@ -1,7 +1,3 @@
-# strategies/rip.py
-
-# TODO add RIPng
-
 import util
 import time
 import config
@@ -30,8 +26,11 @@ async def _rip_validate(test_config) -> bool:
     ip4 = test_config.get("target_ip4")
     ip6 = test_config.get("target_ip6")
     
+    no_warn = await util.start_simulation()
+    if not no_warn:
+        return False, 'Encountered warnings while starting simulation'
+    
     time.sleep(15) # TODO temporary value, change later, as well as the constants above
-    # TODO sleep in smaller intervals (to a limit..) until RIP is set up..
     # await multiple times try in a loop..
 
 
@@ -79,8 +78,8 @@ async def _rip_validate(test_config) -> bool:
         print_output += "RIPng table before turnoff:\n" + rip_table + '\n'
     
     # ====================== Stop a router and wait for new routes to propagate ======================
-    await util.stopNode(router_turnoff)
-    time.sleep(210) # too much?, 190 was too little
+    await util.stop_node(router_turnoff)
+    time.sleep(230) # too much?, 190 was too little
         
     
     ### ====================== Test pings after router turnoff ======================    
@@ -123,6 +122,7 @@ async def _rip_validate(test_config) -> bool:
     #     status = False
     
     if verbose:
-        print_output += "RIPng table before turnoff:\n" + rip_table + '\n'
+        print_output += "RIPng table after turnoff:\n" + rip_table + '\n'
     
+    await util.stop_simulation()
     return status, print_output.strip() + '\n'

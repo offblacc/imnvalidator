@@ -34,3 +34,233 @@
 2025-03-21 12:30:31,163 - imnvalidator - DEBUG - Program started
 2025-03-21 12:30:31,163 - imnvalidator - DEBUG - Parsing arguments
 2025-03-21 12:30:31,164 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:32:33,485 - imnvalidator - DEBUG - Program started
+2025-04-01 20:32:33,485 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:32:33,486 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:32:33,494 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/big_simulation/scheme.imn
+2025-04-01 20:33:29,249 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:33:29,249 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:33:29,260 - imnvalidator - DEBUG - Test Test big simulation for errors successful
+2025-04-01 20:33:29,260 - imnvalidator - DEBUG - Tests finished with 0 failures
+2025-04-01 20:34:05,342 - imnvalidator - INFO - Validator finished in 91.85589933395386 seconds
+2025-04-01 20:34:05,614 - imnvalidator - DEBUG - Program started
+2025-04-01 20:34:05,614 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:34:05,616 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:34:05,623 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/big_simulation_resolve/scheme.imn
+2025-04-01 20:34:30,820 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:34:30,820 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:34:30,830 - imnvalidator - DEBUG - Start of test_big_resolve: Fetching current nodecreate_timeout
+2025-04-01 20:34:30,842 - imnvalidator - DEBUG - Got current nodecreate_timeout=3
+2025-04-01 20:34:30,842 - imnvalidator - DEBUG - Got warnings, stopping simulation
+2025-04-01 20:34:51,963 - imnvalidator - DEBUG - Simulation stopped
+2025-04-01 20:34:51,963 - imnvalidator - DEBUG - Changing timeout value to 5
+2025-04-01 20:34:51,978 - imnvalidator - DEBUG - Starting new simulation with changed eid
+2025-04-01 20:34:51,978 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/big_simulation_resolve/scheme.imn
+2025-04-01 20:35:46,363 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:35:46,363 - imnvalidator - DEBUG - Simulation started
+2025-04-01 20:35:46,363 - imnvalidator - DEBUG - Got success with timeout=5
+2025-04-01 20:35:46,364 - imnvalidator - DEBUG - Test Test big simulation for errors successful
+2025-04-01 20:35:46,364 - imnvalidator - DEBUG - Tests finished with 0 failures
+2025-04-01 20:36:21,127 - imnvalidator - INFO - Validator finished in 135.51096487045288 seconds
+2025-04-01 20:36:21,399 - imnvalidator - DEBUG - Program started
+2025-04-01 20:36:21,399 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:36:21,400 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:36:21,405 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/check_install_host/scheme.imn
+2025-04-01 20:36:23,127 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:36:23,127 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:36:23,718 - imnvalidator - DEBUG - Test Check multiple packages installed failed
+2025-04-01 20:36:23,719 - imnvalidator - DEBUG - Tests finished with 1 failures
+2025-04-01 20:36:24,712 - imnvalidator - INFO - Validator finished in 3.311293125152588 seconds
+2025-04-01 20:36:24,940 - imnvalidator - DEBUG - Program started
+2025-04-01 20:36:24,940 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:36:24,942 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:36:24,946 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/check_install_node/scheme.imn
+2025-04-01 20:36:26,666 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:36:26,667 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:36:27,725 - imnvalidator - DEBUG - Test Check multiple packages installed failed
+2025-04-01 20:36:27,725 - imnvalidator - DEBUG - Tests finished with 1 failures
+2025-04-01 20:36:28,757 - imnvalidator - INFO - Validator finished in 3.81508731842041 seconds
+2025-04-01 20:36:28,985 - imnvalidator - DEBUG - Program started
+2025-04-01 20:36:28,985 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:36:28,986 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:36:28,999 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/ping/scheme.imn
+2025-04-01 20:36:30,750 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:36:30,750 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:36:32,226 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i39d with timeout=2, count=2 RETURNS status 'True' and output 'PING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.123 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.182 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1048ms
+rtt min/avg/max/mdev = 0.123/0.152/0.182/0.029 ms
+[?'
+2025-04-01 20:36:32,226 - imnvalidator - DEBUG - Test Ping pc1 to pc2 successful
+2025-04-01 20:36:32,226 - imnvalidator - DEBUG - Tests finished with 0 failures
+2025-04-01 20:36:33,253 - imnvalidator - INFO - Validator finished in 4.2667787075042725 seconds
+2025-04-01 20:36:33,498 - imnvalidator - DEBUG - Program started
+2025-04-01 20:36:33,498 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:36:33,499 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:36:33,505 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/_rip_validate/scheme.imn
+2025-04-01 20:36:38,356 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:36:38,356 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:36:55,308 - imnvalidator - DEBUG - Pinging 10.0.4.10 from pc@i3b6 with timeout=2, count=2 RETURNS status 'True' and output 'PING 10.0.4.10 (10.0.4.10) 56(84) bytes of data.
+64 bytes from 10.0.4.10: icmp_seq=1 ttl=60 time=0.970 ms
+64 bytes from 10.0.4.10: icmp_seq=2 ttl=60 time=0.608 ms
+
+--- 10.0.4.10 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1005ms
+rtt min/avg/max/mdev = 0.608/0.789/0.970/0.181 ms
+[?'
+2025-04-01 20:36:57,178 - imnvalidator - DEBUG - Pinging fc00:1::10 from pc@i3b6 with timeout=2, count=2 RETURNS status 'True' and output 'PING fc00:1::10(fc00:1::10) 56 data bytes
+64 bytes from fc00:1::10: icmp_seq=1 ttl=60 time=0.834 ms
+64 bytes from fc00:1::10: icmp_seq=2 ttl=60 time=0.643 ms
+
+--- fc00:1::10 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1004ms
+rtt min/avg/max/mdev = 0.643/0.738/0.834/0.095 ms
+[?'
+2025-04-01 20:40:30,235 - imnvalidator - DEBUG - Pinging 10.0.4.10 from pc@i3b6 with timeout=2, count=2 RETURNS status 'True' and output 'PING 10.0.4.10 (10.0.4.10) 56(84) bytes of data.
+64 bytes from 10.0.4.10: icmp_seq=1 ttl=58 time=0.663 ms
+64 bytes from 10.0.4.10: icmp_seq=2 ttl=58 time=0.661 ms
+
+--- 10.0.4.10 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1028ms
+rtt min/avg/max/mdev = 0.661/0.662/0.663/0.001 ms
+[?'
+2025-04-01 20:40:32,154 - imnvalidator - DEBUG - Pinging fc00:1::10 from pc@i3b6 with timeout=2, count=2 RETURNS status 'True' and output 'PING fc00:1::10(fc00:1::10) 56 data bytes
+64 bytes from fc00:1::10: icmp_seq=1 ttl=58 time=0.660 ms
+64 bytes from fc00:1::10: icmp_seq=2 ttl=58 time=0.677 ms
+
+--- fc00:1::10 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1052ms
+rtt min/avg/max/mdev = 0.660/0.668/0.677/0.008 ms
+[?'
+2025-04-01 20:40:32,951 - imnvalidator - DEBUG - Test Validate RIP funtioning successful
+2025-04-01 20:40:32,951 - imnvalidator - DEBUG - Tests finished with 0 failures
+2025-04-01 20:40:36,052 - imnvalidator - INFO - Validator finished in 242.55268383026123 seconds
+2025-04-01 20:42:42,706 - imnvalidator - DEBUG - Program started
+2025-04-01 20:42:42,706 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:42:42,708 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:42:42,723 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/big_simulation/scheme.imn
+2025-04-01 20:43:41,225 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:43:41,233 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:43:41,234 - imnvalidator - DEBUG - Test Test big simulation for errors successful
+2025-04-01 20:43:41,234 - imnvalidator - DEBUG - Tests finished with 0 failures
+2025-04-01 20:44:36,297 - imnvalidator - DEBUG - Program started
+2025-04-01 20:44:36,297 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:44:36,298 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:44:36,305 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/big_simulation/scheme.imn
+2025-04-01 20:45:32,937 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:45:32,937 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:45:32,938 - imnvalidator - DEBUG - Test Test big simulation for errors successful
+2025-04-01 20:45:32,938 - imnvalidator - DEBUG - Tests finished with 0 failures
+2025-04-01 20:46:09,109 - imnvalidator - DEBUG - Program started
+2025-04-01 20:46:09,109 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:46:09,110 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:46:09,118 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/big_simulation_resolve/scheme.imn
+2025-04-01 20:47:03,982 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:47:03,982 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:47:03,991 - imnvalidator - DEBUG - Start of test_big_resolve: Fetching current nodecreate_timeout
+2025-04-01 20:47:04,007 - imnvalidator - DEBUG - Got current nodecreate_timeout=5
+2025-04-01 20:47:04,008 - imnvalidator - DEBUG - Success in first try, no warnings from starting big sim
+2025-04-01 20:47:04,008 - imnvalidator - DEBUG - Test Test big simulation for errors successful
+2025-04-01 20:47:04,008 - imnvalidator - DEBUG - Tests finished with 0 failures
+2025-04-01 20:47:39,965 - imnvalidator - DEBUG - Program started
+2025-04-01 20:47:39,965 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:47:39,966 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:47:39,971 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/check_install_host/scheme.imn
+2025-04-01 20:47:41,788 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:47:41,788 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:47:42,330 - imnvalidator - DEBUG - Test Check multiple packages installed failed
+2025-04-01 20:47:42,330 - imnvalidator - DEBUG - Tests finished with 1 failures
+2025-04-01 20:48:20,110 - imnvalidator - DEBUG - Program started
+2025-04-01 20:48:20,110 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:48:20,111 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:48:20,127 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/big_simulation/scheme.imn
+2025-04-01 20:49:16,166 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:49:16,166 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:49:16,167 - imnvalidator - DEBUG - Test Test big simulation for errors successful
+2025-04-01 20:49:16,167 - imnvalidator - DEBUG - Tests finished with 0 failures
+2025-04-01 20:49:52,430 - imnvalidator - DEBUG - Program started
+2025-04-01 20:49:52,430 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:49:52,431 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:49:52,438 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/big_simulation_resolve/scheme.imn
+2025-04-01 20:50:47,820 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:50:47,820 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:50:47,820 - imnvalidator - DEBUG - Start of test_big_resolve: Fetching current nodecreate_timeout
+2025-04-01 20:50:47,838 - imnvalidator - DEBUG - Got current nodecreate_timeout=5
+2025-04-01 20:50:47,838 - imnvalidator - DEBUG - Success in first try, no warnings from starting big sim
+2025-04-01 20:50:47,838 - imnvalidator - DEBUG - Test Test big simulation for errors successful
+2025-04-01 20:50:47,838 - imnvalidator - DEBUG - Tests finished with 0 failures
+2025-04-01 20:51:22,353 - imnvalidator - DEBUG - Program started
+2025-04-01 20:51:22,353 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:51:22,354 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:51:22,359 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/check_install_host/scheme.imn
+2025-04-01 20:51:24,188 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:51:24,188 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:51:24,745 - imnvalidator - DEBUG - Test Check multiple packages installed failed
+2025-04-01 20:51:24,745 - imnvalidator - DEBUG - Tests finished with 1 failures
+2025-04-01 20:51:25,967 - imnvalidator - DEBUG - Program started
+2025-04-01 20:51:25,967 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:51:25,968 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:51:25,973 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/check_install_node/scheme.imn
+2025-04-01 20:51:27,716 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:51:27,716 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:51:28,811 - imnvalidator - DEBUG - Test Check multiple packages installed failed
+2025-04-01 20:51:28,811 - imnvalidator - DEBUG - Tests finished with 1 failures
+2025-04-01 20:51:30,092 - imnvalidator - DEBUG - Program started
+2025-04-01 20:51:30,092 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:51:30,093 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:51:30,098 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/ping/scheme.imn
+2025-04-01 20:51:31,842 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:51:31,842 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:51:33,283 - imnvalidator - DEBUG - Pinging 10.0.0.22 from pc1@i9f5 with timeout=2, count=2 RETURNS status 'True' and output 'PING 10.0.0.22 (10.0.0.22) 56(84) bytes of data.
+64 bytes from 10.0.0.22: icmp_seq=1 ttl=64 time=0.132 ms
+64 bytes from 10.0.0.22: icmp_seq=2 ttl=64 time=0.147 ms
+
+--- 10.0.0.22 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1004ms
+rtt min/avg/max/mdev = 0.132/0.139/0.147/0.007 ms
+[?'
+2025-04-01 20:51:33,284 - imnvalidator - DEBUG - Test Ping pc1 to pc2 successful
+2025-04-01 20:51:33,284 - imnvalidator - DEBUG - Tests finished with 0 failures
+2025-04-01 20:51:34,619 - imnvalidator - DEBUG - Program started
+2025-04-01 20:51:34,619 - imnvalidator - DEBUG - Parsing arguments
+2025-04-01 20:51:34,620 - imnvalidator - DEBUG - Starting main function
+2025-04-01 20:51:34,625 - imnvalidator - DEBUG - Starting simulation with command: imunes -b /home/lukasever/Documents/faks/10sem/dipl/tests/_rip_validate/scheme.imn
+2025-04-01 20:51:39,437 - imnvalidator - DEBUG - Simulation started successfully.
+2025-04-01 20:51:39,437 - imnvalidator - DEBUG - Running tests in sequence
+2025-04-01 20:51:56,383 - imnvalidator - DEBUG - Pinging 10.0.4.10 from pc@ia08 with timeout=2, count=2 RETURNS status 'True' and output 'PING 10.0.4.10 (10.0.4.10) 56(84) bytes of data.
+64 bytes from 10.0.4.10: icmp_seq=1 ttl=60 time=0.931 ms
+64 bytes from 10.0.4.10: icmp_seq=2 ttl=60 time=0.680 ms
+
+--- 10.0.4.10 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1006ms
+rtt min/avg/max/mdev = 0.680/0.805/0.931/0.125 ms
+[?'
+2025-04-01 20:51:58,299 - imnvalidator - DEBUG - Pinging fc00:1::10 from pc@ia08 with timeout=2, count=2 RETURNS status 'True' and output 'PING fc00:1::10(fc00:1::10) 56 data bytes
+64 bytes from fc00:1::10: icmp_seq=1 ttl=60 time=0.904 ms
+64 bytes from fc00:1::10: icmp_seq=2 ttl=60 time=0.644 ms
+
+--- fc00:1::10 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1040ms
+rtt min/avg/max/mdev = 0.644/0.774/0.904/0.130 ms
+[?'
+2025-04-01 20:55:31,227 - imnvalidator - DEBUG - Pinging 10.0.4.10 from pc@ia08 with timeout=2, count=2 RETURNS status 'True' and output 'PING 10.0.4.10 (10.0.4.10) 56(84) bytes of data.
+64 bytes from 10.0.4.10: icmp_seq=1 ttl=58 time=0.629 ms
+64 bytes from 10.0.4.10: icmp_seq=2 ttl=58 time=0.729 ms
+
+--- 10.0.4.10 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1030ms
+rtt min/avg/max/mdev = 0.629/0.679/0.729/0.050 ms
+[?'
+2025-04-01 20:55:33,147 - imnvalidator - DEBUG - Pinging fc00:1::10 from pc@ia08 with timeout=2, count=2 RETURNS status 'True' and output 'PING fc00:1::10(fc00:1::10) 56 data bytes
+64 bytes from fc00:1::10: icmp_seq=1 ttl=58 time=0.676 ms
+64 bytes from fc00:1::10: icmp_seq=2 ttl=58 time=0.779 ms
+
+--- fc00:1::10 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1057ms
+rtt min/avg/max/mdev = 0.676/0.727/0.779/0.051 ms
+[?'
+2025-04-01 20:55:33,975 - imnvalidator - DEBUG - Test Validate RIP funtioning successful
+2025-04-01 20:55:33,975 - imnvalidator - DEBUG - Tests finished with 0 failures

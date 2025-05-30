@@ -1,42 +1,36 @@
 import config
-import pexpect
 import util
+import subshell
 
-# .*  for now accounts for ansi ~garbage~
-PROMPT = r"[a-zA-Z0-9]+@[a-zA-Z0-9]+.* ?# ?"
 verbose = config.config.VERBOSE
 
-# TODO fix the issue.. this requires a simulation by code design, but.. yep..
+version_check_prefix = '' # will exist for freebsd
+version_check_postfix = '' # will exist for linux
+
+if config.config.is_OS_linux():
+    version_check_postfix = ' --version'
+elif config.config.is_OS_freebsd():
+    version_check_prefix = 'command -v '
+    
+
 async def check_install_host(test_config) -> bool:
     status, print_output = True, ''
     num_failed = 0
     commands = test_config["commands"]
-    child = pexpect.spawn('/bin/bash', encoding="utf-8", timeout=10)
+    hostsh = subshell.HostSubshell(host=config.config.get_platform())
         
     for cmd in commands:
-        # await first or nth consecutive prompt
-        child.expect(PROMPT)
-        
-        # send the command from the config file
-        child.sendline(cmd)
-        child.expect(PROMPT)
-        
-        # fetch output from the command for verbose output
-        if verbose:
-            cmdoutput = '\n'.join(child.before.strip().split('\r\n')[1:-1]) # strip the command 
-            # add to print output after processing the return status of the command
-        
+        cmdoutput = hostsh.send(f'{version_check_prefix}{cmd}{version_check_postfix}')
+
         # check status of the last ran command
-        child.sendline("echo $?")
-        child.expect(r"\d+\r?\n")
-        cmd_status = child.match.group(0).strip()
+        cmd_status = hostsh.last_cmd_status
         
         if cmd_status != '0':
             print_output += util.format_fail_subtest(f'Command {cmd} failed with non-zero exit: {cmd_status}')
             status = False
             num_failed += 1
             if verbose:
-                print_output += cmdoutput + '\r\n'
+                print_output += f'Ran command: "{version_check_prefix}{cmd}{version_check_postfix}"\n'
         else:
             print_output += util.format_pass_subtest(f'Command {cmd} returned status {cmd_status}')
             # if verbose:

@@ -1,5 +1,3 @@
-## TODO add getting the RIP table here..
-
 import logging
 import config
 import asyncio
@@ -7,6 +5,8 @@ from typing import Tuple
 import pexpect
 import json
 import os
+from constants import AWAITS_PROMPT
+import subshell
 
 green_code = '\033[92m'
 red_code = '\033[91m'
@@ -16,7 +16,7 @@ logger = logging.getLogger("imnvalidator")
 async def start_process(cmd: str):
     return await asyncio.create_subprocess_shell(
         cmd,
-        limit=1024 * 256, # 256 KiB buffer, imunes sometimes gives a long output # TODO might be unnecessary
+        limit=1024 * 256,
         stdin=asyncio.subprocess.PIPE,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
@@ -40,39 +40,11 @@ def format_end_status(s: str, status: bool) -> None:
     return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
 
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
-    command = f"himage {source_node_name}@{config.state.eid}"
-    
-    # Start interactive shell session with `himage`
-    child = pexpect.spawn(command, encoding="utf-8", timeout=timeout + 10)
+    nodesh = subshell.NodeSubshell(source_node_name)
 
-    # Ensure the shell is ready (wait for prompt)
-    child.expect(r'[a-zA-Z0-9]+@[a-zA-Z0-9]+:/# ')
-
-    # Send the ping command
-    child.sendline(f"ping -W {timeout} -c {count} {target_ip}")
-
-    child.expect(r'(PING|ping) .+')  # Expect the PING line
-    ping_output = child.before.strip()  # Capture everything before the match
-
-    child.expect(r'[a-zA-Z0-9]+@[a-zA-Z0-9]+:/# ')  # Wait for the shell prompt
-    ping_output += "\n" + child.before.strip()  # Append the ping output
-    
-    # Extract ping output (excluding the prompt itself)
-    ping_output = child.before.strip()
-
-    # Send command to get the exit status ($?)
-    child.sendline("echo $?")
-
-    # Expect a number (exit code) followed by a newline, then wait for the next prompt
-    # TTYs should end with \r\n, allow both just in case
-    child.expect(r"\d+\r?\n")
-
-    # Extract the exit status (last captured number)
-    ping_status = child.match.group(0).strip() == '0'
-
-    # Close the session
-    child.sendline("exit")
-    child.close()
+    ping_output = nodesh.send(f"ping -W {timeout} -c {count} {target_ip}")
+    ping_status = nodesh.last_cmd_status == '0'
+    nodesh.close()
 
     # Log result
     logger.debug(
@@ -80,11 +52,8 @@ async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tu
         f"RETURNS status '{ping_status}' and output '{ping_output}'"
     )
 
-    ping_output = ping_output[:ping_output.rfind('\n')].strip()
     return ping_status, ping_output
 
-
-import json
 
 def nodes_exist(imn_file, test_config_filepath) -> set:
     """Tests whether nodes from:
@@ -118,9 +87,18 @@ def nodes_exist(imn_file, test_config_filepath) -> set:
     ]
 
     with open(imn_file, 'r') as imn_f, open(test_config_filepath, 'r') as schema_f:
-        imn_data = json.load(imn_f)
-        test_data = json.load(schema_f)
-
+        try:
+            imn_data = json.load(imn_f)
+        except Exception as e:
+            print("Error parsing IMUNES file as a JSON file, check your IMUNES file is in the new JSON format.")
+            raise e
+        
+        try:
+            test_data = json.load(schema_f)
+        except Exception as e:
+            print("Error parsing test_config file as a JSON file.")
+            raise e
+        
         # Extract node names from IMN data
         imn_nodes = set(imn_data["nodes"][node]["name"] for node in imn_data["nodes"])
 
@@ -188,46 +166,55 @@ async def start_simulation():
     elif return_code == "0":
         print(f"Simulation started successfully.")
         logger.debug("Simulation started successfully.")
+    
+    if 'warning' in config.state.imunes_output.lower():
+        return False
+    
+    return True
 
-async def stop_simulation() -> str:
+async def stop_simulation(eid=None) -> str:
+    if not eid:
+        eid = config.state.eid
     output = ''
-    if config.state.eid:
-        process = await start_process(f'sudo imunes -b -e {config.state.eid}')
-        while True:
-            line = await process.stdout.readline()
-            if not line:
-                config.state.eid = None
-                break
-            output += line.decode().strip() + '\n'
-    else:
-        raise RuntimeError("No simulation started by this framework still running")
+    process = await start_process(f'sudo imunes -b -e {eid}')
+    while True:
+        line = await process.stdout.readline()
+        if not line:
+            eid = None # TODO makes no sense now that you've added stop_all_ran_sims()
+            break
+        output += line.decode().strip() + '\n'
     return output
 
-async def stopNode(node: str) -> bool:
+async def stop_all_ran_sims():
+    for eid in config.state.all_eids:
+        await stop_simulation(eid)
+
+async def stop_node(node: str):
+    output = ''
     if config.config.is_OS_linux():
         ifaces = list()
-        process = await start_process(f'himage {node}@{config.state.eid} ls -1 /sys/class/net')
-        while True:
-            line = await process.stdout.readline()
-            if not line:
-                break
-            ifaces.append(line.decode().strip())
-
+        nodesh = subshell.NodeSubshell(node)
+        ifaces = nodesh.send('ls -1 /sys/class/net')
+        ifaces = [line.strip() for line in ifaces.strip().split('\n')]
         for ifc in ifaces:
-            process = await start_process(f'himage {node}@{config.state.eid} ifconfig {ifc} down')
-            line = ''
-            while line:
-                line = await process.stdout.readline() # await subprocess.. trickery again
-    return True # TODO add return status, check if ifc down
+            if config.config.VERBOSE:
+                print(f"Shutting down interface: {ifc}")
+            nodesh.send(f'ifconfig {ifc} down')
+        nodesh.close()
+    elif config.config.is_OS_freebsd():
+        raise NotImplementedError
+    return output
 
+async def set_BER(node1: str, node2: str, ber: float) -> Tuple[bool, str]:
+    hostsh = subshell.HostSubshell()
+    output = hostsh.send(f'vlink -BER {ber} -e $eid {node1}:{node2}')
+    cmd_status = hostsh.last_cmd_status == 0
+    return cmd_status, output
 
 async def _get_ripany_table(node: str, ripng: bool):
-    childp = pexpect.spawn(f'himage {node}@{config.state.eid}')
-    childp.expect(r'.*:/# ') # await prompt
-    childp.sendline(f"vtysh -c \"show ip rip{'ng' if ripng else ''}\"")
-    childp.expect('(Codes: .*)(?=\\r\\n)')
-    ret = childp.match.group(0).decode().strip()
-    return ret
+    nodesh = subshell.NodeSubshell(node)
+    output = nodesh.send(f"vtysh -c \"show ip rip{'ng' if ripng else ''}\"")
+    return output
 
 async def get_rip_table(node: str):
     return await _get_ripany_table(node, False)
@@ -235,6 +222,16 @@ async def get_rip_table(node: str):
 async def get_ripng_table(node: str):
     return await _get_ripany_table(node, True)
 
+async def _get_ospfany_table(node: str, ipv6: bool):
+    nodesh = subshell.NodeSubshell(node)
+    output = nodesh.send(f"vtysh -c \"show ip{'v6' if ipv6 else ''} ospf route\"")
+    return output
+
+async def get_ospf_table(node:str):
+    return await _get_ospfany_table(node, False)
+
+async def get_ipv6_ospf_table(node:str):
+    return await _get_ospfany_table(node, True)
 
 def parse_rip_table(raw_rip_table: str):
     ript = dict()
@@ -292,28 +289,17 @@ def parse_ripng_table(raw_rip_table: str):
                 newentry = list()
     return ript
 
-async def ping_check_old(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
-    """sssssstringgggggggggggg
 
-    Args:
-        source_node_name (str): _description_
-        target_ip (str): _description_
-        eid (str): _description_
-        timeout (int, optional): _description_. Defaults to 2.
-        count (int, optional): _description_. Defaults to 2.
-
-    Returns:
-        Tuple[bool, str]: _description_
-    """
-    process = await start_process(
-        f'himage -nt {source_node_name}@{eid} sh -c "ping -W {timeout} -c {count} {target_ip}; echo \$?"'
-    )
-    output = await process.stdout.read()
-    output = output.decode().strip()
-    ping_status = output.split("\n")[-1].strip() == "0"
-    ping_output = output[:output.rfind('\n')].strip()
-    logger.debug(f'Pinging {target_ip} from {source_node_name}@{eid} with args timeout={timeout} and count={count} RETURNS status \'{ping_status}\' and output \'{ping_output}\' while the complete output was \'{output}\'')
-    return ping_status, ping_output
+async def trace_check(source_node: str, target_ip: str):
+    trace_status = False
+    nodesh = subshell.NodeSubshell(source_node)
+    for _ in range(20):
+        nodesh.send(f'strVal=`traceroute {target_ip} | grep -v traceroute | grep {target_ip}`') # checks if dest ip found in traceroute output save to strVal
+        nodesh.send('test -z "$strVal"')
+        if nodesh.last_cmd_status != '0': # if strVal length is 0 - dest not found, traceroute fail, so != 0 is success
+            trace_status = True # quit iterating (waiting for the network to set up)
+            break
+    return trace_status
 
 
 def format_output_frame(s):

@@ -1,0 +1,8 @@
+{
+    "tests": [
+        {
+            "name": "Test services",
+            "type": "_services"
+        }
+    ]
+}

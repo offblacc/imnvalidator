@@ -1,0 +1,197 @@
+{
+    "nodes"    : {
+        "n0" : {
+            "type"                : "pc",
+            "name"                : "PC",
+            "ifaces"              : {
+                "ifc0" : {
+                    "name"       : "lo0",
+                    "type"       : "lo",
+                    "ipv4_addrs" : ["127.0.0.1/24"],
+                    "ipv6_addrs" : ["::1/128"]
+                },
+                "ifc1" : {
+                    "name"       : "eth0",
+                    "mac"        : "42:00:aa:00:00:00",
+                    "ipv4_addrs" : ["10.0.0.20/24"],
+                    "ipv6_addrs" : ["fc00:1::20/64"],
+                    "type"       : "phys",
+                    "link"       : "l0"
+                }
+            },
+            "canvas"              : "c0",
+            "iconcoords"          : "120 312",
+            "labelcoords"         : "120 348",
+            "auto_default_routes" : "disabled"
+        },
+        "n2" : {
+            "type"                : "host",
+            "name"                : "SSH",
+            "ifaces"              : {
+                "ifc0" : {
+                    "name"       : "lo0",
+                    "type"       : "lo",
+                    "ipv4_addrs" : ["127.0.0.1/24"],
+                    "ipv6_addrs" : ["::1/128"]
+                },
+                "ifc1" : {
+                    "name"       : "eth0",
+                    "mac"        : "42:00:aa:00:00:01",
+                    "ipv4_addrs" : ["10.0.0.10/24"],
+                    "ipv6_addrs" : ["fc00:1::10/64"],
+                    "type"       : "phys",
+                    "link"       : "l1"
+                }
+            },
+            "canvas"              : "c0",
+            "iconcoords"          : "600 168",
+            "labelcoords"         : "600 209",
+            "auto_default_routes" : "disabled",
+            "services"            : ["ssh"]
+        },
+        "n1" : {
+            "type"        : "lanswitch",
+            "name"        : "switch1",
+            "canvas"      : "c0",
+            "iconcoords"  : "336 312",
+            "labelcoords" : "336 340",
+            "ifaces"      : {
+                "ifc0" : {
+                    "type" : "phys",
+                    "name" : "e0",
+                    "link" : "l0"
+                },
+                "ifc1" : {
+                    "type" : "phys",
+                    "name" : "e1",
+                    "link" : "l1"
+                },
+                "ifc2" : {
+                    "type" : "phys",
+                    "name" : "e2",
+                    "link" : "l2"
+                },
+                "ifc3" : {
+                    "type" : "phys",
+                    "name" : "e3",
+                    "link" : "l3"
+                },
+                "ifc4" : {
+                    "type" : "phys",
+                    "name" : "e4",
+                    "link" : "l4"
+                }
+            }
+        },
+        "n3" : {
+            "type"                : "host",
+            "name"                : "TCPDUMP",
+            "ifaces"              : {
+                "ifc0" : {
+                    "name"       : "lo0",
+                    "type"       : "lo",
+                    "ipv4_addrs" : ["127.0.0.1/24"],
+                    "ipv6_addrs" : ["::1/128"]
+                },
+                "ifc1" : {
+                    "name"       : "eth0",
+                    "mac"        : "42:00:aa:00:00:02",
+                    "ipv4_addrs" : ["10.0.0.11/24"],
+                    "ipv6_addrs" : ["fc00:1::11/64"],
+                    "type"       : "phys",
+                    "link"       : "l2"
+                }
+            },
+            "canvas"              : "c0",
+            "iconcoords"          : "600 264",
+            "labelcoords"         : "600 305",
+            "services"            : ["tcpdump"],
+            "auto_default_routes" : "disabled"
+        },
+        "n4" : {
+            "type"                : "host",
+            "name"                : "FTP",
+            "ifaces"              : {
+                "ifc0" : {
+                    "name"       : "lo0",
+                    "type"       : "lo",
+                    "ipv4_addrs" : ["127.0.0.1/24"],
+                    "ipv6_addrs" : ["::1/128"]
+                },
+                "ifc1" : {
+                    "name"       : "eth0",
+                    "mac"        : "42:00:aa:00:00:03",
+                    "ipv4_addrs" : ["10.0.0.12/24"],
+                    "ipv6_addrs" : ["fc00:1::12/64"],
+                    "type"       : "phys",
+                    "link"       : "l3"
+                }
+            },
+            "canvas"              : "c0",
+            "iconcoords"          : "600 360",
+            "labelcoords"         : "600 401",
+            "services"            : ["ftp"],
+            "auto_default_routes" : "disabled"
+        },
+        "n5" : {
+            "type"                : "host",
+            "name"                : "TELNET",
+            "ifaces"              : {
+                "ifc0" : {
+                    "name"       : "lo0",
+                    "type"       : "lo",
+                    "ipv4_addrs" : ["127.0.0.1/24"],
+                    "ipv6_addrs" : ["::1/128"]
+                },
+                "ifc1" : {
+                    "name"       : "eth0",
+                    "mac"        : "42:00:aa:00:00:04",
+                    "ipv4_addrs" : ["10.0.0.13/24"],
+                    "ipv6_addrs" : ["fc00:1::13/64"],
+                    "type"       : "phys",
+                    "link"       : "l4"
+                }
+            },
+            "canvas"              : "c0",
+            "iconcoords"          : "600 456",
+            "labelcoords"         : "600 497",
+            "services"            : ["telnet"],
+            "auto_default_routes" : "disabled"
+        }
+    },
+    "links"    : {
+        "l0" : {
+            "peers"        : "n0 n1",
+            "peers_ifaces" : "ifc1 ifc0",
+            "bandwidth"    : "0"
+        },
+        "l1" : {
+            "peers"        : "n1 n2",
+            "peers_ifaces" : "ifc1 ifc1",
+            "bandwidth"    : "0"
+        },
+        "l2" : {
+            "peers"        : "n1 n3",
+            "peers_ifaces" : "ifc2 ifc1",
+            "bandwidth"    : "0"
+        },
+        "l3" : {
+            "peers"        : "n1 n4",
+            "peers_ifaces" : "ifc3 ifc1",
+            "bandwidth"    : "0"
+        },
+        "l4" : {
+            "peers"        : "n1 n5",
+            "peers_ifaces" : "ifc4 ifc1",
+            "bandwidth"    : "0"
+        }
+    },
+    "canvases" : {
+        "c0" : {
+            "name" : "Canvas0"
+        }
+    },
+    "options"  : {
+        "version" : "1"
+    }
+}
