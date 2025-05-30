@@ -1,4 +1,3 @@
-
 import config
 import util
 import subshell
@@ -18,7 +17,7 @@ async def check_install_node(test_config) -> bool:
     num_failed = 0
     commands = test_config["commands"]
     nodes = test_config["on_nodes"]
-    
+
     for node in nodes:
         nodesh = subshell.NodeSubshell(node)
         for cmd in commands:
