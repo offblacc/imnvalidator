@@ -13,6 +13,10 @@ elif config.config.is_OS_freebsd():
     version_check_prefix = 'command -v '
 
 async def check_install_node(test_config) -> bool:
+    no_warn = await util.start_simulation()
+    if not no_warn:
+        return False, 'Encountered warnings while starting simulation'
+    
     status, print_output = True, ''
     num_failed = 0
     commands = test_config["commands"]
@@ -36,4 +40,5 @@ async def check_install_node(test_config) -> bool:
 
     total = len(commands) * len(nodes)
     print_output += util.format_end_status(f'{total-num_failed}/{total} successful checks', num_failed == 0)
+    await util.stop_simulation()
     return status, print_output

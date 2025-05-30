@@ -20,6 +20,10 @@ async def _ospf_validate(test_config) -> Tuple[bool, str]:
     initial_nexthop4 = test_config["initial_next_hop4"]
     post_turnoff_next_hop4 = test_config["post_turnoff_next_hop4"]
     
+    no_warn = await util.start_simulation()
+    if not no_warn:
+        return False, 'Encountered warnings while starting simulation'
+    
     ### ====================== Initial sleep - OSPF setup ======================
     time.sleep(40)
     
@@ -103,4 +107,5 @@ async def _ospf_validate(test_config) -> Tuple[bool, str]:
     
     print_output += util.format_pass_subtest("Post router restart pings succeeded")
 
+    await util.stop_simulation()
     return True, print_output.strip() + '\n'

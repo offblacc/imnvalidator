@@ -6,6 +6,7 @@ import config
 verbose = config.config.VERBOSE
 
 async def test_big(test_config):
+    await util.start_simulation()
     output = ''
     status = None
     if "IMUNES warning - Issues encountered while creating nodes" in state.imunes_output:
@@ -17,4 +18,7 @@ async def test_big(test_config):
         output += util.format_pass_test('Simulation started without warnings')
         status = True
     
+    if not status:
+        output += 'Try manually running big_simulation_resolve tests to find the right value of nodecreate timeout'
+    await util.stop_simulation()
     return status, output

@@ -3,15 +3,16 @@
 import config
 import util
 
-TIMEOUT_MIN = 5
-TIMEOUT_MAX = 100
-TIMEOUT_STEP = 5
 logger = config.config.logger
 ERROR_MSG = "IMUNES warning - Issues encountered"
 
 async def test_big_resolve(test_config):
+    await util.start_simulation()
     output = ''
     status = None
+    TIMEOUT_MIN = test_config["start"]
+    TIMEOUT_MAX = test_config["end"]
+    TIMEOUT_STEP = test_config["step"]
     
     logger.debug('Start of test_big_resolve: Fetching current nodecreate_timeout')
     process = await util.start_process("sudo awk '/set nodecreate_timeout [0-9]+/ {print $3}' /usr/local/lib/imunes/imunes.tcl")
@@ -68,5 +69,7 @@ async def test_big_resolve(test_config):
             output += util.format_pass_test(f'Simulation started without warnings with nodecreate_timeout = {current_timeout}')
             logger.debug(f'Got success with timeout={tout}')
             return status, output
-
+        elif tout + TIMEOUT_STEP > TIMEOUT_MAX:
+            output += "Failed to find a value that works, please try running this test manually."
+    await util.stop_simulation() # idempotent, call is ok
     return False, output

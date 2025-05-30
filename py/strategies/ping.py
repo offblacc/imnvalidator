@@ -5,6 +5,9 @@ import config
 verbose = config.config.VERBOSE
 
 async def ping(test_config) -> bool:
+    no_warn = await util.start_simulation()
+    if not no_warn:
+        return False, 'Encountered warnings while starting simulation'
     eid = config.state.eid
     total = len(test_config["source_nodes"]) * len(test_config["target_ips"])
     failed = 0
@@ -51,4 +54,5 @@ async def ping(test_config) -> bool:
 
     format = util.format_fail_test if failed != 0 else util.format_pass_test
     print_output += format(f"{total - failed}/{total} pings successful")
+    await util.stop_simulation()
     return failed == 0, print_output

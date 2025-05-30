@@ -7,6 +7,9 @@ from typing import Tuple
 import subshell
 
 async def _services(test_config) -> Tuple[bool, str]:
+    no_warn = await util.start_simulation()
+    if not no_warn:
+        return False, 'Encountered warnings while starting simulation'
     eid = config.state.eid
     status, print_output = True, ''
     time.sleep(10) # wait for the services to start in the simulation itself
@@ -46,4 +49,5 @@ async def _services(test_config) -> Tuple[bool, str]:
         print_output += util.format_pass_subtest("TELNET OK")
         
     nodesh.close() # redundant
+    await util.stop_simulation()
     return status, print_output

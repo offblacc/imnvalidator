@@ -13,7 +13,6 @@ elif config.config.is_OS_freebsd():
     version_check_prefix = 'command -v '
     
 
-# TODO fix the issue.. this requires a simulation by code design, but.. yep..
 async def check_install_host(test_config) -> bool:
     status, print_output = True, ''
     num_failed = 0

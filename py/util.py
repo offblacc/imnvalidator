@@ -166,6 +166,11 @@ async def start_simulation():
     elif return_code == "0":
         print(f"Simulation started successfully.")
         logger.debug("Simulation started successfully.")
+    
+    if 'warning' in config.state.imunes_output.lower():
+        return False
+    
+    return True
 
 async def stop_simulation(eid=None) -> str:
     if not eid:
