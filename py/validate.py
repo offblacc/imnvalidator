@@ -10,12 +10,8 @@ import importlib
 import os
 import config
 import traceback
-from helpers.schemavalidate import validateJSON
-
 
 logger = logging.getLogger("imnvalidator")
-
-schema_filepath = str(config.PROJECT_ROOT) + "/test_file_schema.json"
 
 async def main(imn_file, config_filepath, verbose, parallel, validate_install):
     config.config.VERBOSE = verbose
@@ -57,13 +53,6 @@ async def validate_simulation(imn_file, config_filepath, parallel, valinst=False
     config.config.test_config_filename = config_filepath    
     test_config = None
 
-    json_valid, output = validateJSON(
-        data_file_path=config_filepath, schema_file_path=schema_filepath
-    )
-    if not json_valid:
-        print("Invalid JSON, reason:")
-        print(output)
-        exit(1)
 
     ## Try parsing the config file
     try:
@@ -162,7 +151,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--parallel", action="store_true", help="Run tests in parallel")
     parser.add_argument("-t", "--timeit", action="store_true", help="Time the execution")
     parser.add_argument("-a", "--validate-installation", action="store_true",
-                        help="Validate imunes installation itself; in this case omit other args")
+                        help="Validate imunes installation itself running all in tests/")
 
     args = parser.parse_args()
 
