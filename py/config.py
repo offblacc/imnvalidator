@@ -2,8 +2,8 @@
 
 from pathlib import Path
 import logging
-from enum import Enum
 from platform import system
+from constants import OS
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent # assuming structure: PROJECT_ROOT/py/validate.py
 
@@ -74,11 +74,6 @@ class State:
     @eid.setter
     def eid(self, value):
         self.set_eid(value)
-
-
-class OS(Enum):
-    LINUX = 1
-    FREEBSD = 2
 
 config = Config()
 state = State()

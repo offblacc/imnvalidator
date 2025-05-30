@@ -8,9 +8,9 @@
                 "pc2"
             ],
             "commands": [
-                "traceroute --version",
-                "ifconfig --version",
-                "sl --version"
+                "traceroute",
+                "ifconfig",
+                "sl"
             ]
         }
     ]
