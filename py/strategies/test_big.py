@@ -1,9 +1,9 @@
 # strategies/test_big.py
 
-from . import verbose
 from config import state
 import util
 import config
+verbose = config.config.VERBOSE
 
 async def test_big(test_config):
     output = ''
