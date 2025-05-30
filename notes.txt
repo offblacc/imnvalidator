@@ -19,6 +19,8 @@
 # TODO send and sendwstatus implement
 # TODO double-check ospf and stop_node
 # TODO for version checking - remove '--version' from commands - add this "manually" in strategies themselves depending on the OS (`command traceroute` npr)
+# TODO in test big resolve, specify range in the config file (optionally?) - from - to - step
+# TODO migrate using start_process to using the new subshell class
 
 ========================================= PISANI RAD TODO =========================================
 # TODO za pisati u radu - brzina invokeanja subshella... svaki čak i uspješni ping dakle bez timeouta traje ipak neko kraće vrijeme... možda isti shell **NEKAKO** za svaki izvorišni čvor...; ali prouči definitivno izmjeri trajanje...
