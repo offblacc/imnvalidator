@@ -16,7 +16,7 @@ logger = logging.getLogger("imnvalidator")
 async def start_process(cmd: str):
     return await asyncio.create_subprocess_shell(
         cmd,
-        limit=1024 * 256, # 256 KiB buffer, imunes sometimes gives a long output # TODO might be unnecessary
+        limit=1024 * 256,
         stdin=asyncio.subprocess.PIPE,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
@@ -133,11 +133,11 @@ async def start_simulation():
     
     cmd = f"imunes -b {imn_file}; echo $?"
     if config.config.VERBOSE:
-        print(f"Starting simulation with command: {cmd.split(';')[0]}") # TODO not print ??
+        print(f"Starting simulation with command: {cmd.split(';')[0]}")
     else:
-        print("Starting simulation") # TODO not print (..here)
+        print("Starting simulation")
 
-    logger.debug(f'Starting simulation with command: {cmd.split(";")[0]}') # TODO not print ??
+    logger.debug(f'Starting simulation with command: {cmd.split(";")[0]}')
 
     process = await start_process(cmd)  # don't need a PTY here, just start the simulation & read output
 

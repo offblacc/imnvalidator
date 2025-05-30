@@ -5,7 +5,6 @@ from config import state
 import util
 import config
 
-# TODO make this warning work better it happens @ more places
 async def test_big(test_config):
     output = ''
     status = None
@@ -13,8 +12,7 @@ async def test_big(test_config):
         output += util.format_fail_test('Warnings while starting simulation')
         status = False
         if verbose:
-            pass
-            #print("TODO add output here, maybe unnecessary, verbose already prints it out while starting experiment")
+            pass # if verbose then sim creation already printed the errors while creating
     else:
         output += util.format_pass_test('Simulation started without warnings')
         status = True
