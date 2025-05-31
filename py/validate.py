@@ -38,16 +38,25 @@ async def validate_installation():
         if not os.path.isfile(schemefile) or not os.path.isfile(configfile):
             continue # check .imn and .json pair exists in the subdir
         
-        ## EXPCLICITLY AVOID
+        ## ================= EXPLICITLY AVOID =================
         if dir.name == 'big_simulation_resolve':
             continue
-        ## =================
+        ## =====================================================
         
         print(f"Starting test {dir.name}")
-        num_failed = await validate_simulation(schemefile, configfile, False, valinst=True)
-        total_num_failed += num_failed
-        if num_failed != 0:
+        try:
+            num_failed = await validate_simulation(schemefile, configfile, False, valinst=True)
+            total_num_failed += num_failed
+            if num_failed != 0:
+                names_failed.append(dir.name)
+        except Exception as e:
             names_failed.append(dir.name)
+            total_num_failed += 1 # inconsistency with += num_failed above, but not that important
+            print(f"Test {dir.name} ended with an exception:")
+            print(e)
+            print(f"Cleaning up after this sim and continuing with other tests")
+            await util.stop_simulation()
+        
             
     print(f"Number of failed tests: {total_num_failed}")
     if total_num_failed != 0:
@@ -188,7 +197,7 @@ if __name__ == "__main__":
         asyncio.run(util.stop_all_ran_sims())
 
     finally:
-        asyncio.run(util.stop_all_ran_sims())
+        asyncio.run(util.stop_all_ran_sims()) # redundant, let it stay here, zlu netrebalo
         if args.timeit:
             end = time.time()
             print(f"Execution time: {end - start} seconds")
