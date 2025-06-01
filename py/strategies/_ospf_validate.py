@@ -20,9 +20,10 @@ async def _ospf_validate(test_config) -> Tuple[bool, str]:
     initial_nexthop4 = test_config["initial_next_hop4"]
     post_turnoff_next_hop4 = test_config["post_turnoff_next_hop4"]
     
-    no_warn = await util.start_simulation()
-    if not no_warn:
-        return False, 'Encountered warnings while starting simulation'
+    if not config.state.sim_running:
+        no_warn = await util.start_simulation()
+        if not no_warn:
+            return False, 'Encountered warnings while starting simulation'
     
     ### ====================== Initial sleep - OSPF setup ======================
     time.sleep(40)
