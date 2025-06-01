@@ -173,6 +173,7 @@ async def start_simulation():
     if 'warning' in config.state.imunes_output.lower():
         return False
     
+    config.state.sim_running = True
     return True
 
 async def stop_simulation(eid=None) -> str:

@@ -4,11 +4,12 @@ import re
 from typing import Tuple
 import subshell
 
-# TODO some action is probably expected before checking arp table, if sim is started here..
 async def arpcheck(test_config) -> Tuple[bool, str]:
-    no_warn = await util.start_simulation()
-    if not no_warn:
-        return False, 'Encountered warnings while starting simulation'
+    if not config.state.sim_running:
+        no_warn = await util.start_simulation()
+        if not no_warn:
+            return False, 'Encountered warnings while starting simulation'
+        
     status, print_output = False, ''
     nodes = test_config["source_nodes"]
     
@@ -20,7 +21,6 @@ async def arpcheck(test_config) -> Tuple[bool, str]:
     ## GET ARP TABLE ##
     for node in nodes:
         nodesh = subshell.NodeSubshell(node)
-        nodesh.send("ping -c 2 10.0.0.210")
         arp_raw = nodesh.send('arp -an')
         pattern = r'\(([^)]+)\)\s+at\s+([0-9a-fA-F:]{17})'
         matches = re.findall(pattern, arp_raw)
