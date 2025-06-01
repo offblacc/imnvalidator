@@ -5,9 +5,11 @@ import config
 verbose = config.config.VERBOSE
 
 async def ping(test_config) -> bool:
-    no_warn = await util.start_simulation()
-    if not no_warn:
-        return False, 'Encountered warnings while starting simulation'
+    if not config.state.sim_running:
+        no_warn = await util.start_simulation()
+        if not no_warn:
+            return False, 'Encountered warnings while starting simulation'
+
     eid = config.state.eid
     total = len(test_config["source_nodes"]) * len(test_config["target_ips"])
     failed = 0

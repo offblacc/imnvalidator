@@ -6,9 +6,11 @@ from typing import Tuple
 verbose = config.config.VERBOSE
 
 async def traceroute(test_config) -> Tuple[bool, str]:
-    no_warn = await util.start_simulation()
-    if not no_warn:
-        return False, 'Encountered warnings while starting simulation'
+    if not config.state.sim_running:
+        no_warn = await util.start_simulation()
+        if not no_warn:
+            return False, 'Encountered warnings while starting simulation'
+
     status, print_output = True, ''
     pairs = test_config['src_tgt_pairs']
     for src in pairs:

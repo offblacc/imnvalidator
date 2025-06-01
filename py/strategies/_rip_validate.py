@@ -26,9 +26,10 @@ async def _rip_validate(test_config) -> bool:
     ip4 = test_config.get("target_ip4")
     ip6 = test_config.get("target_ip6")
     
-    no_warn = await util.start_simulation()
-    if not no_warn:
-        return False, 'Encountered warnings while starting simulation'
+    if not config.state.sim_running:
+        no_warn = await util.start_simulation()
+        if not no_warn:
+            return False, 'Encountered warnings while starting simulation'
     
     time.sleep(15) # TODO temporary value, change later, as well as the constants above
     # await multiple times try in a loop..

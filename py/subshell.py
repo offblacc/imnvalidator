@@ -7,7 +7,7 @@ from typing import Tuple
 
 class Subshell(ABC):
     def __init__(self):
-        # self.child = None
+        self.child = None
         self.last_cmd_status = None
         command = self._get_command()
         self.child = pexpect.spawn(command, encoding="utf-8", timeout=20) # TODO this timeout might cause problems, enable increasing this from outside

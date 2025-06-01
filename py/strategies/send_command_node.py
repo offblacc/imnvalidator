@@ -4,13 +4,11 @@ import re
 from typing import Tuple
 import subshell
 
-
-# TODO some action is probably expected before checking arp table, if sim is started here..
 async def send_command_node(test_config) -> Tuple[bool, str]:
     if not config.state.sim_running:
-        raise RuntimeError(
-            "To use sent command host, you need to manually start simulation using test name start_simulation before this test"
-        )
+        no_warn = await util.start_simulation()
+        if not no_warn:
+            return False, 'Encountered warnings while starting simulation'
 
     nodesh = subshell.NodeSubshell(test_config["node"])
     cmdout = nodesh.send(test_config["command"]) + '\n'

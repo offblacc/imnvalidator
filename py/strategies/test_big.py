@@ -6,7 +6,8 @@ import config
 verbose = config.config.VERBOSE
 
 async def test_big(test_config):
-    await util.start_simulation()
+    if not config.state.sim_running:
+        await util.start_simulation()
     output = ''
     status = None
     if "IMUNES warning - Issues encountered while creating nodes" in state.imunes_output:

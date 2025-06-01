@@ -130,6 +130,9 @@ def read_JSON_from_file(JSON_filepath: str):
         return json.load(json_file)
 
 async def start_simulation():
+    if config.state.sim_running:
+        print("Attempted to start simulation but it's already running. This might be a bug, please report.")
+        return True
     imn_file = config.config.imunes_filename
     print_live = config.config.VERBOSE
     config.state.imunes_output = '' # reset to empty for new sim output log
@@ -187,6 +190,7 @@ async def stop_simulation(eid=None) -> str:
             eid = None # TODO makes no sense now that you've added stop_all_ran_sims()
             break
         output += line.decode().strip() + '\n'
+    config.state.sim_running = False
     return output
 
 async def stop_all_ran_sims():
