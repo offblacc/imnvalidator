@@ -114,8 +114,10 @@ def nodes_exist(imn_file, test_config_filepath) -> set:
                         test_config_nodes.update(n)
                     elif isinstance(n, str):  # a single node
                         test_config_nodes.add(n)
+                    elif isinstance(n, dict):
+                        test_config_nodes.update(n.keys())
                     else:
-                        raise ValueError('Unexpected node type')
+                        raise ValueError(f'Unexpected node type: {type(n)}')
                 except KeyError:
                     pass
 

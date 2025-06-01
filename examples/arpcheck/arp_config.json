@@ -1,0 +1,13 @@
+{
+  "tests": [
+    {
+      "name": "ARP config test",
+      "type": "arpcheck",
+      "source_nodes": {
+        "PC": {
+          "10.0.0.210": "00:11:22:33:44:55"
+        }
+      }
+    }
+  ]
+}
