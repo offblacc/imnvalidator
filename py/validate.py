@@ -143,7 +143,8 @@ async def run_single_test(test):
     strategy_function = getattr(strategy_module, strategy_type)
 
     status, output = await strategy_function(test)
-    return status, f'\nRunning test {test["name"]}\n' + output
+    return status, f'\nRunning {test["name"]}\n' + output
+    # return status, output
 
 
 

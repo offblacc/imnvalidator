@@ -10,7 +10,7 @@ class Subshell(ABC):
         # self.child = None
         self.last_cmd_status = None
         command = self._get_command()
-        self.child = pexpect.spawn(command, encoding="utf-8", timeout=10)
+        self.child = pexpect.spawn(command, encoding="utf-8", timeout=20) # TODO this timeout might cause problems, enable increasing this from outside
         try:
             self.child.expect(self._get_prompt())
         except Exception:
@@ -31,7 +31,11 @@ class Subshell(ABC):
         self.clear_buffer()
         
         self.child.sendline(command)
-        self.child.expect(self.prompt)
+        try:
+            self.child.expect(self.prompt)
+        except pexpect.exceptions.TIMEOUT as e:
+            print(f"Timed out. Got: {self.child.before}")
+            raise e
         
         output = '\n'.join(self.child.before.strip().split('\r\n')[1:-1]) # cut original command and new prompt
         output = output[output.find('\r') + 1:] # skip additional ANSI garbage
