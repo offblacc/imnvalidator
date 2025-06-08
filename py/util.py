@@ -4,13 +4,14 @@ import asyncio
 from typing import Tuple
 import pexpect
 import json
-import os
+import sys
 from constants import AWAITS_PROMPT
 import subshell
 
-green_code = '\033[92m'
-red_code = '\033[91m'
-reset_code = '\033[0m'
+isatty = sys.stdout.isatty()
+green_code = '\033[92m' if isatty else ''
+red_code = '\033[91m' if isatty else ''
+reset_code = '\033[0m' if isatty else ''
 logger = logging.getLogger("imnvalidator")
     
 async def start_process(cmd: str):
