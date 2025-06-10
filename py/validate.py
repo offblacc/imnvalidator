@@ -39,7 +39,7 @@ async def validate_installation():
             continue # check .imn and .json pair exists in the subdir
         
         ## ================= EXPLICITLY AVOID =================
-        if dir.name == 'big_simulation_resolve':
+        if dir.name == 'big_simulation_resolve': # TODO make this a list here for easier adding...
             continue
         ## =====================================================
         
