@@ -1,0 +1,25 @@
+{
+    "tests": [
+        {
+            "name": "Check ifconfig and vim on host",
+            "type": "check_install_host",
+            "commands": [
+                "ifconfig",
+                "vim"
+            ]
+        },
+        {
+            "name": "Ping pc1 to pc2",
+            "type": "ping",
+            "source_nodes": [
+                "pc1"
+            ],
+            "target_ips": [
+                "10.0.0.22"
+            ],
+            "expect": "success",
+            "fail": "Ping not successfull",
+            "success": "Ping successfull"
+        }
+    ]
+}

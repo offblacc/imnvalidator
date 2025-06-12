@@ -5,8 +5,7 @@
             "type": "check_install_host",
             "commands": [
                 "traceroute",
-                "ifconfig",
-                "sl"
+                "ifconfig"
             ]
         }
     ]

@@ -9,8 +9,7 @@
             ],
             "commands": [
                 "traceroute",
-                "ifconfig",
-                "sl"
+                "ifconfig"
             ]
         }
     ]
