@@ -8,7 +8,7 @@ async def arpcheck(test_config) -> Tuple[bool, str]:
     if not config.state.sim_running:
         no_warn = await util.start_simulation()
         if not no_warn:
-            return False, 'Encountered warnings while starting simulation'
+            return False, util.format_fail_test('Encountered warnings while starting simulation')
         
     status, print_output = False, ''
     nodes = test_config["source_nodes"]
@@ -37,6 +37,8 @@ async def arpcheck(test_config) -> Tuple[bool, str]:
                 print_output += util.format_fail_subtest(f'{ip} at {arp_dict[ip]}, not at {config_requested[ip]}')
             
 
-    status = ok_cnt == max_checks
+    status = ok_cnt == max_checks    
+    print_output += util.format_end_status(f"{ok_cnt}/{max_checks} arp table checks successful", status)
+    
     await util.stop_simulation()
     return status, print_output
