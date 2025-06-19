@@ -18,8 +18,8 @@ async def main(imn_file, config_filepath, verbose, parallel, validate_install):
     config.config.validate_installation = validate_install
     
     if validate_install: # you got scheme and config pairs in tests/*/; get and set config variables, don't forget them
-        await validate_installation()
-        return
+        total_failed = await validate_installation()
+        return total_failed
     else: # you got imn_file and config_filepath as args
         await validate_simulation(imn_file, config_filepath, verbose, parallel)
         return
@@ -61,6 +61,7 @@ async def validate_installation():
     print(f"Number of failed tests: {total_num_failed}")
     if total_num_failed != 0:
         print(f"Tests failed: {', '.join(names_failed)}")
+    return total_num_failed
 
 async def validate_simulation(imn_file, config_filepath, parallel, valinst=False):
     config.config.imunes_filename = imn_file
@@ -179,7 +180,7 @@ if __name__ == "__main__":
 
     logger.debug("Starting main function")
     
-    
+    failures = None
     try:
         failures = asyncio.run(
             main(
@@ -196,6 +197,7 @@ if __name__ == "__main__":
         # print(f'Uncaught Exception: {e}')
         print(f'Stopping all started experiments')
         asyncio.run(util.stop_all_ran_sims())
+        failures = 127
 
     finally:
         asyncio.run(util.stop_all_ran_sims()) # redundant, let it stay here, zlu netrebalo
@@ -203,3 +205,5 @@ if __name__ == "__main__":
             end = time.time()
             print(f"Execution time: {end - start} seconds")
             logger.info(f"Validator finished in {end - start} seconds")
+    
+    sys.exit(failures if failures is not None else 0)
