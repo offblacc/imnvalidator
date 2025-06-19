@@ -1,5 +1,5 @@
 import pexpect
-from constants import AWAITS_PROMPT, AWAITS_FREEBSD_ROOT_PROMPT, OS
+from constants import AWAITS_PROMPT, AWAITS_FREEBSD_ROOT_PROMPT, OS, GENERIC_PROMPT
 import traceback
 import config
 from abc import ABC, abstractmethod
@@ -69,7 +69,7 @@ class Subshell(ABC):
 
 class HostSubshell(Subshell):
     def __init__(self, host=OS.LINUX):
-        self.prompt = AWAITS_PROMPT if host == OS.LINUX else AWAITS_FREEBSD_ROOT_PROMPT
+        self.prompt = GENERIC_PROMPT #AWAITS_PROMPT if host == OS.LINUX else AWAITS_FREEBSD_ROOT_PROMPT
         super().__init__()
         
     def _get_command(self) -> str:
@@ -81,7 +81,7 @@ class HostSubshell(Subshell):
 class NodeSubshell(Subshell):
     def __init__(self, node: str):
         self.node = node
-        self.prompt = AWAITS_PROMPT
+        self.prompt = GENERIC_PROMPT #AWAITS_PROMPT
         super().__init__()
     
     def _get_command(self) -> str:
