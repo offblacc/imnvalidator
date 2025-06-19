@@ -13,9 +13,10 @@ elif config.config.is_OS_freebsd():
     version_check_prefix = 'command -v '
 
 async def check_install_node(test_config) -> bool:
-    no_warn = await util.start_simulation()
-    if not no_warn:
-        return False, 'Encountered warnings while starting simulation'
+    if not config.state.sim_running:
+        no_warn = await util.start_simulation()
+        if not no_warn:
+            return False, util.format_fail_test('Encountered warnings while starting simulation')
     
     status, print_output = True, ''
     num_failed = 0

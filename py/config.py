@@ -62,6 +62,7 @@ class State:
         self.imunes_output = ''
         self._eid = None
         self.all_eids = []
+        self.sim_running = None # set by strategy start_simulation, when user needs more control
         
     def set_eid(self, value):
         self.all_eids.append(value)

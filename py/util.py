@@ -4,13 +4,14 @@ import asyncio
 from typing import Tuple
 import pexpect
 import json
-import os
+import sys
 from constants import AWAITS_PROMPT
 import subshell
 
-green_code = '\033[92m'
-red_code = '\033[91m'
-reset_code = '\033[0m'
+isatty = sys.stdout.isatty()
+green_code = '\033[92m' if isatty else ''
+red_code = '\033[91m' if isatty else ''
+reset_code = '\033[0m' if isatty else ''
 logger = logging.getLogger("imnvalidator")
     
 async def start_process(cmd: str):
@@ -37,7 +38,7 @@ def format_fail_test(s: str) -> None:
 def format_end_status(s: str, status: bool) -> None:
     """Status True is success, False is failure.
     """
-    return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
+    return format_pass_test(s) if status else format_fail_test(s)
 
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     nodesh = subshell.NodeSubshell(source_node_name)
@@ -113,8 +114,10 @@ def nodes_exist(imn_file, test_config_filepath) -> set:
                         test_config_nodes.update(n)
                     elif isinstance(n, str):  # a single node
                         test_config_nodes.add(n)
+                    elif isinstance(n, dict):
+                        test_config_nodes.update(n.keys())
                     else:
-                        raise ValueError('Unexpected node type')
+                        raise ValueError(f'Unexpected node type: {type(n)}')
                 except KeyError:
                     pass
 
@@ -127,6 +130,9 @@ def read_JSON_from_file(JSON_filepath: str):
         return json.load(json_file)
 
 async def start_simulation():
+    if config.state.sim_running:
+        print("Attempted to start simulation but it's already running. This might be a bug, please report.")
+        return True
     imn_file = config.config.imunes_filename
     print_live = config.config.VERBOSE
     config.state.imunes_output = '' # reset to empty for new sim output log
@@ -170,6 +176,7 @@ async def start_simulation():
     if 'warning' in config.state.imunes_output.lower():
         return False
     
+    config.state.sim_running = True
     return True
 
 async def stop_simulation(eid=None) -> str:
@@ -183,6 +190,7 @@ async def stop_simulation(eid=None) -> str:
             eid = None # TODO makes no sense now that you've added stop_all_ran_sims()
             break
         output += line.decode().strip() + '\n'
+    config.state.sim_running = False
     return output
 
 async def stop_all_ran_sims():
@@ -319,5 +327,5 @@ def format_output_frame(s):
     ret_str += f'    /{border}\n'
     for line in s:
         ret_str += f'   || {line}\n'
-    ret_str += f'    \{border}\n'
+    ret_str += rf'    \{border}\n'
     return ret_str

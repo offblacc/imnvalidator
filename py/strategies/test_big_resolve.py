@@ -8,7 +8,7 @@ ERROR_MSG = "IMUNES warning - Issues encountered"
 
 async def test_big_resolve(test_config):
     await util.start_simulation()
-    output = ''
+    print_output = ''
     status = None
     TIMEOUT_MIN = test_config["start"]
     TIMEOUT_MAX = test_config["end"]
@@ -22,16 +22,16 @@ async def test_big_resolve(test_config):
 
     if ERROR_MSG not in config.state.imunes_output:
         status = True
-        output += util.format_pass_test(f'Simulation started without warnings with nodecreate_timeout = {current_timeout}')
+        print_output += util.format_pass_test(f'Simulation started without warnings with nodecreate_timeout = {current_timeout}')
         logger.debug('Success in first try, no warnings from starting big sim')
-        return status, output
+        return status, print_output
 
     for tout in range(TIMEOUT_MIN, TIMEOUT_MAX, TIMEOUT_STEP):
         if int(current_timeout) > tout:
             logger.debug('current timeout is bigger than next one to try out; skipping iteration')
             continue # don't check values that obviously won't work, skip to first that might (> current) 
         
-        output += f'    trying with timeout value {tout}\n'
+        print_output += f'    trying with timeout value {tout}\n'
         logger.debug('Got warnings, stopping simulation')
         print(f"Encountered warnings, changing nodecreate_timeout to {tout} and retrying")
         await util.stop_simulation()
@@ -66,10 +66,10 @@ async def test_big_resolve(test_config):
         logger.debug('Simulation started')
         if ERROR_MSG not in config.state.imunes_output:
             status = True
-            output += util.format_pass_test(f'Simulation started without warnings with nodecreate_timeout = {current_timeout}')
+            print_output += util.format_pass_test(f'Simulation started without warnings with nodecreate_timeout = {current_timeout}')
             logger.debug(f'Got success with timeout={tout}')
-            return status, output
+            return status, print_output
         elif tout + TIMEOUT_STEP > TIMEOUT_MAX:
-            output += "Failed to find a value that works, please try running this test manually."
+            print_output += "Failed to find a value that works, please try running this test manually."
     await util.stop_simulation() # idempotent, call is ok
-    return False, output
+    return False, print_output + util.format_fail_test("Failed to resolve.")

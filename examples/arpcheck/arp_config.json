@@ -1,0 +1,27 @@
+{
+  "tests": [
+    {
+      "name": "start sim",
+      "type": "start_simulation"
+    },
+    {
+      "name": "Send ping",
+      "type": "send_command_node",
+      "node": "PC",
+      "command": "ping -c 2 10.0.0.210"
+    },
+    {
+      "name": "ARP config test",
+      "type": "arpcheck",
+      "source_nodes": {
+        "PC": {
+          "10.0.0.210": "00:11:22:33:44:55"
+        }
+      }
+    },
+    {
+      "name": "Stop sim (redundant)",
+      "type": "stop_simulation"
+    }
+  ]
+}
