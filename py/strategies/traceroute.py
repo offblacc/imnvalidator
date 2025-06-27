@@ -26,5 +26,4 @@ async def traceroute(test_config) -> Tuple[bool, str]:
             failed += 1
     
     print_output += util.format_end_status(f"{total-failed}/{total} traceroutes successful", failed == 0)
-    await util.stop_simulation()
     return status, print_output

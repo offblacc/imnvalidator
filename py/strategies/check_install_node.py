@@ -41,5 +41,4 @@ async def check_install_node(test_config) -> bool:
 
     total = len(commands) * len(nodes)
     print_output += util.format_end_status(f'{total-num_failed}/{total} successful checks', num_failed == 0)
-    await util.stop_simulation()
     return status, print_output

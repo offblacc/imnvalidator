@@ -71,5 +71,4 @@ async def test_big_resolve(test_config):
             return status, print_output
         elif tout + TIMEOUT_STEP > TIMEOUT_MAX:
             print_output += "Failed to find a value that works, please try running this test manually."
-    await util.stop_simulation() # idempotent, call is ok
     return False, print_output + util.format_fail_test("Failed to resolve.")

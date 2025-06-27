@@ -40,5 +40,4 @@ async def arpcheck(test_config) -> Tuple[bool, str]:
     status = ok_cnt == max_checks    
     print_output += util.format_end_status(f"{ok_cnt}/{max_checks} arp table checks successful", status)
     
-    await util.stop_simulation()
     return status, print_output

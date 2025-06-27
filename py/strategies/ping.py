@@ -55,5 +55,4 @@ async def ping(test_config) -> bool:
                 print_output += util.format_output_frame(output)
 
     print_output += util.format_end_status(f"{total - failed}/{total} pings successful", failed == 0)
-    await util.stop_simulation()
     return failed == 0, print_output

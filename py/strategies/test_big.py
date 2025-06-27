@@ -21,5 +21,4 @@ async def test_big(test_config):
     
     if not status:
         output += util.format_fail_test('Try manually running test_big_resolve to find the right value of nodecreate timeout')
-    await util.stop_simulation()
     return status, output
