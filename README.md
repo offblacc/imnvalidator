@@ -1,7 +1,7 @@
 # Imnvalidator
 ### IMUNES simulation validator/testing framework
 
-This project is a testing framework for the IMUNES application. Its purpose is to simplify verifying a successfull IMUNES installation and functionality (to test all functions work on, for example, a specific OS and hardware) as well as verify desired network operation for a specific simulation.
+This project is a testing framework for the IMUNES application. Its purpose is to simplify verifying a successful IMUNES installation and functionality (to test all functions work on, for example, a specific OS and hardware) as well as verify desired network operation for a specific simulation.
 
 Instead of writing tests by programming and manually testing everything the network has to be able to do and what it must not be able to do, you can now just declare the desired functionalities in the JSON file and let the framework take care of the rest, reporting the status back to you.
 
