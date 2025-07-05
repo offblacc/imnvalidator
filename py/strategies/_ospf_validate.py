@@ -23,7 +23,7 @@ async def _ospf_validate(test_config) -> Tuple[bool, str]:
     if not config.state.sim_running:
         no_warn = await util.start_simulation()
         if not no_warn:
-            return False, 'Encountered warnings while starting simulation'
+            return False, util.format_fail_test('Encountered warnings while starting simulation')
     
     ### ====================== Initial sleep - OSPF setup ======================
     time.sleep(40)
@@ -38,6 +38,7 @@ async def _ospf_validate(test_config) -> Tuple[bool, str]:
     
     if not pst:
         return False, util.format_fail_test("Initial IPv4 ping failed")
+        util.format_fail_test()
     
     
     ## IPv6 initial ping
@@ -108,5 +109,6 @@ async def _ospf_validate(test_config) -> Tuple[bool, str]:
     
     print_output += util.format_pass_subtest("Post router restart pings succeeded")
 
+    print_output += util.format_pass_test("OSPF test successful")
     await util.stop_simulation()
     return True, print_output.strip() + '\n'

@@ -8,4 +8,4 @@ async def stop_simulation(test_config) -> Tuple[bool, str]:
     await util.stop_simulation()
     config.state.sim_running = False
     
-    return True, util.format_pass_subtest('Simulation stopped.')
+    return True, util.format_pass_test('Simulation stopped.')

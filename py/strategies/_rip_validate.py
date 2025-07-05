@@ -29,7 +29,7 @@ async def _rip_validate(test_config) -> bool:
     if not config.state.sim_running:
         no_warn = await util.start_simulation()
         if not no_warn:
-            return False, 'Encountered warnings while starting simulation'
+            return False, util.format_fail_test('Encountered warnings while starting simulation')
     
     time.sleep(15) # TODO temporary value, change later, as well as the constants above
     # await multiple times try in a loop..
@@ -40,7 +40,7 @@ async def _rip_validate(test_config) -> bool:
     rt = await util.get_rip_table(router_checkriptable)
     ping_status, ping_output = await util.ping_check(source_node, ip4, config.state.eid)
     if not ping_status:
-        return False, "Didn't converge initially. Error with test config or didn't wait long enough at the start.\n" + ping_output + rt
+        return False, util.format_fail_test("Didn't converge initially. Error with test config or didn't wait long enough at the start.\n") + ping_output + rt
     print_output += util.format_pass_subtest("Initial IPv4 ping goes through")
     
     
@@ -48,7 +48,7 @@ async def _rip_validate(test_config) -> bool:
     rt = await util.get_ripng_table(router_checkriptable)
     ping_status, ping_output = await util.ping_check(source_node, ip6, config.state.eid)
     if not ping_status:
-        return False, "Didn't converge initially. Error with test config or didn't wait long enough at the start.\n" + ping_output + rt
+        return False, util.format_fail_test("Didn't converge initially. Error with test config or didn't wait long enough at the start.\n") + ping_output + rt
     print_output += util.format_pass_subtest("Initial IPv6 ping goes through")
       
     
@@ -88,7 +88,7 @@ async def _rip_validate(test_config) -> bool:
     rt = await util.get_rip_table(router_checkriptable)
     ping_status, ping_output = await util.ping_check(source_node, ip4, config.state.eid)
     if not ping_status:
-        return False, "Didn't find a new route, possible RIP error." + ping_output + rt
+        return False, util.format_fail_test("Didn't find a new route, possible RIP error.") + ping_output + rt
     print_output += util.format_pass_subtest("Post turnoff IPv4 ping goes through")
     
     
@@ -96,7 +96,7 @@ async def _rip_validate(test_config) -> bool:
     rt = await util.get_ripng_table(router_checkriptable)
     ping_status, ping_output = await util.ping_check(source_node, ip6, config.state.eid)
     if not ping_status:
-        return False, "Didn't find a new route, possible RIP error." + ping_output + rt
+        return False, util.format_fail_test("Didn't find a new route, possible RIP error.") + ping_output + rt
     print_output += util.format_pass_subtest("Post turnoff IPv6 ping goes through")
 
 
@@ -125,5 +125,6 @@ async def _rip_validate(test_config) -> bool:
     if verbose:
         print_output += "RIPng table after turnoff:\n" + rip_table + '\n'
     
+    print_output += util.format_pass_test("RIP test successful")
     await util.stop_simulation()
     return status, print_output.strip() + '\n'

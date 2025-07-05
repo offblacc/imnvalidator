@@ -10,8 +10,8 @@
                 "10.0.0.22"
             ],
             "expect": "success",
-            "fail": "Ping not successfull",
-            "success": "Ping successfull"
+            "fail": "Ping not successful",
+            "success": "Ping successful"
         }
     ]
 }

@@ -38,7 +38,7 @@ def format_fail_test(s: str) -> None:
 def format_end_status(s: str, status: bool) -> None:
     """Status True is success, False is failure.
     """
-    return f'{green_code}[PASS]{reset_code} {s}\n' if status else f'{red_code}[FAIL]{reset_code} {s}\n'
+    return format_pass_test(s) if status else format_fail_test(s)
 
 async def ping_check(source_node_name, target_ip, eid, timeout=2, count=2) -> Tuple[bool, str]:
     nodesh = subshell.NodeSubshell(source_node_name)
@@ -327,5 +327,5 @@ def format_output_frame(s):
     ret_str += f'    /{border}\n'
     for line in s:
         ret_str += f'   || {line}\n'
-    ret_str += f'    \{border}\n'
+    ret_str += rf'    \{border}\n'
     return ret_str

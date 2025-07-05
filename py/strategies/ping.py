@@ -8,7 +8,7 @@ async def ping(test_config) -> bool:
     if not config.state.sim_running:
         no_warn = await util.start_simulation()
         if not no_warn:
-            return False, 'Encountered warnings while starting simulation'
+            return False, util.format_fail_test('Encountered warnings while starting simulation')
 
     eid = config.state.eid
     total = len(test_config["source_nodes"]) * len(test_config["target_ips"])
@@ -54,7 +54,5 @@ async def ping(test_config) -> bool:
                 print_output += f'Expected {"successful ping" if expect_success else "ping failure"}, got:\n'
                 print_output += util.format_output_frame(output)
 
-    format = util.format_fail_test if failed != 0 else util.format_pass_test
-    print_output += format(f"{total - failed}/{total} pings successful")
-    await util.stop_simulation()
+    print_output += util.format_end_status(f"{total - failed}/{total} pings successful", failed == 0)
     return failed == 0, print_output

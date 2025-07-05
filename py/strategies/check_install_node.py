@@ -16,7 +16,7 @@ async def check_install_node(test_config) -> bool:
     if not config.state.sim_running:
         no_warn = await util.start_simulation()
         if not no_warn:
-            return False, 'Encountered warnings while starting simulation'
+            return False, util.format_fail_test('Encountered warnings while starting simulation')
     
     status, print_output = True, ''
     num_failed = 0
@@ -41,5 +41,4 @@ async def check_install_node(test_config) -> bool:
 
     total = len(commands) * len(nodes)
     print_output += util.format_end_status(f'{total-num_failed}/{total} successful checks', num_failed == 0)
-    await util.stop_simulation()
     return status, print_output
