@@ -7,7 +7,8 @@
                 "pc1"
             ],
             "target_ips": [
-                "10.0.0.22"
+                "10.0.0.22",
+                "10.0.0.20"
             ],
             "expect": "success",
             "fail": "Ping not successful",
