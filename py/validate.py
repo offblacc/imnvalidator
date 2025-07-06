@@ -56,7 +56,8 @@ async def validate_installation():
             print(e)
             print(f"Cleaning up after this sim and continuing with other tests")
             await util.stop_simulation()
-        
+        # cleanup after each one
+        await util.stop_all_ran_sims()
             
     print(f"Number of failed tests: {total_num_failed}")
     if total_num_failed != 0:
