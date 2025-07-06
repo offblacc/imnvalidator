@@ -5,7 +5,7 @@ from typing import Tuple
 import subshell
 
 async def send_command_node(test_config) -> Tuple[bool, str]:
-    print_output += ''
+    print_output = ''
     if not config.state.sim_running:
         no_warn = await util.start_simulation()
         if not no_warn:
