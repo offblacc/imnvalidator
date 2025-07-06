@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "start sim",
+      "name": "start sim (redundant)",
       "type": "start_simulation"
     },
     {
@@ -20,7 +20,7 @@
       }
     },
     {
-      "name": "Stop sim (redundant)",
+      "name": "stop sim (redundant)",
       "type": "stop_simulation"
     }
   ]
