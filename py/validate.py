@@ -93,6 +93,7 @@ async def validate_simulation(imn_file, config_filepath, parallel, valinst=False
 
     ## Run each test
     failures = 0
+    parallel = False # never start in parallel, deprecated for now
     if parallel:
         # Run tests in parallel
         tasks = [run_single_test(test) for test in test_config["tests"]]
