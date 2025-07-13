@@ -18,4 +18,4 @@ async def send_command_node(test_config) -> Tuple[bool, str]:
     print_output += cmdout
     print_output += util.format_end_status(f"Command returned {nodesh.last_cmd_status}", status)
 
-    return status, cmdout
+    return status, print_output
