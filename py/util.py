@@ -327,5 +327,5 @@ def format_output_frame(s):
     ret_str += f'    /{border}\n'
     for line in s:
         ret_str += f'   || {line}\n'
-    ret_str += rf'    \{border}\n'
+    ret_str += rf'    \{border}' + '\n'
     return ret_str
