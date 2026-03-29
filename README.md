@@ -128,7 +128,7 @@ Running Ping pc1 to pc2
 [PASS] 1/1 tests successful
 ```
 
-In the output you see `[PASS]` twice, first time for each test in the `tests` list (only the `ping` test in this example), and the second time an aggregate result of all tests.
+In the output you see `[PASS]` twice, first time for each test in the `tests` list (only the `ping` test in this example), and the second time an aggregate result of all tests in the list.
 
 
 ### 2. Validating IMUNES installation
