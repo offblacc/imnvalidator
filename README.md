@@ -22,6 +22,14 @@ Another goal this framework is trying to achieve is to simplify the process of t
 ## Installation
 I'll assume you've installed Imunes, if not: https://github.com/imunes/imunes
 
+Clone the repo:
+
+```
+git clone git@github.com:offblacc/imnvalidator.git
+# OR
+git clone https://github.com/offblacc/imnvalidator.git
+```
+
 Imnvalidator was written in Python 3, tested and developed using 3.11.
 
 You'll need pip:
@@ -40,3 +48,111 @@ pip install pexpect
 
 You might have to, depending on your Python installation, use `pip3` or `python3 -m pip` instead of just `pip`.
 
+
+## Usage
+Basic usage is provided by passing --help to the framework:
+
+```
+$ python3 py/validate.py --help
+usage: validate.py [-h] [-v] [-t] [-a] [imn_file] [config_file]
+
+Run framework with specified arguments.
+
+positional arguments:
+  imn_file              Path to the imunes scheme
+  config_file           Path to the JSON config file defining the tests
+
+options:
+  -h, --help            show this help message and exit
+  -v, --verbose         Enable verbose mode
+  -t, --timeit          Time the execution
+  -a, --validate-installation
+                        Validate imunes installation itself running all in
+                        tests/
+```
+
+The framework can be used to validate an IMUNES installation by passing the argument `--validate-installation` or `-a`, or to validate a specific network setup by providing an .imn file and a JSON file with the desired tests.
+
+Detailed explanation of the JSON files structure will be described in section one here as it belongs there and will be useful when explaining the second section. Easier to explain and write this way, so first let's tackle validating a specific network setup, then validating the IMUNES installation itself.
+
+### 1. Validating a specific network setup
+### 2. Validating IMUNES installation
+To check whether your IMUNES installation is working properly, just run the framework with the `--validate-installation` or `-a` argument:
+
+```
+python3 py/validate.py -a
+```
+
+Output, cut for sanity sake (NOTE: the failed test checked for those packages on the host machine (not network nodes), for demo reasons, they are not necessary on the host for IMUNES to function):
+```
+Starting test big_simulation
+Starting simulation
+Simulation started successfully.
+
+Running Test big simulation for errors
+[PASS] Simulation started without warnings
+Starting test check_install_host
+
+Running Check multiple packages installed
+...[FAIL] Command traceroute failed with non-zero exit: 1
+...[FAIL] Command ifconfig failed with non-zero exit: 127
+[FAIL] 0/2 successful checks
+Starting test ping
+Starting simulation
+Simulation started successfully.
+
+Running Ping pc1 to pc2
+...[OK] Node 'pc1' pinged '10.0.0.22' successfully
+[PASS] 1/1 pings successful
+Starting test _services
+Starting simulation
+Simulation started successfully.
+
+
+Running Test services
+...[OK] FTP OK
+...[OK] SSH OK
+...[OK] TELNET OK
+[PASS] 3/3 services test successful
+Starting test traceroute
+Starting simulation
+Simulation started successfully.
+
+Running Traceroute test
+...[OK] pc1 -> 10.0.8.10 traceroute
+...[OK] server -> 10.0.0.21 traceroute
+[PASS] 2/2 traceroutes successful
+Starting test check_install_node
+Starting simulation
+Simulation started successfully.
+
+Running Check multiple packages installed
+...[OK] Command traceroute on pc1 returned status 0
+...[OK] Command ifconfig on pc1 returned status 0
+...[OK] Command traceroute on pc2 returned status 0
+...[OK] Command ifconfig on pc2 returned status 0
+[PASS] 4/4 successful checks
+
+Starting test _rip_validate
+Starting simulation
+Simulation started successfully.
+
+Running Validate RIP funtioning
+...[OK] Initial IPv4 ping goes through
+...[OK] Initial IPv6 ping goes through
+...[OK] Next RIP hop (IPv4) before turnoff is correct: 10.0.7.2
+...[OK] Post turnoff IPv4 ping goes through
+...[OK] Post turnoff IPv6 ping goes through
+...[OK] Next RIP hop (IPv4) after turnoff is correct: 10.0.1.2
+[PASS] RIP test successful
+
+Number of failed tests: 1
+Tests failed: check_install_host
+```
+
+When you see `Starting test X` for example `Starting test check_install_host`, that's the name of a specific 
+
+
+
+
+#### Misc features
