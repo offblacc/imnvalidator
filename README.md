@@ -50,7 +50,7 @@ You might have to, depending on your Python installation, use `pip3` or `python3
 
 
 ## Usage
-Basic usage is provided by passing --help to the framework:
+Basic usage is provided by passing `--help` to the framework:
 
 ```
 $ python3 py/validate.py --help
