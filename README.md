@@ -117,7 +117,7 @@ Each test has a name which is completely arbitrary (for user experience mostly, 
 We can now run the test with the following command:
 
 ```
-$sudo python3 py/validate.py path/to/imn_file.imn path/to/config_file.json
+$ sudo python3 py/validate.py path/to/imn_file.imn path/to/config_file.json
 Starting simulation
 Simulation started successfully.
 
