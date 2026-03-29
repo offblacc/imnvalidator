@@ -76,8 +76,63 @@ The framework can be used to validate an IMUNES installation by passing the argu
 Detailed explanation of the JSON files structure will be described in section one here as it belongs there and will be useful when explaining the second section. Easier to explain and write this way, so first let's tackle validating a specific network setup, then validating the IMUNES installation itself.
 
 ### 1. Validating a specific network setup
+The syntax for running a specific network setup testing is as follows:
+
+```
+python3 py/validate.py [imn_file] [config_file]
+```
+
+Where `imn_file` is the path to the .imn file (IMUNES scheme file) and `config_file` is the path to the JSON file defining the tests to be run on that specific network setup, which I'll describe next on a simple `ping` test example.
+
+First things first, this test will be ran on a network with nodes `pc1` and `pc2`, where `pc2` has IP address `10.0.0.22`.
+
+Here's the JSON file, explained below:
+
+```json
+{
+    "tests": [
+        {
+            "name": "Ping pc1 to pc2",
+            "type": "ping",
+            "source_nodes": [
+                "pc1"
+            ],
+            "target_ips": [
+                "10.0.0.22"
+            ],
+            "expect": "success",
+            "fail": "Ping not successful",
+            "success": "Ping successful"
+        }
+    ]
+}
+```
+
+The root of every test config JSON file is an object with a `tests` key. This is the only top-level key currently, and it exists so that later on it'll be easier to add another top-level objects if needed that can define some global rules for running the tests, adding flexibility for future upgrades.
+
+Inside `tests` there's a list of objects that each define a test, and they'll be ran in sequence one after another (there was paralelism here before some logic got changed). That enables you to chain multiple tests together, for example, you can have a test that turns off a specific link and then have another test that checks if the routing is working properly after that link is turned off, but that's for a later example.
+
+Each test has a name which is completely arbitrary (for user experience mostly, just give it a descriptive name). The most important key is `type` of which there are several and it defines what other keys are required. In this example, the type is `ping`, so the required keys are `source_nodes`, `target_ips` and `expect`. The first two are lists of source nodes and target IPs to ping, and the framework will ping each target IP address from each source node. The `expect` key allows you to expect a ping failure (failure -> test successful), and `fail` and `success` are custom messages that will be printed in case of failure or success. These last two were not implemented in other test types as I saw them as pointless (I think in the end the framework ignores these in the ping test anyway).
+
+We can now run the test with the following command:
+
+```
+$sudo python3 py/validate.py path/to/imn_file.imn path/to/config_file.json
+Starting simulation
+Simulation started successfully.
+
+Running Ping pc1 to pc2
+...[OK] Node 'pc1' pinged '10.0.0.22' successfully
+[PASS] 1/1 pings successful
+
+[PASS] 1/1 tests successful
+```
+
+In the output you see `[PASS]` twice, first time for each test in the `tests` list (only the `ping` test in this example), and the second time an aggregate result of all tests.
+
+
 ### 2. Validating IMUNES installation
-To check whether your IMUNES installation is working properly, just run the framework with the `--validate-installation` or `-a` argument:
+To check if your IMUNES installation is working properly, just run the framework with the `--validate-installation` or `-a` argument:
 
 ```
 python3 py/validate.py -a
