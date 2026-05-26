@@ -179,7 +179,7 @@ To check if your IMUNES installation is working properly, just run the framework
 python3 py/validate.py -a
 ```
 
-Output, cut for sanity sake (NOTE: the failed test checked for those packages on the host machine (not network nodes), for demo reasons, they are not necessary on the host for IMUNES to function):
+Output, cut for sanity's sake (NOTE: the failed test checked for those packages on the host machine (not network nodes), for demo reasons, they are not necessary on the host for IMUNES to function):
 ```
 Starting test big_simulation
 Starting simulation
@@ -251,13 +251,25 @@ When you see `Starting test X` for example `Starting test check_install_host`, t
 
 
 ### Adding new test types & framework flexibility
+Adding new test types is relatively easy, which was important for the framework's upgradeability.
+Let's say you want to add a test type, and you want to name it "banana". For the framework to recognize "banana" as a test type in the json file, you need to do the following:
+1. In `py/strategies` create a file called `banana.py`
+2. In the file, create a function:
+```py
+async def banana(test_config) -> bool
+```
+
+After these two steps, your new test type will be successfully recognized and will be ran after you put "banana" in the "type" field in the json file. Still - we're not done yet; the framework expects the same kind of feedback from each test:
+
+
+3. The expected interface
+
+Each test needs to return a tuple contaning a boolean and a string, the boolean representing test status (True = success) and the string which determines what is printed out. For reference, check out `py/strategies/traceroute.py`, where you will see how that string is built throughout the test's execution and which utility functions were used for output formatting. Most importantly, these are `format_pass_subtest`, `format_fail_subtest` and `format_end_status`. You'll also find it useful importing `config` as it contains a lot of useful variables and state information, so be sure to check it out.
+
+The `util.py` file is currently a stew of everything imaginable. As the project grew, I haven't done my due dilligence and fragmented it by function. On the bright side, if you need something, you probably know where you'll find it.
+
 
 #### Misc features
 
 #### Existing test types
-
-##### Ping
-##### Lorem
-##### Ipsum
-##### Finish
-##### This
+ > to be documented in the future in detail
