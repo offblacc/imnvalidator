@@ -131,6 +131,47 @@ Running Ping pc1 to pc2
 In the output you see `[PASS]` twice, first time for each test in the `tests` list (only the `ping` test in this example), and the second time an aggregate result of all tests in the list.
 
 
+It is possible to have more control over the simulation starting and stopping using *special* tests that aren't really tests but more some sort of commands - their names are *start_simulation* and *stop simulation*. It is important to note simulations will be **automatically** started and stopped before and after the first and last tests in the list, and all tests in between will be ran *on the same simulation, one after another*, but you can also have this freedom of starting and stopping simulations when you need it.
+
+The following example shows manual control over the simulation's runtime.
+
+```json
+{
+  "tests": [
+    {
+      "name": "start sim (redundant)",
+      "type": "start_simulation"
+    },
+    {
+      "name": "Send ping",
+      "type": "send_command_node",
+      "node": "PC",
+      "command": "ping -c 2 10.0.0.210"
+    },
+    {
+      "name": "ARP config test",
+      "type": "arpcheck",
+      "source_nodes": {
+        "PC": {
+          "10.0.0.210": "00:11:22:33:44:55"
+        }
+      }
+    },
+    {
+      "name": "stop sim (redundant)",
+      "type": "stop_simulation"
+    }
+  ]
+}
+
+```
+
+In the example above omitting the first and last test, or just one of them, will make no difference. If the framework needs the simulation running for a test and it hasn't been done manually, the framework will start it, same goes for stopping it. The framework also takes care to clean up after itself if for any reason one of the simulations ran during testing hasn't exited cleanly. It is also careful not to stop any running IMUNES simulations that it has not started itself. 
+
+>*The only exception is an edge case in which it stops a simulation and before the framework is done running tests a different process starts a simulation that gets the same ID that the just-stopped simulation had. Odds are small but never zero. For now this is treated as tolerable.*
+
+
+
 ### 2. Validating IMUNES installation
 To check if your IMUNES installation is working properly, just run the framework with the `--validate-installation` or `-a` argument:
 
@@ -209,5 +250,14 @@ When you see `Starting test X` for example `Starting test check_install_host`, t
 
 
 
+### Adding new test types & framework flexibility
 
 #### Misc features
+
+#### Existing test types
+
+##### Ping
+##### Lorem
+##### Ipsum
+##### Finish
+##### This
